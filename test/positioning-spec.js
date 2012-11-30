@@ -5,19 +5,23 @@ describe("Positioning", function() {
       text:function(){return node_text;}
     };
   };
-  position_map=function(map_root,viewport_height,viewport_width,fontSizer){
+  var position_map=function(map_root,layout_options,fontSizer){
     var box=fontSizer(map_root.text());
-    viewport_center=[viewport_width/2,viewport_height/2];
+    viewport_center=[layout_options.viewport_width/2,layout_options.viewport_height/2];
     return {root:{coordinates:[
-      [viewport_center[0]-box[0]/2,viewport_center[1]-box[1]/2],
-      [viewport_center[0]+box[0]/2,viewport_center[1]+box[1]/2]
+      [viewport_center[0]-box[0]/2-layout_options.padding_x, viewport_center[1]-box[1]/2-layout_options.padding_y],
+      [viewport_center[0]+box[0]/2+layout_options.padding_x, viewport_center[1]+box[1]/2+layout_options.padding_y]
     ]}};
   }
   it("lays out the root node in the centre", function() {
     var node=new Node("center");
     var boxWidth=100,boxHeight=50,fontSizer=function(){return [boxWidth,boxHeight]};
-    var viewport_height=800,viewport_width=1200;
-    var screenMap=position_map(node,viewport_height,viewport_width,fontSizer);
-    expect(screenMap.root.coordinates).toEqual([[550,375],[650,425]]);
+    var layout_options={
+      viewport_height:800,
+      viewport_width:1200,
+      padding_x:10,
+      padding_y:5};
+    var screenMap=position_map(node,layout_options,fontSizer);
+    expect(screenMap.root.coordinates).toEqual([[540,370],[660,430]]);
   });
 });
