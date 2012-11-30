@@ -5,7 +5,9 @@ describe("Positioning", function() {
       text:function(){return node_text;}
     };
   };
-  var position_map=function(map_root,layout_options,fontSizer){
+  var position_map=function(map_root,param_options,fontSizer){
+    var default_options={ viewport_height:0, viewport_width:0, padding_x:0, padding_y:0};
+    var layout_options=$.extend({},default_options,param_options); 
     var box=fontSizer(map_root.text());
     viewport_center=[layout_options.viewport_width/2,layout_options.viewport_height/2];
     return {root:{coordinates:[
