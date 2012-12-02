@@ -31,6 +31,7 @@ describe("Positioning", function() {
     var index=0;
     return {
         coordinates:root_coordinates,
+        node:map_root,
         children: map_root.children().map(function(node){ 
           var child_options=$.extend([],param_options,child_offset(root_coordinates,param_options,(Math.PI*index++)/map_root.children().length));
           return position_map(node,child_options,fontSizer); 
@@ -75,18 +76,18 @@ describe("Positioning", function() {
       expect(intersects([[5,5],[10,10]],[[1,1],[4,4]])).toEqual(false);
     });
   });
-  it("lays out the root node in the centre, padded according to options", function() {
+
+  var layout_test_map=function(){
     var boxWidth=100,boxHeight=50,fontSizer=function(){return [boxWidth,boxHeight]};
     var layout_options={ viewport_height:800, viewport_width:1200, padding_x:10, padding_y:5};
-    var screenMap=position_map(test_map(),layout_options,fontSizer);
-    expect(screenMap.coordinates).toEqual([[540,370],[660,430]]);
+    return position_map(test_map(),layout_options,fontSizer);
+  }
+  it("lays out the root node in the centre, padded according to options", function() {
+    expect(layout_test_map().coordinates).toEqual([[540,370],[660,430]]);
   });
   it("lays out secondary nodes without overlapping", function(){
-    var boxWidth=100,boxHeight=50,fontSizer=function(){return [boxWidth,boxHeight]};
-    var layout_options={ viewport_height:800, viewport_width:1200, padding_x:10, padding_y:5};
-    var screenMap=position_map(test_map(),layout_options,fontSizer);
+    var screenMap=layout_test_map();
     expect (screenMap.children.length).toEqual(test_map().children().length); 
-    
     var previous=[screenMap.coordinates];
     screenMap.children.forEach(function(child){
       previous.forEach(function(prev_coordinates){
@@ -94,5 +95,19 @@ describe("Positioning", function() {
       });
       previous.push(child.coordinates);
     });
+  });
+  check_node_attached=function(screen_map, node){
+    expect(screen_map.node).toBe(node);
+    var index=0;
+    node.children().forEach(function(child){
+      check_node_attached(screen_map.children[index++],child);
+    });
+  }
+  it("attaches a reference to the relevant node on each positioned element", function(){
+    var boxWidth=100,boxHeight=50,fontSizer=function(){return [boxWidth,boxHeight]};
+    var layout_options={ viewport_height:800, viewport_width:1200, padding_x:10, padding_y:5};
+    var test=test_map();
+    var screen_map= position_map(test,layout_options,fontSizer);
+    check_node_attached(screen_map,test);
   });
 });
