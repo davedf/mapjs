@@ -96,11 +96,10 @@ function init_tree(json,container_id){
             };
             //set label styles
             var style = label.style;
+            // ugly ugly ugly - vertical centering
             style.width=node.data.$width+'px';
-            // ugly ugly ugly
-            style.height = (node.data.$height/2) + 'px';
+            style.height=(node.data.$height/2) + 'px';
             style.paddingTop=(node.data.$height/4)+ 'px';
-
         },
         
         //This method is called right before plotting
