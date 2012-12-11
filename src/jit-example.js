@@ -42,6 +42,11 @@ function init_tree(json,container_id){
     //init Spacetree
     //Create a new ST instance
     var st = new $jit.ST({
+       // Navigation: {  
+       //     enable: true,  
+       //     panning: 'avoid nodes',  
+       //     zooming: 20  
+       // }, 
         //id of viz container element
         injectInto: container_id,
         //multitree
@@ -72,7 +77,7 @@ function init_tree(json,container_id){
             }
         },
         Edge: {
-            type: 'line',
+            type: 'bezier',
             overridable: true
         },
         
@@ -95,10 +100,7 @@ function init_tree(json,container_id){
             // ugly ugly ugly
             style.height = (node.data.$height/2) + 'px';
             style.paddingTop=(node.data.$height/4)+ 'px';
-            style.cursor = 'pointer';
-            style.color = '#333';
-            style.fontSize = '0.8em';
-            style.textAlign= 'center';
+
         },
         
         //This method is called right before plotting
