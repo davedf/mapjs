@@ -59,7 +59,8 @@ function init_tree(json,container_id){
         levelDistance: 40,
         //sibling and subtrees offsets
         siblingOffset: 3,
-        subtreeOffset: 3,
+        subtreeOfftet: 3,
+        levelsToShow: 5,
         //set node and edge styles
         //set overridable=true for styling individual
         //nodes or edges
@@ -90,18 +91,21 @@ function init_tree(json,container_id){
         //your node.
         onCreateLabel: function(label, node){
             label.id = node.id;            
-            label.innerHTML = node.name;
             label.onclick = function(){
-              st.onClick(node.id);
+              if (node==st.clickedNode) 
+                st.edit_node(node); 
+              else
+                st.onClick(node.id);
             };
+        },
+        onPlaceLabel: function(label,node){
             //set label styles
+            label.innerHTML = node.name;
             var style = label.style;
-            // ugly ugly ugly - vertical centering
             style.width=node.data.$width+'px';
             style.height=(node.data.$height/2) + 'px';
             style.paddingTop=(node.data.$height/4)+ 'px';
         },
-        
         //This method is called right before plotting
         //a node. It's useful for changing an individual node
         //style properties before plotting it.
@@ -143,10 +147,18 @@ function init_tree(json,container_id){
             }
         }
     });
+    st.edit_node=function(node){
+          var result=window.prompt('Edit label?',node.name);
+          node.name=result;
+          st.refresh();
+          //this will also reposition labels properly
+          st.onClick(node.id);
+    };
     //load json data
     st.loadJSON(json);
     //compute node positions and layout
     st.compute('end');
     st.select(st.root);
     //end
+    window.st=st;
 }
