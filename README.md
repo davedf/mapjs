@@ -1,4 +1,4 @@
 mapjs
 =====
 
-mindmap javascript proof-of-concent
+mindmap javascript proof-of-concept
