@@ -100,11 +100,11 @@ function init_tree(json,container_id){
         },
         onPlaceLabel: function(label,node){
             //set label styles
-            label.innerHTML = node.name;
+            label.innerHTML = 
+              '<span style="display:table-cell; vertical-align:middle;width:'+node.data.$width+'px;height:'+node.data.$height+'px"> '+node.name+'</span>';
             var style = label.style;
             style.width=node.data.$width+'px';
-            style.height=(node.data.$height/2) + 'px';
-            style.paddingTop=(node.data.$height/4)+ 'px';
+            style.height=node.data.$height + 'px';
         },
         //This method is called right before plotting
         //a node. It's useful for changing an individual node
