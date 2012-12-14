@@ -72,7 +72,7 @@ function init_tree(json,container_id){
             content_span.className='nodecontent';
             label.appendChild(content_span);
             label.id = node.id;            
-            label.onclick = function(){ st.onClick(node.id); };
+            content_span.onclick = function(){ st.onClick(node.id); };
             content_span.ondblclick= function(){ st.edit_node(node); };
 
             var button_span=document.createElement("span");
@@ -80,9 +80,8 @@ function init_tree(json,container_id){
             label.appendChild(button_span);
             var btn_add=document.createElement('a');
             btn_add.className='button';
-            btn_add.onclick= function(){ st.add_child_node(node); } 
+            btn_add.onclick= function(){ st.add_child_node(node);}; 
             btn_add.innerText='+';
-            btn_add.href="#";
             button_span.appendChild(btn_add);
         },
         onPlaceLabel: function(label,node){
@@ -150,7 +149,8 @@ function init_tree(json,container_id){
         return "node_n"+window.node_uuid;
     }
     st.add_child_node=function(node){
-      st.addSubtree({id:"node02",children: [{ id: "node352222x", name: "352222x", data: {}, children: []}]},'animate',{hideLabels:false});
+      st.addSubtree({id:node.id,children: [{ id: next_id(), name: "Click to edit", data: {}, children: []}]},'animate',{hideLabels:false});
+
     }
     //load json data
     st.loadJSON(json);
