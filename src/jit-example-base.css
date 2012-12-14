@@ -24,3 +24,9 @@ html, body {
    font-size : 0.8em;
    text-align: center;
 }
+.nodecontent { 
+   vertical-align:middle;
+   display:table-cell;
+}
+.nodebuttons { height:10px; text-align:right;width:100%}
+

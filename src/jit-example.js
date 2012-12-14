@@ -16,29 +16,7 @@ var labelType, useGradients, nativeTextSupport, animate;
 })();
 
 
-function split_left_right(json){
-    //preprocess subtrees orientation
-    var arr = json.children, len = arr.length;
-    for(var i=0; i < len; i++) {
-    	//split half left orientation
-      if(i < len / 2) {
-    		arr[i].data.$orn = 'left';
-    		$jit.json.each(arr[i], function(n) {
-    			n.data.$orn = 'left';
-    		});
-    	} else {
-    	//half right
-    		arr[i].data.$orn = 'right';
-    		$jit.json.each(arr[i], function(n) {
-    			n.data.$orn = 'right';
-    		});
-    	}
-    }
-    //end
-}
 function init_tree(json,container_id){
-    //init data
-    split_left_right(json);
     //init Spacetree
     //Create a new ST instance
     var st = new $jit.ST({
@@ -50,7 +28,7 @@ function init_tree(json,container_id){
         //id of viz container element
         injectInto: container_id,
         //multitree
-    	  multitree: true,
+    	  //multitree: true,
         //set duration for the animation
         duration: 800,
         //set animation transition type
@@ -59,7 +37,7 @@ function init_tree(json,container_id){
         levelDistance: 40,
         //sibling and subtrees offsets
         siblingOffset: 3,
-        subtreeOfftet: 3,
+        subtreeOffset: 3,
         levelsToShow: 5,
         //set node and edge styles
         //set overridable=true for styling individual
@@ -96,14 +74,27 @@ function init_tree(json,container_id){
             label.id = node.id;            
             label.onclick = function(){ st.onClick(node.id); };
             content_span.ondblclick= function(){ st.edit_node(node); };
+
+            var button_span=document.createElement("span");
+            button_span.className='nodebuttons';
+            label.appendChild(button_span);
+            var btn_add=document.createElement('a');
+            btn_add.className='button';
+            btn_add.onclick= function(){ st.add_child_node(node); } 
+            btn_add.innerText='+';
+            btn_add.href="#";
+            button_span.appendChild(btn_add);
         },
         onPlaceLabel: function(label,node){
             var content_span=label.getElementsByClassName('nodecontent')[0];
+            var button_span=label.getElementsByClassName('nodebuttons')[0];
             content_span.innerHTML=node.name;
             var style = label.style;
             var content_style=content_span.style;
-            content_style.width=style.width=node.data.$width+'px';
-            content_style.height=style.height=node.data.$height + 'px';
+            var button_style=button_span.style;
+            button_style.width=content_style.width=style.width=node.data.$width+'px';
+            style.height=node.data.$height + 'px';
+            content_style.height=(node.data.$height-button_span.offsetHeight)+'px';
         },
         //This method is called right before plotting
         //a node. It's useful for changing an individual node
@@ -153,6 +144,14 @@ function init_tree(json,container_id){
           //this will also reposition labels properly
           st.onClick(node.id);
     };
+    next_id=function(){
+        window.node_uuid=window.node_uuid||0;
+        window.node_uuid++;
+        return "node_n"+window.node_uuid;
+    }
+    st.add_child_node=function(node){
+      st.addSubtree({id:"node02",children: [{ id: "node352222x", name: "352222x", data: {}, children: []}]},'animate',{hideLabels:false});
+    }
     //load json data
     st.loadJSON(json);
     //compute node positions and layout
