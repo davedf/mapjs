@@ -90,21 +90,20 @@ function init_tree(json,container_id){
         //Use this method to add event handlers and styles to
         //your node.
         onCreateLabel: function(label, node){
+            var content_span=document.createElement("span");
+            content_span.className='nodecontent';
+            label.appendChild(content_span);
             label.id = node.id;            
-            label.onclick = function(){
-              if (node==st.clickedNode) 
-                st.edit_node(node); 
-              else
-                st.onClick(node.id);
-            };
+            label.onclick = function(){ st.onClick(node.id); };
+            content_span.ondblclick= function(){ st.edit_node(node); };
         },
         onPlaceLabel: function(label,node){
-            //set label styles
-            label.innerHTML = 
-              '<span style="display:table-cell; vertical-align:middle;width:'+node.data.$width+'px;height:'+node.data.$height+'px"> '+node.name+'</span>';
+            var content_span=label.getElementsByClassName('nodecontent')[0];
+            content_span.innerHTML=node.name;
             var style = label.style;
-            style.width=node.data.$width+'px';
-            style.height=node.data.$height + 'px';
+            var content_style=content_span.style;
+            content_style.width=style.width=node.data.$width+'px';
+            content_style.height=style.height=node.data.$height + 'px';
         },
         //This method is called right before plotting
         //a node. It's useful for changing an individual node
