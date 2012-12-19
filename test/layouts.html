@@ -1,0 +1,137 @@
+<html>
+    <head>
+  <script src="../lib/jquery-1.8.3.js"></script>
+      <style>
+        .node{
+            display:block;vertical-align:middle; margin-left:30px; margin-top:10px; margin-bottom:10px; padding:5px;
+
+          }
+          .children {
+            display:inline-block;vertical-align:middle;
+          }
+          .label {
+            display:inline; vertical-align:middle; border:10px solid black;padding:5px; 
+            border-radius:70%;
+          }
+          
+          .node .node .label {
+            border: 5px solid black; 
+          }
+          .node .node .node .label {
+            border: 1px solid black; 
+          }
+          .map {width:900px; overflow:scroll;}
+          .connect_down_left{
+            border-top-left-radius: 50%;
+            position: absolute;
+            border-left: 0.3em solid #2C2C2C;
+            border-top: 0.3em solid #2C2C2C;
+          }
+          .connect_up_left{
+            border-bottom-left-radius: 50%;
+            position: absolute;
+            border-left: 0.3em solid #2C2C2C;
+            border-bottom: 0.3em solid #2C2C2C;
+          }
+          .connect_left{
+            position: absolute;
+            border-bottom: 0.3em solid #2C2C2C;
+          }
+        </style>
+    </head>
+    <body>
+    <div class="map">
+        <div class="node" id="node_1">
+          <span class="label">Node 1</span>
+          <span class="children">
+            <div class="node" id="node_1_1">
+              <span class="label">Node 1.1</span>
+              <span class="children" >
+
+                <div class="node">
+                  <span class="label">Node 1.1.1</span>
+                </div>
+                <div class="node">
+                  <span class="label">Node 1.1.2</span>
+                </div>
+                <div class="node">
+                  <span class="label">Node 1.1.3</span>
+                </div>
+              </span>
+            </div>
+            <div class="node">
+              <span class="label">Node 1.2</span>
+              <span class="children">
+
+                <div class="node">
+                  <span class="label">Node 1.2.1</span>
+                </div>
+                <div class="node">
+                  <span class="label">Node 1.2.2</span>
+            
+                
+              <span class="children" >
+
+                <div class="node">
+                  <span class="label">Node 1.2.2.1</span>
+                </div>
+                <div class="node">
+                  <span class="label">Node 1.2.2.2</span>
+                </div>
+                <div class="node">
+                  <span class="label">Node 1.2.2.3</span>
+                </div>
+              </span>
+                
+                
+                </div>
+                <div class="node">
+                  <span class="label">Node 1.2.3</span>
+                </div>
+              
+              </span>
+            </div>
+            
+            <div class="node">
+              <span class="label">Node 1.3</span>
+              <span class="children">
+              </span>
+            </div>
+    
+          </span>
+        </div><!-- node 1-->
+      </div><!-- map -->
+      <script>
+          $(function(){
+            var idx=0;
+            $('.node .node .label').each(function(){
+              var node=$(this);
+              var vertical_sensitivity_threshold=5;
+              var parent=node.parent().parent().parent().children('.label:first');
+              if (node.length>0 && parent.length>0){ 
+                var connect =$('<div>&nbsp</div>').appendTo('.map');
+                connect.attr('id','connect_'+(idx++));
+                if (Math.abs(parent.offset().top-node.offset().top)<vertical_sensitivity_threshold && parent.offset().left<node.offset().left){
+                  connect.addClass("connect_left");
+                  connect.offset(
+                    { top: parent.offset().top+parent.outerHeight()/2, left: parent.offset().left+parent.outerWidth() });
+                
+                }
+                else if (parent.offset().top>node.offset().top && parent.offset().left<node.offset().left){
+                  connect.addClass("connect_down_left");
+                  connect.offset(
+                    { top: node.offset().top+node.outerHeight()/2, left: parent.offset().left+parent.outerWidth()/2 });
+                }
+                else if (parent.offset().top<node.offset().top && parent.offset().left<node.offset().left){
+                  connect.addClass("connect_up_left");
+                  connect.offset(
+                    { top: parent.offset().top+parent.outerHeight(), left: parent.offset().left+parent.outerWidth()/2 });
+                }
+                connect.width(node.offset().left-connect.offset().left-parseInt(node.css('padding-left')));
+                connect.height(Math.max(parent.offset().top-parseInt(parent.css('padding-top')),node.offset().top+node.outerHeight()/2)-connect.offset().top);
+              }
+            });
+            });
+      </script>
+    </body>
+</html>
