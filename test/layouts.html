@@ -10,12 +10,12 @@
             display:inline-block;vertical-align:middle;
           }
           .label {
-            display:inline; vertical-align:middle; border:10px solid black;padding:5px; 
-            border-radius:70%;
+            display:inline; vertical-align:middle; border:5px solid black;padding:5px; 
+            border-radius:30%;
           }
           
           .node .node .label {
-            border: 5px solid black; 
+            border: 3px solid black; 
           }
           .node .node .node .label {
             border: 1px solid black; 
@@ -33,7 +33,19 @@
             border-left: 0.3em solid #2C2C2C;
             border-bottom: 0.3em solid #2C2C2C;
           }
-          .connect_left{
+          .connect_down_right{
+            border-top-right-radius: 50%;
+            position: absolute;
+            border-right: 0.3em solid #2C2C2C;
+            border-top: 0.3em solid #2C2C2C;
+          }
+          .connect_up_right{
+            border-bottom-right-radius: 50%;
+            position: absolute;
+            border-right: 0.3em solid #2C2C2C;
+            border-bottom: 0.3em solid #2C2C2C;
+          }
+          .connect_horizontal{
             position: absolute;
             border-bottom: 0.3em solid #2C2C2C;
           }
@@ -42,12 +54,57 @@
     <body>
     <div class="map">
         <div class="node" id="node_1">
+          <span class="children">
+            <div class="node">
+              <span class="children" >
+                <div class="node">
+                  <span class="label">Node 1.4.1</span>
+                </div>
+                <div class="node">
+                  <span class="label">Node 1.4.2</span>
+                </div>
+                <div class="node">
+                  <span class="label">Node 1.4.3</span>
+                </div>
+              </span>
+              <span class="label">Node 1.4</span>
+            </div>
+            <div class="node">
+              <span class="children">
+                <div class="node">
+                  <span class="label">Node 1.5.1</span>
+                </div>
+                <div class="node">
+                  <span class="children" >
+                    <div class="node">
+                      <span class="label">Node 1.5.2.1</span>
+                    </div>
+                    <div class="node">
+                      <span class="label">Node 1.5.2.2</span>
+                    </div>
+                    <div class="node">
+                      <span class="label">Node 1.5.2.3</span>
+                    </div>
+                  </span>
+                  <span class="label">Node 1.5.2</span>
+                </div>
+                <div class="node">
+                  <span class="label">Node 1.5.3</span>
+                </div>
+              </span>
+              <span class="label">Node 1.5</span>
+            </div>
+            
+            <div class="node">
+              <span class="label">Node 1.6</span>
+            </div>
+    
+          </span>
           <span class="label">Node 1</span>
           <span class="children">
             <div class="node" id="node_1_1">
               <span class="label">Node 1.1</span>
               <span class="children" >
-
                 <div class="node">
                   <span class="label">Node 1.1.1</span>
                 </div>
@@ -111,24 +168,41 @@
               if (node.length>0 && parent.length>0){ 
                 var connect =$('<div>&nbsp</div>').appendTo('.map');
                 connect.attr('id','connect_'+(idx++));
-                if (Math.abs(parent.offset().top-node.offset().top)<vertical_sensitivity_threshold && parent.offset().left<node.offset().left){
-                  connect.addClass("connect_left");
-                  connect.offset(
-                    { top: parent.offset().top+parent.outerHeight()/2, left: parent.offset().left+parent.outerWidth() });
-                
+                if (Math.abs(parent.offset().top-node.offset().top)<vertical_sensitivity_threshold){
+                  connect.addClass("connect_horizontal");
+                  connect.offset( { top: parent.offset().top+parent.outerHeight()/2, 
+                      left: Math.min(parent.offset().left+parent.outerWidth(),node.offset().left+node.outerWidth()) });
+                  connect.width(
+                    Math.max(node.offset().left-parseInt(node.css('padding-left')),
+                    parent.offset().left)-connect.offset().left);
                 }
-                else if (parent.offset().top>node.offset().top && parent.offset().left<node.offset().left){
-                  connect.addClass("connect_down_left");
-                  connect.offset(
-                    { top: node.offset().top+node.outerHeight()/2, left: parent.offset().left+parent.outerWidth()/2 });
+                else {
+                  if (parent.offset().top>node.offset().top && parent.offset().left<node.offset().left){
+                    connect.addClass("connect_down_left");
+                    connect.offset(
+                      { top: node.offset().top+node.outerHeight()/2, left: parent.offset().left+parent.outerWidth()/2 });
+                  }
+                  else if (parent.offset().top<node.offset().top && parent.offset().left<node.offset().left){
+                    connect.addClass("connect_up_left");
+                    connect.offset(
+                      { top: parent.offset().top+parent.outerHeight(), left: parent.offset().left+parent.outerWidth()/2 });
+                  }
+                  else if (parent.offset().top>node.offset().top && parent.offset().left>node.offset().left){
+                    connect.addClass("connect_down_right");
+                    connect.offset(
+                      { top: node.offset().top+node.outerHeight()/2, left: node.offset().left+node.outerWidth() });
+                  }
+                  else if (parent.offset().top<node.offset().top && parent.offset().left>node.offset().left){
+                    connect.addClass("connect_up_right");
+                    connect.offset(
+                      { top: parent.offset().top+parent.outerHeight(), left: node.offset().left+node.outerWidth() });
+                  }
+                  connect.width(
+                    Math.max(node.offset().left-parseInt(node.css('padding-left')),
+                    parent.offset().left+parent.outerWidth()/2)-connect.offset().left);
                 }
-                else if (parent.offset().top<node.offset().top && parent.offset().left<node.offset().left){
-                  connect.addClass("connect_up_left");
-                  connect.offset(
-                    { top: parent.offset().top+parent.outerHeight(), left: parent.offset().left+parent.outerWidth()/2 });
-                }
-                connect.width(node.offset().left-connect.offset().left-parseInt(node.css('padding-left')));
                 connect.height(Math.max(parent.offset().top-parseInt(parent.css('padding-top')),node.offset().top+node.outerHeight()/2)-connect.offset().top);
+              
               }
             });
             });
