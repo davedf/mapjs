@@ -174,18 +174,16 @@
             });
             return jquery_elem.outerWidth()+max;
           }
-          $(function(){
-            var idx=0;
-            $('.map').width(2*widest_child($('.map .node:first')));
+          function paint_map_connections(jquery_element){
+            jquery_element.width(2*widest_child(jquery_element.find('.node:first')));
             $('.node .node .label').each(function(){
               var node=$(this);
               var vertical_sensitivity_threshold=5;
               var parent=node.parent().parent().parent().children('.label:first');
-              if (node.length>0 && parent.length>0){ 
-                var connect =$('<div>&nbsp</div>').appendTo('.map');
-                connect.attr('id','connect_'+(idx++));
-
-                
+              if (node.length>0 && parent.length>0){
+                node.children('.connect').detach(); 
+                var connect =$('<div>&nbsp</div>').appendTo(node);
+                connect.addClass('connect');
               if (Math.abs(v_middle(parent)-v_middle(node))<vertical_sensitivity_threshold){
                   connect.addClass("connect_horizontal");
                   connect.offset( { top: v_middle(parent), 
@@ -222,7 +220,11 @@
                 connect.height(Math.max(parent.offset().top-parseInt(parent.css('padding-top')),node.offset().top+node.outerHeight()/2)-connect.offset().top);
               }
             });
-            });
+          }
+          $(function(){
+              paint_map_connections($('.map'));
+            }
+          );
       </script>
     </body>
 </html>
