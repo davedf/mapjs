@@ -1,11 +1,3 @@
-describe("Array utils", function(){
-  describe ("sort_assoc_array", function(){
-    it ('converts a key-value pair into a simple indexed array', function(){
-      expect(sort_assoc_array({1:'one'})).toEqual(['one']);
-      expect(sort_assoc_array({2:'two',1:'one'})).toEqual(['one','two']);
-    });
-  });
-});
 describe("Map visualisations", function() {
   describe ("ideas_to_nodes", function(){
     it ("converts a single childless idea into a node element", function(){
@@ -50,7 +42,6 @@ describe("Map visualisations", function() {
       expect_node_label(actual.children('.children').last().children('.node').last(),'My Third Subidea');
     });
     it ("stacks up sub-sub-ideas in the direction of it's parent", function(){
-      
       var actual=ideas_to_nodes({title:'My Idea', 
             ideas: { 1: {title:'My First Subidea', ideas:{1:{title:'My First sub-sub-idea'},2:{title:'My Second sub-sub-idea'}}},
                      2: {title:'My Second Subidea',ideas:{1:{title:'My Third sub-sub-idea'}}}

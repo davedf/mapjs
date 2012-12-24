@@ -1,9 +1,3 @@
-
-function sort_assoc_array(assoc_array){
-  var result=[];
-  $.each(assoc_array, function(key,value){ result.push(value)});
-  return result;
-}
 function split_point(length){
   if (length%2==0) return length/2;
   return Math.floor(length/2)+1;
@@ -15,7 +9,7 @@ function ideas_to_nodes(json_ideas,props){
   var left_children=$('<div class="children"/>');
   var right_children=$('<div class="children" />');
   if (json_ideas['ideas']){
-    var sorted_subideas=sort_assoc_array(json_ideas['ideas']);
+    var sorted_subideas= _(json_ideas['ideas']).sortBy(function(val,key){return parseFloat(key)})
     var i=0;
     for (;(options['direction']=='right' && i<sorted_subideas.length)  || (options['direction']=='split' && i<split_point(sorted_subideas.length));i++){
       ideas_to_nodes(sorted_subideas[i],$.extend({},props,{direction:'right'})).appendTo(right_children);
