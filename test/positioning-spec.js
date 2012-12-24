@@ -37,6 +37,20 @@ describe("Map visualisations", function() {
         expect_node_label(actual.children('.children').last().children('.node').first(),'My First Subidea');
         expect_node_label(actual.children('.children').last().children('.node').last(),'My Second Subidea');
       });
+      it ("handles floating point values as numbers, not strings", function(){
+        var actual=ideas_to_nodes(
+        { title: 'Node 1.1',
+                     ideas: {
+                       1: {title: 'Node 1.1.1'},
+                       2: {title: 'Node 1.1.2'},
+                       1.5: {title: 'Node 1.1.3'}
+                     }
+                   });
+        expect_node_label(actual.children('.children').last().children('.node').first(),'Node 1.1.1');
+        expect_node_label(actual.children('.children').last().children('.node').eq(1),'Node 1.1.3');
+        expect_node_label(actual.children('.children').last().children('.node').last(),'Node 1.1.2');
+      
+      });
       it ("stacks up sub-sub-ideas in the direction of it's parent", function(){
         var actual=ideas_to_nodes({title:'My Idea', 
           ideas: { 1: {title:'My First Subidea', ideas:{1:{title:'My First sub-sub-idea'},2:{title:'My Second sub-sub-idea'}}},

@@ -167,13 +167,9 @@ describe ("content management", function(){
         expect(idea.ideas[-15].id).toBe(4);
       });
       it ('delegates to children if it does not contain the requested idea, succeeding if any child does', function(){
-
         var idea=content({id:0,title:'I0',ideas:{9:{id:1, title:'I1', ideas: { '-5': { id: 2, title:'I2'}, '-10': { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}}}});
-
         var result=cmd_reorder(idea,4,2);
-        
         expect(result).toBeTruthy();
-       
         var child=idea.ideas[9];
         expect(child.ideas[-5].id).toBe(2);
         expect(child.ideas[-10].id).toBe(3);
@@ -181,7 +177,11 @@ describe ("content management", function(){
         expect(new_key).toBeLessThan(10);
         expect(new_key).not.toBeLessThan(-5);
         expect(new_key).toBeLessThan(0);
-
+      });
+      it ('fails if none of the children contain the requested idea either', function(){
+        var idea=content({id:0,title:'I0',ideas:{9:{id:1, title:'I1', ideas: { '-5': { id: 2, title:'I2'}, '-10': { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}}}});
+        var result=cmd_reorder(idea,-4,2);
+        expect(result).toBeFalsy();
       });
     });
   });

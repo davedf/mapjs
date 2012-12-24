@@ -10,12 +10,15 @@ function ideas_to_nodes(json_idea,direction){
   node_div.children('.label').text(json_idea.title);
   node_div.children('.label').attr('idea',json_idea.id);
   if (json_idea['ideas']){
-    var split=_.groupBy(json_idea['ideas'],function(val,key){ return direction||(parseFloat(key)>=0?'right':'left')});
-    if (split['right']){
+// group by doesn't keep keys so can't use it here
+// var split=_.groupBy(json_idea['ideas'],function(val,key){ return direction||(parseFloat(key)>=0?'right':'left')});
+    var split={right:{},left:{}}; 
+    _(json_idea.ideas).each(function(value,key){ var grp=direction||(parseFloat(key)>=0?'right':'left'); split[grp][parseFloat(key)]=value;})
+    if (_.size(split.right)>0){
       var right_children=$('<div class="children" />').appendTo(node_div);
       _.sortBy(split['right'],abs_sort).forEach(function(idea){ideas_to_nodes(idea,'right').appendTo(right_children)});
     }
-    if (split['left']){
+    if (_.size(split.left)>0){
       var left_children=$('<div class="children" />').prependTo(node_div);
       _.sortBy(split['left'],abs_sort).forEach(function(idea){ideas_to_nodes(idea,'left').appendTo(left_children)});
     }

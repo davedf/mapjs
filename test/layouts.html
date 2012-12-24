@@ -65,7 +65,7 @@
                      ideas: {
                        1: {title: 'Node 1.1.1'},
                        2: {title: 'Node 1.1.2'},
-                       3: {title: 'Node 1.1.3'}
+                       1.5: {title: 'Node 1.1.3'}
                      }
                    },
                 2: { title: 'Node 1.2',
@@ -105,9 +105,8 @@
                 '-3': {title: 'Node 1.6'}
               }
           }
-
-          $(function(){
-              var active_content=content(ideas);
+          function repaint_entire_map(active_content){
+              $('.map').children().detach();// TODO: REMOVE LISTENERS
               ideas_to_nodes(active_content).appendTo('.map');
               paint_map_connections($('.map'));
               $('.label').draggable({
@@ -119,7 +118,8 @@
                   var groups=_.groupBy(sibling_labels,function(item){return $(item).offset().top<ui.helper.offset().top})
                   var first_below=_.min(groups[false], function(label_span) { return $(label_span).offset().top });
                   console.log ("positioning before id " + $(first_below).attr('idea') + "("+ $(first_below).text()+")");
-                  cmd_reorder(active_content, $(this).attr('idea'),first_below);
+                  cmd_reorder(active_content, ui.helper.attr('idea'),$(first_below).attr('idea'));
+                  repaint_entire_map(active_content);
                   console.log("done");
                 }
               }); 
@@ -131,6 +131,11 @@
                  }
               });
             }
+
+          $(function(){
+            var active_content=content(ideas);
+            repaint_entire_map(active_content);
+          }
           );
       </script>
     </body>
