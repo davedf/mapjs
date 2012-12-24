@@ -28,4 +28,28 @@ function cmd_update_title(content_idea,target_id,new_title){
   }
   else return _.reduce(content_idea.ideas,function(result,idea){return result||cmd_update_title(idea,target_id,new_title)},false);
 }
-
+function find_child_rank_by_id(parent_idea,child_id){
+  return _.reduce(parent_idea.ideas, function(res, value,key) { if (value.id==child_id) return key; else return res; }, undefined);
+}
+function cmd_reorder(parent_idea, child_id_to_reorder, target_id_after){
+  var current_rank=find_child_rank_by_id(parent_idea,child_id_to_reorder );
+  if (!current_rank) return false;
+  if (child_id_to_reorder==target_id_after) return true;
+  var new_rank=0;
+  if (target_id_after){
+    var after_rank=parseFloat(find_child_rank_by_id(parent_idea,target_id_after));
+    var ranks_before=_(_(_(_(parent_idea.ideas).keys()).map(parseFloat)).sortBy(function(k){return Math.abs(k)})).reject(function(k){return Math.abs(k)>=Math.abs(after_rank)});
+    var before_rank=ranks_before.length>0?_.max(ranks_before):0;
+    if (before_rank==current_rank) return true;
+    new_rank=before_rank+(after_rank-before_rank)/2;
+    if (Math.floor(new_rank)>before_rank) new_rank=Math.floor(new_rank);
+  }
+  else {
+    var max_rank=_(_(_(_(parent_idea.ideas).keys()).map(parseFloat))).max(Math.abs);
+    if (max_rank==current_rank) return true;
+    new_rank=max_rank+10;
+  }
+  parent_idea.ideas[new_rank]=parent_idea.ideas[current_rank];
+  delete parent_idea.ideas[current_rank];
+  return true;
+}
