@@ -1,21 +1,17 @@
-function split_point(length){
-  if (length%2==0) return length/2;
-  return Math.floor(length/2)+1;
-}
 function abs_sort(val,key) { return Math.abs(key);}
 function ideas_to_nodes(json_ideas,direction){
-  var node_div= $('<div class="node"></div>');
-  var left_children=$('<div class="children"/>');
-  var right_children=$('<div class="children" />');
+  var node_div= $('<div class="node"><span class="label">'+json_ideas.title+'</span></div>');
   if (json_ideas['ideas']){
     var split=_.groupBy(json_ideas['ideas'],function(val,key){ return direction||(parseFloat(key)>=0?'right':'left')});
-    var sorted_subideas= _.sortBy(json_ideas['ideas'],function(val,key){return parseFloat(key)})
-    _.sortBy(split['right'],abs_sort).forEach(function(idea){ideas_to_nodes(idea,'right').appendTo(right_children)});
-    _.sortBy(split['left'],abs_sort).forEach(function(idea){ideas_to_nodes(idea,'left').appendTo(left_children)});
+    if (split['right']){
+      var right_children=$('<div class="children" />').appendTo(node_div);
+      _.sortBy(split['right'],abs_sort).forEach(function(idea){ideas_to_nodes(idea,'right').appendTo(right_children)});
+    }
+    if (split['left']){
+      var left_children=$('<div class="children" />').prependTo(node_div);
+      _.sortBy(split['left'],abs_sort).forEach(function(idea){ideas_to_nodes(idea,'left').appendTo(left_children)});
+    }
   }
-  if (left_children.children().length>0) left_children.appendTo(node_div);
-  node_div.append('<span class="label">'+json_ideas.title+'</span>');
-  if (right_children.children().length>0) right_children.appendTo(node_div);
   return node_div;
 }
 function expect_node_label(jquery_selector, expected_label){
