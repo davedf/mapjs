@@ -1,8 +1,13 @@
 function abs_sort(val,key) { return Math.abs(key);}
-function ideas_to_nodes(json_ideas,direction){
-  var node_div= $('<div class="node"><span class="label">'+json_ideas.title+'</span></div>');
-  if (json_ideas['ideas']){
-    var split=_.groupBy(json_ideas['ideas'],function(val,key){ return direction||(parseFloat(key)>=0?'right':'left')});
+function attach_listeners(content_idea,node_div){
+    content_idea.addEventListener('Title_Updated', function(idea){ 
+      node_div.children('.label').text(idea.title);
+    });
+}
+function ideas_to_nodes(json_idea,direction){
+  var node_div= $('<div class="node"><span class="label">'+json_idea.title+'</span></div>');
+  if (json_idea['ideas']){
+    var split=_.groupBy(json_idea['ideas'],function(val,key){ return direction||(parseFloat(key)>=0?'right':'left')});
     if (split['right']){
       var right_children=$('<div class="children" />').appendTo(node_div);
       _.sortBy(split['right'],abs_sort).forEach(function(idea){ideas_to_nodes(idea,'right').appendTo(right_children)});
@@ -12,6 +17,7 @@ function ideas_to_nodes(json_ideas,direction){
       _.sortBy(split['left'],abs_sort).forEach(function(idea){ideas_to_nodes(idea,'left').appendTo(left_children)});
     }
   }
+  if (json_idea.addEventListener) {attach_listeners(json_idea,node_div);}
   return node_div;
 }
 function expect_node_label(jquery_selector, expected_label){
