@@ -139,6 +139,34 @@ describe ("content management", function(){
         expect(idea.ideas[10].id).toBe(3);
         expect(idea.ideas[15].id).toBe(4);
       });
+      it ('puts the child closest to zero from the - side if the boundary idea was the smallest negative', function(){
+        var idea=content({id:1, title:'I1', ideas: { '-5': { id: 2, title:'I2'}, '-10': { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}});
+        var result=cmd_reorder(idea,4,2); 
+        expect(result).toBeTruthy();
+        expect(idea.ideas[-5].id).toBe(2);
+        expect(idea.ideas[-10].id).toBe(3);
+        var new_key=find_child_rank_by_id(idea,4);
+        console.log(new_key);
+        expect(new_key).not.toBeLessThan(-5);
+        expect(new_key).toBeLessThan(0);
+      });
+      it ('puts the child in the last negative rank if the boundary idea was not defined but current rank is negative', function(){
+        var idea=content({id:1, title:'I1', ideas: { '-5': { id: 2, title:'I2'}, '-10': { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}});
+        var result=cmd_reorder(idea,2); 
+        expect(result).toBeTruthy();
+        expect(idea.ideas[-10].id).toBe(3);
+        expect(idea.ideas[-15].id).toBe(4);
+        var new_key=find_child_rank_by_id(idea,2);
+        expect(new_key).toBeLessThan(-15);
+      });
+      it ('does nothing if the boundary idea was not defined and child was already last', function(){
+        var idea=content({id:1, title:'I1', ideas: { '-5': { id: 2, title:'I2'}, '-10': { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}});
+        var result=cmd_reorder(idea,4); 
+        expect(result).toBeTruthy();
+        expect(idea.ideas[-5].id).toBe(2);
+        expect(idea.ideas[-10].id).toBe(3);
+        expect(idea.ideas[-15].id).toBe(4);
+      });
     });
   });
 });

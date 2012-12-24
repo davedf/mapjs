@@ -42,12 +42,11 @@ function cmd_reorder(parent_idea, child_id_to_reorder, target_id_after){
     var before_rank=ranks_before.length>0?_.max(ranks_before):0;
     if (before_rank==current_rank) return true;
     new_rank=before_rank+(after_rank-before_rank)/2;
-    if (Math.floor(new_rank)>before_rank) new_rank=Math.floor(new_rank);
   }
   else {
     var max_rank=_(_(_(_(parent_idea.ideas).keys()).map(parseFloat))).max(Math.abs);
     if (max_rank==current_rank) return true;
-    new_rank=max_rank+10;
+    new_rank=max_rank+10*(current_rank<0?-1:1);
   }
   parent_idea.ideas[new_rank]=parent_idea.ideas[current_rank];
   delete parent_idea.ideas[current_rank];
