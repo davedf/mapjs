@@ -1,6 +1,7 @@
 <html>
     <head>
   <script src="../lib/jquery-1.8.3.js"></script>
+  <script src="../src/mindmap.js"></script>
       <style>
         .node{
             display:block;vertical-align:middle; margin-left:30px; margin-top:10px; margin-bottom:10px; padding:5px;
@@ -19,209 +20,88 @@
           .node .node .node .label {
             border: 1px solid black; 
           }
-          .map {width:500px; overflow:scroll;}
+          .map {overflow:scroll;}
+          .connect{
+            position:absolute;
+          }
           .connect_down_left{
             border-top-left-radius: 50%;
-            position: absolute;
             border-left: 0.3em solid #2C2C2C;
             border-top: 0.3em solid #2C2C2C;
           }
           .connect_up_left{
             border-bottom-left-radius: 50%;
-            position: absolute;
             border-left: 0.3em solid #2C2C2C;
             border-bottom: 0.3em solid #2C2C2C;
           }
           .connect_down_right{
             border-top-right-radius: 50%;
-            position: absolute;
             border-right: 0.3em solid #2C2C2C;
             border-top: 0.3em solid #2C2C2C;
           }
           .connect_up_right{
             border-bottom-right-radius: 50%;
-            position: absolute;
             border-right: 0.3em solid #2C2C2C;
             border-bottom: 0.3em solid #2C2C2C;
           }
           .connect_horizontal{
-            position: absolute;
             border-bottom: 0.3em solid #2C2C2C;
           }
         </style>
     </head>
     <body>
-    <div class="map">
-        <div class="node" id="node_1">
-          <span class="children">
-            <div class="node">
-              <span class="children" >
-                <div class="node">
-                  <span class="label">Node 1.4.1</span>
-                </div>
-                <div class="node">
-                  <span class="label">Node 1.4.2</span>
-                </div>
-                <div class="node">
-                  <span class="label">Node 1.4.3</span>
-                </div>
-              </span>
-              <span class="label">Node 1.4</span>
-            </div>
-            <div class="node">
-              <span class="children">
-                <div class="node">
-                  <span class="label">Node 1.5.1</span>
-                </div>
-                <div class="node">
-                  <span class="children" >
-                    <div class="node">
-                      <span class="label">Node 1.5.2.1</span>
-                    </div>
-                    <div class="node">
-                      <span class="label">Node 1.5.2.2</span>
-                    </div>
-                    <div class="node">
-                      <span class="label">Node 1.5.2.3</span>
-                    </div>
-                  </span>
-                  <span class="label">Node 1.5.2</span>
-                </div>
-                <div class="node">
-                  <span class="label">Node 1.5.3
-                  
-                  
-                  Mozilla is a free software community best known for producing the Firefox web browser. The Mozilla community uses, develops, spreads and supports Mozilla products and works to advance the goals of the Open Web described in the Mozilla Manifesto.[1] The community is supported institutionally by the Mozilla Foundation and its tax-paying subsidiary, the Mozilla Corporation.[2]
-                  </span>
-                </div>
-              </span>
-              <span class="label">Node 1.5</span>
-            </div>
-            
-            <div class="node">
-              <span class="label">Node 1.6</span>
-            </div>
-    
-          </span>
-          <span class="label">Node 1</span>
-          <span class="children">
-            <div class="node" id="node_1_1">
-              <span class="label">Node 1.1</span>
-              <span class="children" >
-                <div class="node">
-                  <span class="label">Node 1.1.1</span>
-                </div>
-                <div class="node">
-                  <span class="label">Node 1.1.2</span>
-                </div>
-                <div class="node">
-                  <span class="label">Node 1.1.3</span>
-                </div>
-              </span>
-            </div>
-            <div class="node">
-              <span class="label">Node 1.2</span>
-              <span class="children">
-
-                <div class="node">
-                  <span class="label">Node 1.2.1</span>
-                </div>
-                <div class="node">
-                  <span class="label">Node 1.2.2</span>
-            
-                
-              <span class="children" >
-
-                <div class="node">
-                  <span class="label">Node 1.2.2.1</span>
-                </div>
-                <div class="node">
-                  <span class="label">Node 1.2.2.2</span>
-                </div>
-                <div class="node">
-                  <span class="label">Node 1.2.2.3</span>
-                </div>
-              </span>
-                
-                
-                </div>
-                <div class="node">
-                  <span class="label">Node 1.2.3</span>
-                </div>
-              
-              </span>
-            </div>
-            
-            <div class="node">
-              <span class="label">Node 1.3</span>
-              <span class="children">
-              </span>
-            </div>
-    
-          </span>
-        </div><!-- node 1-->
-      </div><!-- map -->
+    <div class="map"> </div>
       <script>
-          function v_middle(jquery_elem){
-            return jquery_elem.offset().top + jquery_elem.outerHeight()/2;
-          }
-          function widest_child(jquery_elem){
-            if (jquery_elem.children('.node').length==0) return jquery_elem.outerWidth();
-            var max=0;
-            jquery_elem.children('.node').each(function(){
-                var current=widest_child($(this));
-                if (max<current) max=current;
-            });
-            return jquery_elem.outerWidth()+max;
-          }
-          function paint_map_connections(jquery_element){
-            jquery_element.width(2*widest_child(jquery_element.find('.node:first')));
-            $('.node .node .label').each(function(){
-              var node=$(this);
-              var vertical_sensitivity_threshold=5;
-              var parent=node.parent().parent().parent().children('.label:first');
-              if (node.length>0 && parent.length>0){
-                node.children('.connect').detach(); 
-                var connect =$('<div>&nbsp</div>').appendTo(node);
-                connect.addClass('connect');
-              if (Math.abs(v_middle(parent)-v_middle(node))<vertical_sensitivity_threshold){
-                  connect.addClass("connect_horizontal");
-                  connect.offset( { top: v_middle(parent), 
-                      left: Math.min(parent.offset().left+parent.outerWidth(),node.offset().left+node.outerWidth()) });
-                  connect.width(
-                    Math.max(node.offset().left-parseInt(node.css('padding-left')),
-                    parent.offset().left)-connect.offset().left);
-                }
-                else {
-                  if (v_middle(parent)>v_middle(node) && parent.offset().left<node.offset().left){
-                    connect.addClass("connect_down_left");
-                    connect.offset(
-                      { top: node.offset().top+node.outerHeight()/2, left: parent.offset().left+parent.outerWidth()/2 });
-                  }
-                  else if (v_middle(parent)<v_middle(node) && parent.offset().left<node.offset().left){
-                    connect.addClass("connect_up_left");
-                    connect.offset(
-                      { top: parent.offset().top+parent.outerHeight(), left: parent.offset().left+parent.outerWidth()/2 });
-                  }
-                  else if (v_middle(parent)>v_middle(node) && parent.offset().left>node.offset().left){
-                    connect.addClass("connect_down_right");
-                    connect.offset(
-                      { top: node.offset().top+node.outerHeight()/2, left: node.offset().left+node.outerWidth() });
-                  }
-                  else if (v_middle(parent)<v_middle(node) && parent.offset().left>node.offset().left){
-                    connect.addClass("connect_up_right");
-                    connect.offset(
-                      { top: parent.offset().top+parent.outerHeight(), left: node.offset().left+node.outerWidth() });
-                  }
-                  connect.width(
-                    Math.max(node.offset().left-parseInt(node.css('padding-left')),
-                    parent.offset().left+parent.outerWidth()/2)-connect.offset().left);
-                }
-                connect.height(Math.max(parent.offset().top-parseInt(parent.css('padding-top')),node.offset().top+node.outerHeight()/2)-connect.offset().top);
+          var ideas= {
+              title: 'Node 1',
+              ideas: {
+                1: { title: 'Node 1.1',
+                     ideas: {
+                       1: {title: 'Node 1.1.1'},
+                       2: {title: 'Node 1.1.2'},
+                       3: {title: 'Node 1.1.3'}
+                     }
+                   },
+                2: { title: 'Node 1.2',
+                     ideas: {
+                       1: {title: 'Node 1.2.1'},
+                       2: {title: 'Node 1.2.2',
+                          ideas: {
+                            1: {title: 'Node 1.2.2.1'},
+                            2: {title: 'Node 1.2.2.2'},
+                            3: {title: 'Node 1.2.2.3'}
+                            }
+                          },
+                       3: {title: 'Node 1.2.3'}
+                     }
+                   },
+                3: {title: 'Node 1.3'},
+                4: { title: 'Node 1.4',
+                     ideas: {
+                       1: {title: 'Node 1.4.1'},
+                       2: {title: 'Node 1.4.2'},
+                       3: {title: 'Node 1.4.3'}
+                     }
+                   },
+                5: { title: 'Node 1.5',
+                     ideas: {
+                       1: {title: 'Node 1.5.1'},
+                       2: {title: 'Node 1.5.2',
+                          ideas: {
+                            1: {title: 'Node 1.5.2.1'},
+                            2: {title: 'Node 1.5.2.2'},
+                            3: {title: 'Node 1.5.2.3'}
+                            }
+                          },
+                          3: {title: 'Node 1.5.3 Mozilla is a free software community best known for producing the Firefox web browser. The Mozilla community uses, develops, spreads and supports Mozilla products and works to advance the goals of the Open Web described in the Mozilla Manifesto.[1] The community is supported institutionally by the Mozilla Foundation and its tax-paying subsidiary, the Mozilla Corporation.[2] '}
+                     }
+                   },
+                3: {title: 'Node 1.6'}
               }
-            });
           }
+
           $(function(){
+              ideas_to_nodes(ideas).appendTo('.map');
               paint_map_connections($('.map'));
             }
           );
