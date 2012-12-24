@@ -33,7 +33,8 @@ function find_child_rank_by_id(parent_idea,child_id){
 }
 function cmd_reorder(parent_idea, child_id_to_reorder, target_id_after){
   var current_rank=find_child_rank_by_id(parent_idea,child_id_to_reorder );
-  if (!current_rank) return false;
+  if (!current_rank)  
+   return _.reduce(parent_idea.ideas,function(result,idea){return result||cmd_reorder(idea,child_id_to_reorder, target_id_after)},false);
   if (child_id_to_reorder==target_id_after) return true;
   var new_rank=0;
   if (target_id_after){

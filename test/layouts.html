@@ -117,11 +117,10 @@
                 stop: function(event,ui){
                   var sibling_labels=ui.helper.parent().siblings().children('.label');
                   var groups=_.groupBy(sibling_labels,function(item){return $(item).offset().top<ui.helper.offset().top})
-                  var last_above=_(_.sortBy(groups[true], function(label_span) { return $(label_span).offset().top })).last();
-                  var first_below=_(_.sortBy(groups[false], function(label_span) { return $(label_span).offset().top })).first();
-                  console.log ("positioning between "+$(last_above).attr('idea') + $(last_above).text() + " and " + $(first_below).attr('idea') + $(first_below).text());
-
-                  paint_map_connections($('.map'));
+                  var first_below=_.min(groups[false], function(label_span) { return $(label_span).offset().top });
+                  console.log ("positioning before id " + $(first_below).attr('idea') + "("+ $(first_below).text()+")");
+                  cmd_reorder(active_content, $(this).attr('idea'),first_below);
+                  console.log("done");
                 }
               }); 
               $('.label').dblclick(function(){
