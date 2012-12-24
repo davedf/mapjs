@@ -1,4 +1,11 @@
 describe ("content management", function(){
+  describe ("max ID", function(){
+      it ("calculates the maximum assigned ID already in the idea hierarchy", function(){
+      
+        var ideas={id:22, title:'My Idea', ideas: { 1: {id:23, title:'My First Subidea'}, '-1':{id:54,title:'Max'}}};
+        expect (max_id(ideas)).toBe(54);
+      });
+  });
   describe ("content wapper", function(){
       it ("attaches update function for title", function(){
         var wrapped=content({title:'My Idea'});
@@ -16,6 +23,19 @@ describe ("content management", function(){
         wrapped.addEventListener('Title_Updated',listener);
         wrapped.set_title('Updated');
         expect(listener).toHaveBeenCalledWith(wrapped);
+      });
+      it ("automatically assigns IDs to ideas without IDs", function(){
+        var wrapped=content({title:'My Idea'});
+        expect(wrapped.id).toBe(1);
+      });
+      it ("does not touch any IDs already assigned", function(){
+        var wrapped=content({id:22, title:'My Idea', ideas: { 1: {id:23, title:'My First Subidea'}}});
+        wrapped.ideas[1].set_title(22);
+        expect (wrapped.ideas[1].id).toBe(23);
+      });
+      it ("skips over any IDs already assigned while adding new IDs", function(){
+        var wrapped=content({id:55, title:'My Idea', ideas: { 1: {title:'My First Subidea'}}});
+        expect (wrapped.ideas[1].id).toBe(56);
       });
   });
   describe ("command processing",function(){

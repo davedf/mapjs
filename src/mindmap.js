@@ -40,11 +40,15 @@ function paint_map_connections(jquery_element){
   jquery_element.width(2*widest_child(jquery_element.find('.node:first')));
   $('.node .node .label').each(function(){
     var node=$(this);
+    repaint_connection_to_parent(node);
+  });
+}
+function repaint_connection_to_parent(node){
     var vertical_sensitivity_threshold=5;
     var parent=node.parent().parent().parent().children('.label:first');
     if (node.length>0 && parent.length>0){
-      node.children('.connect').detach(); 
-      var connect =$('<div>&nbsp</div>').appendTo(node);
+      node.siblings('.connect').detach(); 
+      var connect =$('<div>&nbsp</div>').appendTo(node.parent());
       connect.addClass('connect');
       if (Math.abs(v_middle(parent)-v_middle(node))<vertical_sensitivity_threshold){
         connect.addClass("connect_horizontal");
@@ -82,5 +86,4 @@ function paint_map_connections(jquery_element){
       connect.height(Math.max(parent.offset().top-parseInt(parent.css('padding-top')),
       node.offset().top+node.outerHeight()/2)-connect.offset().top);
     }
-  });
-}
+  }
