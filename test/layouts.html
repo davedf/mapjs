@@ -2,9 +2,12 @@
     <head>
   <script src="../lib/underscore-1.4.3-min.js"></script>
   <script src="../lib/jquery-1.8.3.js"></script>
+  <script src="../lib/jquery-ui-1.9.2.custom.min.js"></script>
   <script src="../src/observable.js"></script>
   <script src="../src/content.js"></script>
   <script src="../src/mindmap.js"></script>
+  <link rel="stylesheet" type="text/css" href="../lib/jquery-ui-1.9.2.custom.min.css">
+  
       <style>
         .node{
             display:block;vertical-align:middle; margin-left:30px; margin-top:10px; margin-bottom:10px; padding:5px;
@@ -107,8 +110,21 @@
               var active_content=content(ideas);
               ideas_to_nodes(active_content).appendTo('.map');
               paint_map_connections($('.map'));
-            
-              $('.label').click(function(){
+              $('.label').draggable({
+                drag: function(event,ui){
+                  repaint_connection_to_parent(ui.helper.parent().find('.label'));
+                },
+                stop: function(event,ui){
+                  var sibling_labels=ui.helper.parent().siblings().children('.label');
+                  var groups=_.groupBy(sibling_labels,function(item){return $(item).offset().top<ui.helper.offset().top})
+                  var last_above=_(_.sortBy(groups[true], function(label_span) { return $(label_span).offset().top })).last();
+                  var first_below=_(_.sortBy(groups[false], function(label_span) { return $(label_span).offset().top })).first();
+                  console.log ("positioning between "+$(last_above).attr('idea') + $(last_above).text() + " and " + $(first_below).attr('idea') + $(first_below).text());
+
+                  paint_map_connections($('.map'));
+                }
+              }); 
+              $('.label').dblclick(function(){
                  var new_value=prompt('Edit idea',$(this).text());
                  if (new_value) {
                    cmd_update_title(active_content,$(this).attr('idea'),new_value);
