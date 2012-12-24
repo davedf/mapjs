@@ -5,7 +5,10 @@ function attach_listeners(content_idea,node_div){
     });
 }
 function ideas_to_nodes(json_idea,direction){
-  var node_div= $('<div class="node"><span class="label">'+json_idea.title+'</span></div>');
+  var node_div= $('<div class="node"><span class="label"></span></div>');
+  node_div.attr('idea',json_idea.id);
+  node_div.children('.label').text(json_idea.title);
+  node_div.children('.label').attr('idea',json_idea.id);
   if (json_idea['ideas']){
     var split=_.groupBy(json_idea['ideas'],function(val,key){ return direction||(parseFloat(key)>=0?'right':'left')});
     if (split['right']){
@@ -19,11 +22,6 @@ function ideas_to_nodes(json_idea,direction){
   }
   if (json_idea.addEventListener) {attach_listeners(json_idea,node_div);}
   return node_div;
-}
-function expect_node_label(jquery_selector, expected_label){
-      expect(jquery_selector).toBe('div.node'); 
-      expect(jquery_selector).toContain('span.label');
-      expect(jquery_selector.children('.label')).toHaveText(expected_label);
 }
 
 function v_middle(jquery_elem){

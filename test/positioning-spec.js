@@ -1,5 +1,11 @@
 describe("Map visualisations", function() {
   describe ("ideas_to_nodes", function(){
+    function expect_node_label(jquery_selector, expected_label){
+      expect(jquery_selector).toBe('div.node'); 
+      expect(jquery_selector).toContain('span.label');
+      expect(jquery_selector.children('.label')).toHaveText(expected_label);
+    }
+
     describe("node positioning", function(){
       it ("converts a single childless idea into a node element", function(){
         var actual=ideas_to_nodes({title:'My Idea'});
@@ -45,6 +51,12 @@ describe("Map visualisations", function() {
         expect_node_label(left_child.children('.children').children('.node').first(),'My Third sub-sub-idea');
         expect_node_label(right_child.children('.children').children('.node').first(),'My First sub-sub-idea');
         expect_node_label(right_child.children('.children').children('.node').last(),'My Second sub-sub-idea');
+      });
+      it ('marks node with the idea ID', function(){
+        var actual=ideas_to_nodes({id:'idea1',title:'My idea'})
+        expect(actual).toBe('div.node');
+        expect(actual.attr('idea')).toBe('idea1');
+        expect(actual.children('.label').attr('idea')).toBe('idea1');
       });
     });
     describe ("data binding", function(){
