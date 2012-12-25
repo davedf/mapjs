@@ -118,7 +118,7 @@
                   var groups=_.groupBy(sibling_labels,function(item){return $(item).offset().top<ui.helper.offset().top})
                   var first_below=_.min(groups[false], function(label_span) { return $(label_span).offset().top });
                   console.log ("positioning before id " + $(first_below).attr('idea') + "("+ $(first_below).text()+")");
-                  cmd_reorder(active_content, ui.helper.attr('idea'),$(first_below).attr('idea'));
+                  active_content.positionBefore(ui.helper.attr('idea'),$(first_below).attr('idea'));
                   repaint_entire_map(active_content);
                   console.log("done");
                 }
@@ -126,7 +126,7 @@
               $('.label').dblclick(function(){
                  var new_value=prompt('Edit idea',$(this).text());
                  if (new_value) {
-                   cmd_update_title(active_content,$(this).attr('idea'),new_value);
+                   active_content.updateTitle(parseFloat($(this).attr('idea')),new_value);
                    paint_map_connections($('.map'));
                  }
               });

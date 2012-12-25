@@ -77,7 +77,7 @@ describe("Map visualisations", function() {
       it ("updates label text when idea title changes, does not touch any other nodes", function(){
         var wrapped_content=content({id:1, title:'My Idea', ideas: { 1: {id:2, title:'My First Subidea'}}});
         var actual=ideas_to_nodes(wrapped_content);
-        wrapped_content.ideas[1].set_title('Updated');
+        wrapped_content.updateTitle(2, 'Updated');
         expect_node_label(actual,'My Idea');
         expect_node_label(actual.children('.children').find('.node'),'Updated');
       });
