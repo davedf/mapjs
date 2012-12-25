@@ -74,7 +74,64 @@ describe ("content management", function(){
           expect(ideas.updateTitle('Non Existing','XX')).toBeFalsy();
         });
     });
-
+    describe ("addSubIdea", function(){
+         
+        it ('adds a sub-idea to the idea in the argument', function(){
+            var idea=content({id:71,title:'My Idea'});
+            var succeeded=idea.addSubIdea(71,'New idea');
+            expect(succeeded).toBeTruthy();
+            var asArray=_.toArray(idea.ideas);
+            expect(asArray.length).toBe(1);
+            expect(asArray[0].title).toBe('New idea');
+           });
+        it ('repeatedly adds only one idea (bug resurrection check)', function(){
+            var idea=content({id:71,title:'My Idea'});
+            idea.addSubIdea(71,'First idea');
+            idea.addSubIdea(71,'Second idea');
+            var asArray=_.toArray(idea.ideas);
+            expect(asArray.length).toBe(2);
+            expect(asArray[0].title).toBe('First idea');
+            expect(asArray[0].ideas).toBeFalsy();
+            expect(asArray[1].title).toBe('Second idea');
+            expect(asArray[1].ideas).toBeFalsy();
+        
+        });
+        it ('assigns the next available ID to the new idea', function(){
+            var idea=content({id:71,title:'My Idea'});
+            idea.addSubIdea(71);
+            expect(_.toArray(idea.ideas)[0].id).toBe(72);
+        });
+        it ('assigns the first subidea the rank of 1', function(){
+            var idea=content({id:71,title:'My Idea'});
+            idea.addSubIdea(71);
+            expect(idea.ideas[1].id).toBe(72);
+        });
+        it ('assigns a rank greater than any of its siblings', function(){
+          var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 10: { id:3, title:'I3'}, 15 : {id:4, title:'I4'}}});
+          idea.addSubIdea(1);
+          var new_key=idea.findChildRankById(5);
+          expect(new_key).not.toBeLessThan(15);
+        });
+        it ('propagates to children if it does not match the requested id, succeeding if any child ID matches', function(){
+          var ideas=content({id:1, title:'My Idea', 
+                            ideas: {  1: {id:2, title:'My First Subidea', ideas:{1:{id:3, title:'My First sub-sub-idea'}}}}});
+          var result=ideas.addSubIdea(3,'New New');
+          expect(result).toBeTruthy();
+          expect(ideas.ideas[1].ideas[1].ideas[1].title).toBe('New New'); 
+        });
+        it ('fails if no child ID in hierarchy matches requested id', function(){
+          var ideas=content({id:1, title:'My Idea', 
+                            ideas: {  1: {id:2, title:'My First Subidea', ideas:{1:{id:3, title:'My First sub-sub-idea'}}}}});
+          expect(ideas.addSubIdea(33,'New New')).toBeFalsy();
+        });
+        it ('fires Idea_Added when a new idea is added', function(){
+            var idea=content({id:71,title:'My Idea'});
+            var addedListener=jasmine.createSpy('Idea_Added');
+            idea.addEventListener('Idea_Added', addedListener);
+            idea.addSubIdea(71);
+            expect(addedListener).toHaveBeenCalledWith(idea.ideas[1]);
+        });
+    });
     describe ("positionBefore", function(){
       it ('reorders immediate children by changing the rank of an idea to be immediately before the provided idea', function(){
         var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 10: { id:3, title:'I3'}, 15 : {id:4, title:'I4'}}});
@@ -188,7 +245,6 @@ describe ("content management", function(){
         expect(result).toBeFalsy();
       });
       it ('makes the root observable for any child order changes', function(){
-  
         var idea=content({id:0,title:'I0',ideas:{9:{id:1, title:'I1', ideas: { '-5': { id: 2, title:'I2'}, '-10': { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}}}});
         childRankSpy=jasmine.createSpy('ChildRankListener');
         idea.addEventListener('Child_Ranks_Changed', childRankSpy);

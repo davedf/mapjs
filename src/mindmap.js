@@ -1,9 +1,4 @@
 function abs_sort(val,key) { return Math.abs(key);}
-function attach_listeners(content_idea,node_div){
-    content_idea.addEventListener('Title_Updated', function(idea){ 
-      node_div.find('.label[idea='+idea.id+']').text(idea.title);
-    });
-}
 function ideas_to_nodes(json_idea,direction){
   var node_div= $('<div class="node"><span class="label"></span></div>');
   node_div.attr('idea',json_idea.id);
@@ -23,8 +18,6 @@ function ideas_to_nodes(json_idea,direction){
       _.sortBy(split['left'],abs_sort).forEach(function(idea){ideas_to_nodes(idea,'left').appendTo(left_children)});
     }
   }
-  //TODO: ensure only root
-  if (json_idea.addEventListener) {attach_listeners(json_idea,node_div);}
   return node_div;
 }
 

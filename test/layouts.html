@@ -9,7 +9,7 @@
   <link rel="stylesheet" type="text/css" href="../lib/jquery-ui-1.9.2.custom.min.css">
   
       <style>
-        .node{
+          .node{
             display:block;vertical-align:middle; margin-left:30px; margin-top:10px; margin-bottom:10px; padding:5px;
           }
           .children {
@@ -19,7 +19,7 @@
             display:inline-block; vertical-align:middle; border:5px solid black;padding:5px; 
            border-radius:10% ; max-width:150px; cursor:pointer;
           }
-                    
+          .selected {background-color:yellow;}          
           .node .node .label {
             border: 3px solid black; 
           }
@@ -128,7 +128,12 @@
                    active_content.updateTitle(parseFloat($(this).attr('idea')),new_value);
 
                  }
-              });
+               });
+               $('.label').click(function(event){
+                  $('.selected').removeClass('selected');
+                  $(event.target).addClass('selected')
+                });
+
             }
 
           $(function(){
@@ -137,8 +142,19 @@
             active_content.addEventListener('Child_Ranks_Changed', function(){
               repaint_entire_map(active_content);
             });
-            active_content.addEventListener('Title_Updated', function(){
+            active_content.addEventListener('Title_Updated', function(idea){
+              $('.map').find('.label[idea='+idea.id+']').text(idea.title);
               paint_map_connections($('.map'));
+            });
+            active_content.addEventListener('Idea_Added', function(idea){
+              repaint_entire_map(active_content);
+              $('.selected').removeClass('selected');
+              $('.label[idea='+idea.id+']').addClass('selected')
+            });
+            $(document).keypress(function(e) {
+              if(e.which == 13) {// ENTER
+                if ($('.selected').attr('idea')) active_content.addSubIdea($('.selected').attr('idea'),'A cunning plan');
+              }
             });
           }
           );

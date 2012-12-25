@@ -46,6 +46,27 @@ var content;
           false
         );
     };
+    maxAbsoluteNumKey=function(kv_map){
+      if (_.size(kv_map)==0) return 0;
+     return _(_(_(_(kv_map).keys()).map(parseFloat))).max(Math.abs);
+    }
+    contentAggregate.addSubIdea=function(parentId,ideaTitle){
+      var current=arguments[2]||contentAggregate;
+      if (current.id==parentId){
+        if (!current.ideas) current.ideas={}
+        var new_idea={title:ideaTitle,id:contentAggregate.maxId()+1};
+        current.ideas[maxAbsoluteNumKey(current.ideas)+1]=new_idea;
+        contentAggregate.dispatchEvent('Idea_Added',new_idea);
+        return true;
+      }
+      return _.reduce(
+        current.ideas,
+        function (result, idea) {
+          return result || contentAggregate.addSubIdea(parentId, ideaTitle, idea);
+        },
+        false
+      );
+    }
     contentAggregate.positionBefore = function (ideaId, positionBeforeIdeaId) {
       var parentIdea = arguments[2] || contentAggregate;
       var current_rank=parentIdea.findChildRankById(ideaId);
@@ -77,7 +98,7 @@ var content;
           return true;
         new_rank = before_rank + (after_rank - before_rank) / 2;
       } else {
-        var max_rank = _(_(_(_(parentIdea.ideas).keys()).map(parseFloat))).max(Math.abs);
+        var max_rank = maxAbsoluteNumKey(parentIdea.ideas); 
         if (max_rank == current_rank)
           return true;
         new_rank = max_rank + 10 * (current_rank < 0 ? -1 : 1);
