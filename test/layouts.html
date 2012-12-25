@@ -126,7 +126,7 @@
                  var new_value=prompt('Edit idea',$(this).text());
                  if (new_value) {
                    active_content.updateTitle(parseFloat($(this).attr('idea')),new_value);
-                   paint_map_connections($('.map'));
+
                  }
               });
             }
@@ -136,6 +136,9 @@
             repaint_entire_map(active_content);
             active_content.addEventListener('Child_Ranks_Changed', function(){
               repaint_entire_map(active_content);
+            });
+            active_content.addEventListener('Title_Updated', function(){
+              paint_map_connections($('.map'));
             });
           }
           );
