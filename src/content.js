@@ -84,6 +84,7 @@ var content;
       }
       parentIdea.ideas[new_rank] = parentIdea.ideas[current_rank];
       delete parentIdea.ideas[current_rank];
+      contentAggregate.dispatchEvent('Child_Ranks_Changed',parentIdea);
       return true;
     }
     init(contentAggregate);

@@ -75,7 +75,7 @@ describe ("content management", function(){
         });
     });
 
-    describe ("cmd_reorder", function(){
+    describe ("positionBefore", function(){
       it ('reorders immediate children by changing the rank of an idea to be immediately before the provided idea', function(){
         var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 10: { id:3, title:'I3'}, 15 : {id:4, title:'I4'}}});
         var result=idea.positionBefore(4,3); 
@@ -186,6 +186,14 @@ describe ("content management", function(){
         var idea=content({id:0,title:'I0',ideas:{9:{id:1, title:'I1', ideas: { '-5': { id: 2, title:'I2'}, '-10': { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}}}});
         var result=idea.positionBefore(-4, 2);
         expect(result).toBeFalsy();
+      });
+      it ('makes the root observable for any child order changes', function(){
+  
+        var idea=content({id:0,title:'I0',ideas:{9:{id:1, title:'I1', ideas: { '-5': { id: 2, title:'I2'}, '-10': { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}}}});
+        childRankSpy=jasmine.createSpy('ChildRankListener');
+        idea.addEventListener('Child_Ranks_Changed', childRankSpy);
+        var result=idea.positionBefore(4,2);
+        expect(childRankSpy).toHaveBeenCalledWith(idea.ideas[9]);
       });
     });
   });

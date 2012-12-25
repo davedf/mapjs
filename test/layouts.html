@@ -106,7 +106,7 @@
               }
           }
           function repaint_entire_map(active_content){
-              $('.map').children().detach();// TODO: REMOVE LISTENERS
+              $('.map').children().detach();
               ideas_to_nodes(active_content).appendTo('.map');
               paint_map_connections($('.map'));
               $('.label').draggable({
@@ -119,7 +119,6 @@
                   var first_below=_.min(groups[false], function(label_span) { return $(label_span).offset().top });
                   console.log ("positioning before id " + $(first_below).attr('idea') + "("+ $(first_below).text()+")");
                   active_content.positionBefore(ui.helper.attr('idea'),$(first_below).attr('idea'));
-                  repaint_entire_map(active_content);
                   console.log("done");
                 }
               }); 
@@ -135,6 +134,9 @@
           $(function(){
             var active_content=content(ideas);
             repaint_entire_map(active_content);
+            active_content.addEventListener('Child_Ranks_Changed', function(){
+              repaint_entire_map(active_content);
+            });
           }
           );
       </script>
