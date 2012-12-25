@@ -109,6 +109,9 @@
               $('.map').children().detach();
               ideas_to_nodes(active_content).appendTo('.map');
               paint_map_connections($('.map'));
+              $('.selected').removeClass('selected');
+              $('.label[idea='+active_content.id+']').addClass('selected')
+              
               $('.label').draggable({
                 drag: function(event,ui){
                   repaint_connection_to_parent(ui.helper.parent().find('.label'));
