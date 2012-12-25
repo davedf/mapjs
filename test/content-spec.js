@@ -1,12 +1,12 @@
-describe ("content management", function(){
-  describe ("max ID", function(){
+describe ("content aggregate", function(){
+  describe ("maxID", function(){
       it ("calculates the maximum assigned ID already in the idea hierarchy", function(){
       
         var ideas=content({id:22, title:'My Idea', ideas: { 1: {id:23, title:'My First Subidea'}, '-1':{id:54,title:'Max'}}});
         expect (ideas.maxId()).toBe(54);
       });
   });
-  describe ("find_child_rank_by_id", function(){
+  describe ("findChildRankById", function(){
       var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 10: { id:3, title:'I3'}, 15 : {id:4, title:'I4'}}});
       it ('returns the key in the parent idea list of an idea by its id', function(){  
         expect( idea.findChildRankById(2)).toEqual(5);
@@ -75,7 +75,6 @@ describe ("content management", function(){
         });
     });
     describe ("addSubIdea", function(){
-         
         it ('adds a sub-idea to the idea in the argument', function(){
             var idea=content({id:71,title:'My Idea'});
             var succeeded=idea.addSubIdea(71,'New idea');
@@ -130,6 +129,33 @@ describe ("content management", function(){
             idea.addEventListener('Idea_Added', addedListener);
             idea.addSubIdea(71);
             expect(addedListener).toHaveBeenCalledWith(idea.ideas[1]);
+        });
+    });
+    describe ("removeSubIdea", function(){
+        it ('removes a child idea matching the provided id', function(){
+          var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 10: { id:3, title:'I3'}, 15 : {id:4, title:'I4'}}});
+          expect(idea.removeSubIdea(2)).toBeTruthy();
+          expect(_.size(idea.ideas)).toBe(2);
+          expect(idea.ideas[10].id).toBe(3);
+          expect(idea.ideas[15].id).toBe(4);
+        });
+        it ('delegates to children if no immediate child matches id', function(){
+          var idea=content({id:0,title:'I0',ideas:{9:{id:1, title:'I1', ideas: { '-5': { id: 2, title:'I2'}, '-10': { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}}}});
+          expect(idea.removeSubIdea(3)).toBeTruthy();
+          expect(_.size(idea.ideas[9].ideas)).toBe(2);
+          expect(idea.ideas[9].ideas[-5].id).toBe(2);
+          expect(idea.ideas[9].ideas[-15].id).toBe(4);
+        });
+        it ('fails if no immediate child matches id', function(){
+          var idea=content({id:0,title:'I0',ideas:{9:{id:1, title:'I1', ideas: { '-5': { id: 2, title:'I2'}, '-10': { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}}}});
+          expect(idea.removeSubIdea(13)).toBeFalsy();
+        });
+        it ('fires Idea_Removed with old idea as argument', function(){
+          var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 10: { id:3, title:'I3'}, 15 : {id:4, title:'I4'}}});
+          var addedListener=jasmine.createSpy('Idea_Added');
+          idea.addEventListener('Idea_Removed', addedListener);
+          idea.removeSubIdea(3);
+          expect(addedListener).toHaveBeenCalledWith(3);
         });
     });
     describe ("positionBefore", function(){
