@@ -20,6 +20,8 @@
            border-radius:10% ; max-width:150px; cursor:pointer;
           }
           .selected {background-color:yellow;}          
+          .active {background-color:blue;}          
+          .hover {background-color:red}          
           .node .node .label {
             border: 3px solid black; 
           }
@@ -124,7 +126,18 @@
                   active_content.positionBefore(ui.helper.attr('idea'),$(first_below).attr('idea'));
                   console.log("done");
                 }
-              }); 
+              });
+              $('.label').droppable({
+                accept: ".label",
+                activeClass: "active",
+                hoverClass: "hover",
+                drop: function(event,ui){
+                  console.log("drop");
+                  var newParent= $(event.target).attr('idea');
+                  var ideaId= $(ui.helper).attr('idea');
+                  active_content.changeParent(ideaId,newParent);
+                }
+              });
               $('.label').dblclick(function(){
                  $('.selected').removeClass('selected');
                  var new_value=prompt('Edit idea',$(this).text());
@@ -135,8 +148,8 @@
                $('.label').click(function(event){
                   $('.selected').removeClass('selected');
                   $(event.target).addClass('selected')
-                });
-
+               });
+               
             }
 
           $(function(){
@@ -159,6 +172,11 @@
               $('.label[idea='+ideaId+']').parent().parent().parent().children('.label').addClass('.selected');
               $('.label[idea='+ideaId+']').parent().detach();
               paint_map_connections($('.map'));
+            });
+            active_content.addEventListener('Parent_Changed', function(ideaId){
+              repaint_entire_map(active_content);
+              $('.selected').removeClass('selected');
+              $('.label[idea='+ideaId+']').addClass('selected')
             });
             $(document).keyup(function(e) {
               var selectedId= $('.selected').attr('idea');

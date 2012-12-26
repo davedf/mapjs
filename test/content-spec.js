@@ -137,6 +137,32 @@ describe ("content aggregate", function(){
           expect(new_key).not.toBeLessThan(16);
         });
     });
+    describe ("changeParent", function(){
+      it ("removes an idea from it's parent and reassings to another parent", function(){
+          var idea=content({id:5,title:'I0',ideas:{9:{id:1, title:'I1', ideas: { '-5': { id: 2, title:'I2'}, '-10': { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}}}});
+          var result=idea.changeParent(4,5);
+          expect(result).toBeTruthy();
+          var new_rank=idea.findChildRankById(4);
+          expect(new_rank).toBeTruthy();
+          var old_rank=idea.ideas[9].findChildRankById(4);
+          expect (old_rank).toBeFalsy();
+      });
+      it ("fails if no such idea exists to remove", function(){
+          var idea=content({id:5,title:'I0',ideas:{9:{id:1, title:'I1', ideas: { '-5': { id: 2, title:'I2'}, '-10': { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}}}});
+          expect(idea.changeParent(14,5)).toBeFalsy();
+      });
+      it ("fails if no such new parent exists ", function(){
+          var idea=content({id:5,title:'I0',ideas:{9:{id:1, title:'I1', ideas: { '-5': { id: 2, title:'I2'}, '-10': { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}}}});
+          expect(idea.changeParent(4,11)).toBeFalsy();
+      });
+      it ("fires a Parent_Changed event when a parent is changed", function(){
+          var idea=content({id:5,title:'I0',ideas:{9:{id:1, title:'I1', ideas: { '-5': { id: 2, title:'I2'}, '-10': { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}}}});
+          var listener=jasmine.createSpy('Parent_Changed');
+          idea.addEventListener('Parent_Changed',listener);
+          var result=idea.changeParent(4,5);
+          expect(listener).toHaveBeenCalledWith(4);
+      });
+    });
     describe ("removeSubIdea", function(){
         it ('removes a child idea matching the provided id', function(){
           var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 10: { id:3, title:'I3'}, 15 : {id:4, title:'I4'}}});
