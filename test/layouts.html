@@ -180,13 +180,17 @@
             active_content.addEventListener('Idea_Added', function(idea){
               repaint_entire_map(active_content);
               $('.selected').removeClass('selected');
-              $('.label[idea='+idea.id+']').addClass('selected')
+              $('.label[idea='+idea.id+']').effect('bounce',{},500,function(){
+                $('.label[idea='+idea.id+']').addClass('selected')
+              });
             });
             active_content.addEventListener('Idea_Removed', function(ideaId){
               $('.selected').removeClass('selected');
               $('.label[idea='+ideaId+']').parent().parent().parent().children('.label').addClass('.selected');
+              $('.label[idea='+ideaId+']').parent().hide("fade",{},500,function(){
               $('.label[idea='+ideaId+']').parent().detach();
               paint_map_connections($('.map'),connect_classes);
+              });
             });
             active_content.addEventListener('Parent_Changed', function(ideaId){
               repaint_entire_map(active_content);
