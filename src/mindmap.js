@@ -47,7 +47,7 @@ function midpoint (jquery_element){
 function connectClass (node, parent,connect_classes){
   var nodeMid=midpoint(node);
   var parentMid=midpoint(parent);
-  if (Math.abs(nodeMid.y-parentMid.y)<Math.min(node.outerHeight(),parent.outerHeight()))
+  if (Math.abs(nodeMid.y-parentMid.y)<Math.min(node.outerHeight(),parent.outerHeight())/2)
     return connect_classes.horizontal;
   else if (nodeMid.y<parentMid.y && nodeMid.x>parentMid.x) 
     return connect_classes.down_left;
