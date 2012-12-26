@@ -1,12 +1,25 @@
 describe ("content aggregate", function(){
-  describe ("maxID", function(){
+
+  describe ("content wapper", function(){
+    it ("automatically assigns IDs to ideas without IDs", function(){
+      var wrapped=content({title:'My Idea'});
+      expect(wrapped.id).toBe(1);
+    });
+    it ("does not touch any IDs already assigned", function(){
+      var wrapped=content({id:22, title:'My Idea', ideas: { 1: {id:23, title:'My First Subidea'}}});
+      expect (wrapped.ideas[1].id).toBe(23);
+    });
+    it ("skips over any IDs already assigned while adding new IDs", function(){
+      var wrapped=content({id:55, title:'My Idea', ideas: { 1: {title:'My First Subidea'}}});
+      expect (wrapped.ideas[1].id).toBe(56);
+    });
+    describe ("maxID", function(){
       it ("calculates the maximum assigned ID already in the idea hierarchy", function(){
-      
         var ideas=content({id:22, title:'My Idea', ideas: { 1: {id:23, title:'My First Subidea'}, '-1':{id:54,title:'Max'}}});
         expect (ideas.maxId()).toBe(54);
       });
-  });
-  describe ("findChildRankById", function(){
+    });
+    describe ("findChildRankById", function(){
       var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 10: { id:3, title:'I3'}, 15 : {id:4, title:'I4'}}});
       it ('returns the key in the parent idea list of an idea by its id', function(){  
         expect( idea.findChildRankById(2)).toEqual(5);
@@ -16,52 +29,26 @@ describe ("content aggregate", function(){
       it ('returns false/NaN if no such child exists', function(){
         expect( idea.findChildRankById('xxx')).toBeFalsy();
       });
-  });
-  describe ("findSubIdeaById", function(){
-    it ("returns the idea reference for a direct child matching the ID", function(){
-      var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 10: { id:3, title:'I3'}, 15 : {id:4, title:'I4'}}});
-      expect(idea.findSubIdeaById(2).id).toBe(2);
     });
-    it ("returns the idea reference for any indirect child matching the ID", function(){
-      var idea=content({id:5,title:'I0',ideas:{9:{id:1, title:'I1', ideas: { '-5': { id: 2, title:'I2'}, '-10': { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}}}})
-      expect(idea.findSubIdeaById(2).id).toBe(2);
+    describe ("findSubIdeaById", function(){
+      it ("returns the idea reference for a direct child matching the ID", function(){
+        var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 10: { id:3, title:'I3'}, 15 : {id:4, title:'I4'}}});
+        expect(idea.findSubIdeaById(2).id).toBe(2);
+      });
+      it ("returns the idea reference for any indirect child matching the ID", function(){
+        var idea=content({id:5,title:'I0',ideas:{9:{id:1, title:'I1', ideas: { '-5': { id: 2, title:'I2'}, '-10': { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}}}})
+        expect(idea.findSubIdeaById(2).id).toBe(2);
+      });
+      it ("returns undefined if it matches the ID itself - to avoid false positives in parent search", function(){
+        var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 10: { id:3, title:'I3'}, 15 : {id:4, title:'I4'}}});
+        expect(idea.findSubIdeaById(1)).toBeFalsy();
+      });
+      it ("returns undefined if no immediate child or any indirect child matches the ID", function(){
+        var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 10: { id:3, title:'I3'}, 15 : {id:4, title:'I4'}}});
+        expect(idea.findSubIdeaById(33)).toBeFalsy();
+      });
     });
-    it ("returns undefined if it matches the ID itself - to avoid false positives in parent search", function(){
-      var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 10: { id:3, title:'I3'}, 15 : {id:4, title:'I4'}}});
-      expect(idea.findSubIdeaById(1)).toBeFalsy();
-    });
-    it ("returns undefined if no immediate child or any indirect child matches the ID", function(){
-      var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 10: { id:3, title:'I3'}, 15 : {id:4, title:'I4'}}});
-      expect(idea.findSubIdeaById(33)).toBeFalsy();
-    });
-  });
-  describe ("content wapper", function(){
-      it ("makes a idea observable for title changes", function(){
-        var listener=jasmine.createSpy('title_listener');
-        var wrapped=content({title:'My Idea'});
-        wrapped.addEventListener('Title_Updated', listener);
-        wrapped.updateTitle(1, 'Updated');
-        expect(listener).toHaveBeenCalledWith(wrapped);
-      });
-      it ("makes an aggregate oservable for child title changes", function(){
-        var listener=jasmine.createSpy('title_listener');
-        var wrapped=content({title:'My Idea', id:2, ideas: { 1: {id:1, title:'Old title'}}});
-        wrapped.addEventListener('Title_Updated', listener);
-        wrapped.updateTitle(1, 'Updated');
-        expect(listener).toHaveBeenCalledWith(wrapped.ideas[1]);
-      });
-      it ("automatically assigns IDs to ideas without IDs", function(){
-        var wrapped=content({title:'My Idea'});
-        expect(wrapped.id).toBe(1);
-      });
-      it ("does not touch any IDs already assigned", function(){
-        var wrapped=content({id:22, title:'My Idea', ideas: { 1: {id:23, title:'My First Subidea'}}});
-        expect (wrapped.ideas[1].id).toBe(23);
-      });
-      it ("skips over any IDs already assigned while adding new IDs", function(){
-        var wrapped=content({id:55, title:'My Idea', ideas: { 1: {title:'My First Subidea'}}});
-        expect (wrapped.ideas[1].id).toBe(56);
-      });
+
   });
   describe ("command processing",function(){
     describe ("updateTitle", function(){
@@ -90,6 +77,13 @@ describe ("content aggregate", function(){
           expect(result).toBeTruthy();
           expect(ideas.ideas[1].ideas[1].title).toBe('Updated'); 
           expect(ideas.updateTitle('Non Existing','XX')).toBeFalsy();
+        });
+        it ("fires Title_Updated event when the title changes", function(){
+          var listener=jasmine.createSpy('title_listener');
+          var wrapped=content({title:'My Idea', id:2, ideas: { 1: {id:1, title:'Old title'}}});
+          wrapped.addEventListener('Title_Updated', listener);
+          wrapped.updateTitle(1, 'Updated');
+          expect(listener).toHaveBeenCalledWith(wrapped.ideas[1]);
         });
     });
     describe ("addSubIdea", function(){
