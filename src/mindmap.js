@@ -40,6 +40,23 @@ function paint_map_connections(jquery_element){
     repaint_connection_to_parent(node);
   });
 }
+function midpoint (jquery_element){
+  return {x:jquery_element.offset().left+jquery_element.outerWidth()/2,y:jquery_element.offset().top+jquery_element.outerHeight()/2}
+}
+function connectClass (node, parent){
+  var nodeMid=midpoint(node);
+  var parentMid=midpoint(parent);
+  if (Math.abs(nodeMid.y,parentMid.y)<Math.min(node.outerHeight(),parent.outerHeight()))
+    return "connect-horizontal";
+  else if (nodeMid.y<parentMid.y && nodeMid.x>parentMid.x) 
+    return "connect_down_left";
+  else if (nodeMid.y>parentMid.y && nodeMid.x>parentMid.x) 
+    return "connect_up_left";
+  else if (nodeMid.y<parentMid.y && nodeMid.x<parentMid.x) 
+    return "connect_down_right";
+  else if (nodeMid.y>parentMid.y && nodeMid.x<parentMid.x) 
+    return "connect_up_right";
+}
 function repaint_connection_to_parent(node){
     var vertical_sensitivity_threshold=5;
     var parent=node.parent().parent().parent().children('.label:first');
@@ -47,40 +64,11 @@ function repaint_connection_to_parent(node){
       node.siblings('.connect').detach(); 
       var connect =$('<div>&nbsp</div>').appendTo(node.parent());
       connect.addClass('connect');
-      if (Math.abs(v_middle(parent)-v_middle(node))<vertical_sensitivity_threshold){
-        connect.addClass("connect_horizontal");
-        connect.offset( { top: v_middle(parent), 
-          left: Math.min(parent.offset().left+parent.outerWidth(),node.offset().left+node.outerWidth()) });
-        connect.width(
-          Math.max(node.offset().left-parseInt(node.css('padding-left')),
-            parent.offset().left)-connect.offset().left);
-      }
-      else {
-        if (v_middle(parent)>v_middle(node) && parent.offset().left<node.offset().left){
-          connect.addClass("connect_down_left");
-          connect.offset(
-            { top: node.offset().top+node.outerHeight()/2, left: parent.offset().left+parent.outerWidth()/2 });
-        }
-        else if (v_middle(parent)<v_middle(node) && parent.offset().left<node.offset().left){
-          connect.addClass("connect_up_left");
-          connect.offset(
-              { top: parent.offset().top+parent.outerHeight(), left: parent.offset().left+parent.outerWidth()/2 });
-        }
-        else if (v_middle(parent)>v_middle(node) && parent.offset().left>node.offset().left){
-          connect.addClass("connect_down_right");
-          connect.offset(
-              { top: node.offset().top+node.outerHeight()/2, left: node.offset().left+node.outerWidth() });
-        }
-        else if (v_middle(parent)<v_middle(node) && parent.offset().left>node.offset().left){
-          connect.addClass("connect_up_right");
-          connect.offset(
-              { top: parent.offset().top+parent.outerHeight(), left: node.offset().left+node.outerWidth() });
-        }
-        connect.width(
-            Math.max(node.offset().left-parseInt(node.css('padding-left')),
-              parent.offset().left+parent.outerWidth()/2)-connect.offset().left);
-      }
-      connect.height(Math.max(parent.offset().top-parseInt(parent.css('padding-top')),
-      node.offset().top+node.outerHeight()/2)-connect.offset().top);
+      var nodeMid=midpoint(node);
+      var parentMid=midpoint(parent);
+      connect.offset({top:Math.min(nodeMid.y,parentMid.y),left:Math.min(nodeMid.x,parentMid.x)});
+      connect.height(Math.max(nodeMid.y,parentMid.y)-connect.offset().top);
+      connect.width(Math.max(nodeMid.x,parentMid.x)-connect.offset().left);
+      connect.addClass(connectClass(node,parent));    
     }
   }

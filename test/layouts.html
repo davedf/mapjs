@@ -17,7 +17,8 @@
           }
           .label {
             display:inline-block; vertical-align:middle; border:5px solid black;padding:5px; 
-           border-radius:10% ; max-width:150px; cursor:pointer;
+            border-radius:10% ; max-width:150px; cursor:pointer;
+            background-color:white;
           }
           .selected {background-color:yellow;}          
           .active {background-color:gray;}          
@@ -31,6 +32,7 @@
           .map {overflow:scroll;}
           .connect{
             position:absolute;
+            z-index:-10;
           }
           .connect_down_left{
             border-top-left-radius: 50%;
@@ -54,11 +56,12 @@
           }
           .connect_horizontal{
             border-bottom: 0.3em solid #2C2C2C;
+            padding-bottom: 0.3em;
           }
         </style>
     </head>
     <body>
-    <div class="map"> </div>
+    <div tabstop="0" class="map"> </div>
       <script>
           var ideas= {
               title: 'Node 1',
