@@ -163,10 +163,8 @@ describe ("content aggregate", function(){
       it ("removes an idea from it's parent and reassings to another parent", function(){
         var result=idea.changeParent(4,5);
         expect(result).toBeTruthy();
-        var new_rank=idea.findChildRankById(4);
-        expect(new_rank).toBeTruthy();
-        var old_rank=idea.ideas[9].findChildRankById(4);
-        expect (old_rank).toBeFalsy();
+        expect(idea.containsDirectChild(4)).toBeTruthy();
+        expect (idea.ideas[9].containsDirectChild(4)).toBeFalsy();
       });
       it ("fails if no such idea exists to remove", function(){
           expect(idea.changeParent(14,5)).toBeFalsy();
@@ -181,11 +179,14 @@ describe ("content aggregate", function(){
         var result=idea.changeParent(4,5);
         expect(listener).toHaveBeenCalledWith(4);
       });
-      it ("fails if asked to make a node it's own parent", function(){
+      it ("fails if asked to make a idea it's own parent", function(){
         expect(idea.changeParent(2,2)).toBeFalsy(); 
       });
-      it ("fails if asked to make a cycle (make a node a child of it's own child)", function(){
+      it ("fails if asked to make a cycle (make a idea a child of it's own child)", function(){
         expect(idea.changeParent(1,2)).toBeFalsy(); 
+      });
+      it ("fails if asked to put an idea in it's current parent", function(){
+        expect(idea.changeParent(1,5)).toBeFalsy(); 
       });
     });
     describe ("removeSubIdea", function(){

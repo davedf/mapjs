@@ -8,7 +8,7 @@ var content;
           contentIdea.ideas[key] = init(value);
         });
       contentIdea.id = contentIdea.id || (contentAggregate.maxId() + 1);
-      contentIdea.findChildRankById = function (childIdeaId) {
+      contentIdea.containsDirectChild=contentIdea.findChildRankById = function (childIdeaId) {
         return parseFloat(_.reduce(
           contentIdea.ideas, 
           function(res, value, key) { 
@@ -97,6 +97,7 @@ var content;
       var idea=contentAggregate.findSubIdeaById(ideaId);
       if (!idea) return false;
       if (idea.findSubIdeaById(newParentId)) return false;
+      if (parent.containsDirectChild(ideaId)) return false;
       traverseAndRemoveIdea(contentAggregate,ideaId);
       if (!idea) return false;
       appendSubIdea(parent,idea);
