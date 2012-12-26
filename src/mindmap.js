@@ -33,42 +33,43 @@ function widest_child(jquery_elem){
   });
   return jquery_elem.outerWidth()+max;
 }
-function paint_map_connections(jquery_element){
+function paint_map_connections(jquery_element,connect_classes){
   jquery_element.width(2*widest_child(jquery_element.find('.node:first')));
   $('.node .node .label').each(function(){
     var node=$(this);
-    repaint_connection_to_parent(node);
+    repaint_connection_to_parent(node,connect_classes);
   });
 }
 function midpoint (jquery_element){
   return {x:jquery_element.offset().left+jquery_element.outerWidth()/2,y:jquery_element.offset().top+jquery_element.outerHeight()/2}
 }
-function connectClass (node, parent){
+
+function connectClass (node, parent,connect_classes){
   var nodeMid=midpoint(node);
   var parentMid=midpoint(parent);
   if (Math.abs(nodeMid.y,parentMid.y)<Math.min(node.outerHeight(),parent.outerHeight()))
-    return "connect-horizontal";
+    return connect_classes.horizontal;
   else if (nodeMid.y<parentMid.y && nodeMid.x>parentMid.x) 
-    return "connect_down_left";
+    return connect_classes.down_left;
   else if (nodeMid.y>parentMid.y && nodeMid.x>parentMid.x) 
-    return "connect_up_left";
+    return connect_classes.up_left;
   else if (nodeMid.y<parentMid.y && nodeMid.x<parentMid.x) 
-    return "connect_down_right";
+    return connect_classes.down_right;
   else if (nodeMid.y>parentMid.y && nodeMid.x<parentMid.x) 
-    return "connect_up_right";
+    return connect_classes.up_right;
 }
-function repaint_connection_to_parent(node){
+function repaint_connection_to_parent(node, connect_classes){
     var vertical_sensitivity_threshold=5;
     var parent=node.parent().parent().parent().children('.label:first');
     if (node.length>0 && parent.length>0){
-      node.siblings('.connect').detach(); 
-      var connect =$('<div>&nbsp</div>').appendTo(node.parent());
-      connect.addClass('connect');
+      var connect= node.siblings('.connect'); //|| won't work, because this is an empty array if nothing
+      if (connect.length==0){ connect= $('<div>&nbsp</div>').appendTo(node.parent()); connect.addClass('connect');}
+      else connect.removeClass(_.toArray(connect_classes).join(" "));
       var nodeMid=midpoint(node);
       var parentMid=midpoint(parent);
       connect.offset({top:Math.min(nodeMid.y,parentMid.y),left:Math.min(nodeMid.x,parentMid.x)});
       connect.height(Math.max(nodeMid.y,parentMid.y)-connect.offset().top);
       connect.width(Math.max(nodeMid.x,parentMid.x)-connect.offset().left);
-      connect.addClass(connectClass(node,parent));    
+      connect.addClass(connectClass(node,parent,connect_classes));    
     }
   }

@@ -110,16 +110,23 @@
                 '-3': {title: 'Node 1.6'}
               }
           }
+          var connect_classes={
+            horizontal: "connect-horizontal",
+            down_left: "connect_down_left",
+            up_left: "connect_up_left",
+            down_right: "connect_down_right",
+            up_right: "connect_up_right"
+          };
           function repaint_entire_map(active_content){
               $('.map').children().detach();
               ideas_to_nodes(active_content).appendTo('.map');
-              paint_map_connections($('.map'));
+              paint_map_connections($('.map'),connect_classes);
               $('.selected').removeClass('selected');
               $('.label[idea='+active_content.id+']').addClass('selected')
               
               $('.label').draggable({
                 drag: function(event,ui){
-                  repaint_connection_to_parent(ui.helper.parent().find('.label'));
+                  repaint_connection_to_parent(ui.helper.parent().find('.label'), connect_classes);
                 },
                 stop: function(event,ui){
                   var sibling_labels=ui.helper.parent().siblings().children('.label');
@@ -163,7 +170,7 @@
             });
             active_content.addEventListener('Title_Updated', function(idea){
               $('.map').find('.label[idea='+idea.id+']').text(idea.title);
-              paint_map_connections($('.map'));
+              paint_map_connections($('.map'),connect_classes);
             });
             active_content.addEventListener('Idea_Added', function(idea){
               repaint_entire_map(active_content);
@@ -174,14 +181,14 @@
               $('.selected').removeClass('selected');
               $('.label[idea='+ideaId+']').parent().parent().parent().children('.label').addClass('.selected');
               $('.label[idea='+ideaId+']').parent().detach();
-              paint_map_connections($('.map'));
+              paint_map_connections($('.map'),connect_classes);
             });
             active_content.addEventListener('Parent_Changed', function(ideaId){
               repaint_entire_map(active_content);
               $('.selected').removeClass('selected');
               $('.label[idea='+ideaId+']').addClass('selected')
             });
-            $(document).keyup(function(e) {
+            $(document).keydown(function(e) {
               var selectedId= $('.selected').attr('idea');
               if (!selectedId) return;
               if(e.which == 13) {// ENTER
@@ -189,6 +196,7 @@
               }
               if(e.which == 8) { // BACKSPACE
                 active_content.removeSubIdea(selectedId);
+                e.preventDefault();
               }
             });
           }
