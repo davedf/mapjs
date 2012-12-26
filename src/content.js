@@ -39,47 +39,19 @@ var content;
         idea.id || 0
       );
     };
-    contentAggregate.updateTitle = function (ideaId, title) {
-      var contentIdea = arguments[2] || contentAggregate;
-      if (contentIdea.id == ideaId) {
-          contentIdea.title = title;
-          contentAggregate.dispatchEvent('Title_Updated', contentIdea);
-          return true;
-      } else
-        return _.reduce(
-          contentIdea.ideas,
-          function(result, idea) {
-            return result || contentAggregate.updateTitle(ideaId, title, idea);
-          },
-          false
-        );
-    };
+
+
+    /*** private utility methods ***/
     maxAbsoluteNumKey=function(kv_map){
       if (_.size(kv_map)==0) return 0;
-     return _(_(_(_(kv_map).keys()).map(parseFloat))).max(Math.abs);
+      return _(_(_(_(kv_map).keys()).map(parseFloat))).max(Math.abs);
     }
     appendSubIdea=function(parentIdea,subIdea){
       if (!parentIdea.ideas) parentIdea.ideas={}
       parentIdea.ideas[Math.abs(maxAbsoluteNumKey(parentIdea.ideas))+1]=subIdea;
     }
-    traverseAndAddIdeaToParent = function(current, parentId, newIdea ) {
-      if (current.id==parentId){
-        appendSubIdea(current,newIdea);
-        return true;
-      }
-      return _.reduce(
-        current.ideas,
-        function (result, child) {
-          return result || traverseAndAddIdeaToParent(child,parentId, newIdea);
-        },
-        false
-      );
-    }
-    contentAggregate.addSubIdea = function(parentId,ideaTitle){
-      var newIdea=init({title:ideaTitle,id:contentAggregate.maxId()+1});
-      var result=traverseAndAddIdeaToParent(contentAggregate,parentId,newIdea);
-      if (result) contentAggregate.dispatchEvent('Idea_Added',newIdea);
-      return result;
+    findIdeaById = function (ideaId){
+      return contentAggregate.id==ideaId?contentAggregate:contentAggregate.findSubIdeaById(ideaId);
     }
     traverseAndRemoveIdea = function (parentIdea,subIdeaId) {
       var childRank=parentIdea.findChildRankById(subIdeaId);
@@ -96,14 +68,31 @@ var content;
         false
       );
     }
+
+    /**** aggregate command processing methods ****/
+    contentAggregate.updateTitle = function (ideaId, title) {
+      var idea=findIdeaById(ideaId);
+      if (!idea) return false;
+      idea.title=title;
+      contentAggregate.dispatchEvent('Title_Updated', idea);
+      return true;
+    };
+    contentAggregate.addSubIdea = function(parentId,ideaTitle){
+      var parent=findIdeaById(parentId);
+      if (!parent) return false;
+      var newIdea=init({title:ideaTitle,id:contentAggregate.maxId()+1});
+      appendSubIdea(parent,newIdea);
+      contentAggregate.dispatchEvent('Idea_Added',newIdea);
+      return true;
+    }
     contentAggregate.removeSubIdea = function (subIdeaId){
-      var result= traverseAndRemoveIdea(contentAggregate,subIdeaId);
-      if (result)  contentAggregate.dispatchEvent('Idea_Removed',subIdeaId);
+      var result = traverseAndRemoveIdea(contentAggregate,subIdeaId);
+      if (result) contentAggregate.dispatchEvent('Idea_Removed',subIdeaId);
       return result;
     }
     contentAggregate.changeParent = function (ideaId, newParentId){
       if (ideaId==newParentId) return false;
-      var parent=contentAggregate.id==newParentId?contentAggregate:contentAggregate.findSubIdeaById(newParentId);
+      var parent=findIdeaById(newParentId);
       if (!parent) return false;
       var idea=contentAggregate.findSubIdeaById(ideaId);
       if (!idea) return false;
