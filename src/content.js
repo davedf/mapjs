@@ -16,7 +16,15 @@ var content;
           },
           undefined
         ));
-      }
+      };
+      contentIdea.findSubIdeaById = function(childIdeaId){
+        var myChild= _.find(contentIdea.ideas,function(idea){return idea.id==childIdeaId;})   
+        return myChild || 
+          _.reduce (contentIdea.ideas, function(result,idea){
+             return result || idea.findSubIdeaById(childIdeaId); 
+          }, 
+          undefined);
+      };
       return contentIdea;
     };
     contentAggregate.maxId = function maxId(idea) {
@@ -50,11 +58,13 @@ var content;
       if (_.size(kv_map)==0) return 0;
      return _(_(_(_(kv_map).keys()).map(parseFloat))).max(Math.abs);
     }
-    
+    appendSubIdea=function(parentIdea,subIdea){
+      if (!parentIdea.ideas) parentIdea.ideas={}
+      parentIdea.ideas[Math.abs(maxAbsoluteNumKey(parentIdea.ideas))+1]=subIdea;
+    }
     traverseAndAddIdeaToParent = function(current, parentId, newIdea ) {
       if (current.id==parentId){
-        if (!current.ideas) current.ideas={}
-        current.ideas[Math.abs(maxAbsoluteNumKey(current.ideas))+1]=newIdea;
+        appendSubIdea(current,newIdea);
         return true;
       }
       return _.reduce(
@@ -92,13 +102,17 @@ var content;
       return result;
     }
     contentAggregate.changeParent = function (ideaId, newParentId){
-      var idea=traverseAndRemoveIdea(contentAggregate,ideaId);
+      if (ideaId==newParentId) return false;
+      var parent=contentAggregate.id==newParentId?contentAggregate:contentAggregate.findSubIdeaById(newParentId);
+      if (!parent) return false;
+      var idea=contentAggregate.findSubIdeaById(ideaId);
       if (!idea) return false;
-      var result= traverseAndAddIdeaToParent(contentAggregate,newParentId,idea);
-      if (result) { 
-        contentAggregate.dispatchEvent('Parent_Changed',ideaId);
-      }
-      return result;
+      if (idea.findSubIdeaById(newParentId)) return false;
+      traverseAndRemoveIdea(contentAggregate,ideaId);
+      if (!idea) return false;
+      appendSubIdea(parent,idea);
+      contentAggregate.dispatchEvent('Parent_Changed',ideaId);
+      return true;
     }
     contentAggregate.positionBefore = function (ideaId, positionBeforeIdeaId) {
       var parentIdea = arguments[2] || contentAggregate;

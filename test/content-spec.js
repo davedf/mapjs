@@ -17,6 +17,24 @@ describe ("content aggregate", function(){
         expect( idea.findChildRankById('xxx')).toBeFalsy();
       });
   });
+  describe ("findSubIdeaById", function(){
+    it ("returns the idea reference for a direct child matching the ID", function(){
+      var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 10: { id:3, title:'I3'}, 15 : {id:4, title:'I4'}}});
+      expect(idea.findSubIdeaById(2).id).toBe(2);
+    });
+    it ("returns the idea reference for any indirect child matching the ID", function(){
+      var idea=content({id:5,title:'I0',ideas:{9:{id:1, title:'I1', ideas: { '-5': { id: 2, title:'I2'}, '-10': { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}}}})
+      expect(idea.findSubIdeaById(2).id).toBe(2);
+    });
+    it ("returns undefined if it matches the ID itself - to avoid false positives in parent search", function(){
+      var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 10: { id:3, title:'I3'}, 15 : {id:4, title:'I4'}}});
+      expect(idea.findSubIdeaById(1)).toBeFalsy();
+    });
+    it ("returns undefined if no immediate child or any indirect child matches the ID", function(){
+      var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 10: { id:3, title:'I3'}, 15 : {id:4, title:'I4'}}});
+      expect(idea.findSubIdeaById(33)).toBeFalsy();
+    });
+  });
   describe ("content wapper", function(){
       it ("makes a idea observable for title changes", function(){
         var listener=jasmine.createSpy('title_listener');
@@ -138,29 +156,36 @@ describe ("content aggregate", function(){
         });
     });
     describe ("changeParent", function(){
+      var idea;
+      beforeEach(function(){
+        idea=content({id:5,title:'I0',ideas:{9:{id:1, title:'I1', ideas: { '-5': { id: 2, title:'I2'}, '-10': { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}}}});
+      });
       it ("removes an idea from it's parent and reassings to another parent", function(){
-          var idea=content({id:5,title:'I0',ideas:{9:{id:1, title:'I1', ideas: { '-5': { id: 2, title:'I2'}, '-10': { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}}}});
-          var result=idea.changeParent(4,5);
-          expect(result).toBeTruthy();
-          var new_rank=idea.findChildRankById(4);
-          expect(new_rank).toBeTruthy();
-          var old_rank=idea.ideas[9].findChildRankById(4);
-          expect (old_rank).toBeFalsy();
+        var result=idea.changeParent(4,5);
+        expect(result).toBeTruthy();
+        var new_rank=idea.findChildRankById(4);
+        expect(new_rank).toBeTruthy();
+        var old_rank=idea.ideas[9].findChildRankById(4);
+        expect (old_rank).toBeFalsy();
       });
       it ("fails if no such idea exists to remove", function(){
-          var idea=content({id:5,title:'I0',ideas:{9:{id:1, title:'I1', ideas: { '-5': { id: 2, title:'I2'}, '-10': { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}}}});
           expect(idea.changeParent(14,5)).toBeFalsy();
       });
-      it ("fails if no such new parent exists ", function(){
-          var idea=content({id:5,title:'I0',ideas:{9:{id:1, title:'I1', ideas: { '-5': { id: 2, title:'I2'}, '-10': { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}}}});
-          expect(idea.changeParent(4,11)).toBeFalsy();
+      it ("fails if no such new parent exists", function(){
+        expect(idea.changeParent(4,11)).toBeFalsy();
+        expect (idea.ideas[9].ideas[-15].id).toBe(4);
       });
       it ("fires a Parent_Changed event when a parent is changed", function(){
-          var idea=content({id:5,title:'I0',ideas:{9:{id:1, title:'I1', ideas: { '-5': { id: 2, title:'I2'}, '-10': { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}}}});
-          var listener=jasmine.createSpy('Parent_Changed');
-          idea.addEventListener('Parent_Changed',listener);
-          var result=idea.changeParent(4,5);
-          expect(listener).toHaveBeenCalledWith(4);
+        var listener=jasmine.createSpy('Parent_Changed');
+        idea.addEventListener('Parent_Changed',listener);
+        var result=idea.changeParent(4,5);
+        expect(listener).toHaveBeenCalledWith(4);
+      });
+      it ("fails if asked to make a node it's own parent", function(){
+        expect(idea.changeParent(2,2)).toBeFalsy(); 
+      });
+      it ("fails if asked to make a cycle (make a node a child of it's own child)", function(){
+        expect(idea.changeParent(1,2)).toBeFalsy(); 
       });
     });
     describe ("removeSubIdea", function(){
