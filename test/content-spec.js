@@ -115,13 +115,13 @@ describe ("content aggregate", function(){
         it ('assigns the first subidea the rank of 1', function(){
             var idea=content({id:71,title:'My Idea'});
             idea.addSubIdea(71);
-            expect(idea.ideas[1].id).toBe(72);
+            expect(idea.findChildRankById(72)).toBe(1);
         });
         it ('assigns a rank greater than any of its siblings', function(){
           var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 10: { id:3, title:'I3'}, 15 : {id:4, title:'I4'}}});
           idea.addSubIdea(1);
           var new_key=idea.findChildRankById(5);
-          expect(new_key).not.toBeLessThan(15);
+          expect(Math.abs(new_key)).not.toBeLessThan(15);
         });
         it ('propagates to children if it does not match the requested id, succeeding if any child ID matches', function(){
           var ideas=content({id:1, title:'My Idea', 
@@ -146,7 +146,19 @@ describe ("content aggregate", function(){
           var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, '-15': { id:3, title:'I3'}, '-16' : {id:4, title:'I4'}}});
           idea.addSubIdea(1);
           var new_key=idea.findChildRankById(5);
-          expect(new_key).not.toBeLessThan(16);
+          expect(Math.abs(new_key)).not.toBeLessThan(16);
+        });
+        describe ('balances positive/negative ranks when adding to aggegate root', function(){
+          describe ('adds a negative rank if there are more positive ranks than negative', function(){
+            var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 10: { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}});
+            idea.addSubIdea(1);
+            expect(idea.findChildRankById(5)).toBeLessThan(0);
+          });
+          describe ('adds a positive rank if there are less or equal positive ranks than negative', function(){
+            var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, '-15' : {id:4, title:'I4'}}});
+            idea.addSubIdea(1);
+            expect(idea.findChildRankById(5)).not.toBeLessThan(0);
+          });
         });
     });
     describe ("changeParent", function(){

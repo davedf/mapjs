@@ -46,9 +46,18 @@ var content;
       if (_.size(kv_map)==0) return 0;
       return _(_(_(_(kv_map).keys()).map(parseFloat))).max(Math.abs);
     }
+    nextChildRank=function(parentIdea){
+      var new_rank=Math.abs(maxAbsoluteNumKey(parentIdea.ideas))+1;
+      if (parentIdea.id==contentAggregate.id){
+        counts= _.countBy(parentIdea.ideas, function(v,k){ return k<0; });
+        if (counts.true<counts.false) new_rank=new_rank*-1;
+      }
+      return new_rank;
+    }
     appendSubIdea=function(parentIdea,subIdea){
       if (!parentIdea.ideas) parentIdea.ideas={}
-      parentIdea.ideas[Math.abs(maxAbsoluteNumKey(parentIdea.ideas))+1]=subIdea;
+
+      parentIdea.ideas[nextChildRank(parentIdea)]=subIdea;
     }
     findIdeaById = function (ideaId){
       return contentAggregate.id==ideaId?contentAggregate:contentAggregate.findSubIdeaById(ideaId);
