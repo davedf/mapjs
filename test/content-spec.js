@@ -130,6 +130,12 @@ describe ("content aggregate", function(){
             idea.addSubIdea(71);
             expect(addedListener).toHaveBeenCalledWith(idea.ideas[1]);
         });
+        it ('takes negative rank items as absolute while calculating new rank ID (bug resurrection test)', function(){
+          var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, '-15': { id:3, title:'I3'}, '-16' : {id:4, title:'I4'}}});
+          idea.addSubIdea(1);
+          var new_key=idea.findChildRankById(5);
+          expect(new_key).not.toBeLessThan(16);
+        });
     });
     describe ("removeSubIdea", function(){
         it ('removes a child idea matching the provided id', function(){

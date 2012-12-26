@@ -55,7 +55,7 @@ var content;
       if (current.id==parentId){
         if (!current.ideas) current.ideas={}
         var new_idea=init({title:ideaTitle,id:contentAggregate.maxId()+1});
-        current.ideas[maxAbsoluteNumKey(current.ideas)+1]=new_idea;
+        current.ideas[Math.abs(maxAbsoluteNumKey(current.ideas))+1]=new_idea;
         contentAggregate.dispatchEvent('Idea_Added',new_idea);
         return true;
       }
