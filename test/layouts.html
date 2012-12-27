@@ -23,14 +23,11 @@
           .selected {background-color:yellow;}          
           .active {background-color:gray;}          
           .hover {background-color:red}          
-          .node .node .label {
-            border: 3px solid black; 
-          }
-          .node .node .node .label {
+          .label {
             border: 1px solid black; 
           }
           .map {overflow:scroll;position:absolute;top:0;left:0}
-          #map2 {visibility:hidden;}
+          #map2 {z-Index:-20;position:absolute;top:0;left:1000;background-color:gray; width:1000; height:1000}
           .connect{
             position:absolute;
             z-index:-10;
@@ -112,13 +109,7 @@
                 '-3': {title: 'Node 1.6'}
               }
           }
-          var connect_classes={
-            horizontal: "connect_horizontal",
-            down_left: "connect_down_left",
-            up_left: "connect_up_left",
-            down_right: "connect_down_right",
-            up_right: "connect_up_right"
-          };
+
           function repaint_entire_map(active_content, jquery_map){
               jquery_map.children().detach();
               ideas_to_nodes(active_content).appendTo(jquery_map);
@@ -193,6 +184,7 @@
             repaint_entire_map(active_content,$('#map1'));
             active_content.addEventListener('positionBefore', function(){
               repaint_entire_map(active_content,$('#map1'));
+              update_map($('#map2'),visual_to_damjan($('#map1')))
             });
             active_content.addEventListener('updateTitle', function(ideaId, newTitle){
               $('#map1').find('.label[idea='+ideaId+']').text(newTitle);
@@ -201,13 +193,13 @@
            active_content.addEventListener('addSubIdea', function(parentIdea,title,newIdeaId){
               repaint_entire_map(active_content,$('#map1'));
               $('.selected').removeClass('selected');
-              $('.label[idea='+newIdeaId+']').effect('bounce',{},500,function(){
-                $('.label[idea='+newIdeaId+']').addClass('selected')
+              $('#map1').find('.label[idea='+newIdeaId+']').effect('bounce',{},500,function(){
+                $('#map1').find('.label[idea='+newIdeaId+']').addClass('selected')
               });
             });
             active_content.addEventListener('removeSubIdea', function(ideaId){
               $('.selected').removeClass('selected');
-              var node=$('.label[idea='+ideaId+']').parent();
+              var node=$('#map1').find('.label[idea='+ideaId+']').parent();
               node.parent().parent().children('.label').addClass('.selected');
               node.children('.connect').detach(); 
               node.hide("fade",{},500,function(){
@@ -231,6 +223,7 @@
                 e.preventDefault();
               }
             });
+            update_map($('#map2'),visual_to_damjan($('#map1')))
           }
           );
       </script>

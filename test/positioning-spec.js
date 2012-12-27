@@ -79,8 +79,8 @@ describe("Map visualisations", function() {
            connectors:[{from:1, to:2}]},
           {nodes:{ '1': { text:'some title', offset : { top: 10, left: 5 }, dimensions: { width:100,height:100 }},
                    '2': { text:'other title',offset : { top: 1, left: 50 }, dimensions: { width:10,height:10 }}},
-           connectors:[{from:1, to:2}]},
-          });
+           connectors:[{from:1, to:2}]}
+          );
       expect (result.renamed).toEqual([]);
       expect (result.moved).toEqual([]);
       expect (result.added).toEqual([]);
