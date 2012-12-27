@@ -136,7 +136,6 @@
                   var sibling_labels=ui.helper.parent().siblings().children('.label');
                   var groups=_.groupBy(sibling_labels,function(item){return $(item).offset().top<ui.helper.offset().top})
                   var first_below=_.min(groups[false], function(label_span) { return $(label_span).offset().top });
-                  console.log ("positioning before id " + $(first_below).attr('idea') + "("+ $(first_below).text()+")");
                   if (!active_content.positionBefore(ui.helper.attr('idea'),$(first_below).attr('idea'))){
                     ui.helper.offset(oldPos); 
                     repaint_connection_to_parent(ui.helper, connect_classes);
@@ -148,7 +147,6 @@
                 activeClass: "active",
                 hoverClass: "hover",
                 drop: function(event,ui){
-                  console.log("drop");
                   var newParent= $(event.target).attr('idea');
                   var ideaId= $(ui.helper).attr('idea');
                   active_content.changeParent(ideaId,newParent);
@@ -192,29 +190,31 @@
           $(function(){
             var active_content=content(ideas);
             repaint_entire_map(active_content,$('#map1'));
-            active_content.addEventListener('Child_Ranks_Changed', function(){
+            active_content.addEventListener('positionBefore', function(){
               repaint_entire_map(active_content,$('#map1'));
             });
-            active_content.addEventListener('Title_Updated', function(idea){
-              $('#map1').find('.label[idea='+idea.id+']').text(idea.title);
+            active_content.addEventListener('updateTitle', function(ideaId, newTitle){
+              $('#map1').find('.label[idea='+ideaId+']').text(newTitle);
               paint_map_connections($('#map1'),connect_classes);
             });
-            active_content.addEventListener('Idea_Added', function(idea){
+           active_content.addEventListener('addSubIdea', function(parentIdea,title,newIdeaId){
               repaint_entire_map(active_content,$('#map1'));
               $('.selected').removeClass('selected');
-              $('.label[idea='+idea.id+']').effect('bounce',{},500,function(){
-                $('.label[idea='+idea.id+']').addClass('selected')
+              $('.label[idea='+newIdeaId+']').effect('bounce',{},500,function(){
+                $('.label[idea='+newIdeaId+']').addClass('selected')
               });
             });
-            active_content.addEventListener('Idea_Removed', function(ideaId){
+            active_content.addEventListener('removeSubIdea', function(ideaId){
               $('.selected').removeClass('selected');
-              $('.label[idea='+ideaId+']').parent().parent().parent().children('.label').addClass('.selected');
-              $('.label[idea='+ideaId+']').parent().hide("fade",{},500,function(){
-              $('.label[idea='+ideaId+']').parent().detach();
+              var node=$('.label[idea='+ideaId+']').parent();
+              node.parent().parent().children('.label').addClass('.selected');
+              node.children('.connect').detach(); 
+              node.hide("fade",{},500,function(){
+              node.detach();
               paint_map_connections($('#map1'),connect_classes);
               });
             });
-            active_content.addEventListener('Parent_Changed', function(ideaId){
+            active_content.addEventListener('changeParent', function(ideaId,parentId){
               repaint_entire_map(active_content,$('#map1'));
               $('.selected').removeClass('selected');
               $('.label[idea='+ideaId+']').addClass('selected')
