@@ -156,16 +156,26 @@
               });
               jquery_map.find('.label').dblclick(function(){
                  $('.selected').removeClass('selected');
-                 var t=$(this).text();
+                 var originalText=$(this).text();
+                 var originalLabel=$(this);
                  var dim={height: $(this).innerHeight(), width: $(this).innerWidth()};
                  var ideaId=$(this).attr('idea');
                  $(this).text("");
-                 var ta=$("<textarea>"+t+"</textarea>").appendTo($(this));
+                 var ta=$("<textarea>"+originalText+"</textarea>").appendTo($(this));
                  ta.height(dim.height); ta.width(dim.width);
                  ta.focus();
                  ta.blur(function(){
                    active_content.updateTitle(ideaId,ta.val());
                    ta.detach();
+                 });
+                 ta.keyup(function(e){
+                  if (e.keyCode==13){ //ENTER
+                    ta.blur();
+                  }
+                  else if (e.keyCode==27){
+                    originalLabel.text(originalText); 
+                    ta.detach();
+                  }
                  });
                  //var new_value=prompt('Edit idea',$(this).text());
                  //if (new_value) {
