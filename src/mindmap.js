@@ -20,10 +20,6 @@ function ideas_to_nodes(json_idea,direction){
   }
   return node_div;
 }
-
-function v_middle(jquery_elem){
-  return jquery_elem.offset().top + jquery_elem.outerHeight()/2;
-}
 function widest_child(jquery_elem){
   if (jquery_elem.children('.node').length==0) return jquery_elem.outerWidth();
   var max=0;

@@ -29,7 +29,7 @@
           .node .node .node .label {
             border: 1px solid black; 
           }
-          .map {overflow:scroll;}
+          .map {overflow:scroll;position:absolute;top:0;left:0}
           .connect{
             position:absolute;
             z-index:-10;
@@ -61,7 +61,8 @@
         </style>
     </head>
     <body>
-    <div tabstop="0" class="map"> </div>
+    <div tabstop="0" id="map2" class="map"> </div>
+    <div tabstop="0" id="map1" class="map"> </div>
       <script>
           var ideas= {
               title: 'Node 1',
@@ -117,14 +118,14 @@
             down_right: "connect_down_right",
             up_right: "connect_up_right"
           };
-          function repaint_entire_map(active_content){
-              $('.map').children().detach();
-              ideas_to_nodes(active_content).appendTo('.map');
-              paint_map_connections($('.map'),connect_classes);
-              $('.selected').removeClass('selected');
-              $('.label[idea='+active_content.id+']').addClass('selected')
+          function repaint_entire_map(active_content, jquery_map){
+              jquery_map.children().detach();
+              ideas_to_nodes(active_content).appendTo(jquery_map);
+              paint_map_connections(jquery_map,connect_classes);
+              jquery_map.find('.selected').removeClass('selected');
+              jquery_map.find('.label[idea='+active_content.id+']').addClass('selected')
               var oldPos; 
-              $('.label').draggable({
+              jquery_map.find('.label').draggable({
                 drag: function(event,ui){
                   repaint_connection_to_parent(ui.helper, connect_classes);
                 },
@@ -142,7 +143,7 @@
                   }
                 }
               });
-              $('.label').droppable({
+              jquery_map.find('.label').droppable({
                 accept: ".label",
                 activeClass: "active",
                 hoverClass: "hover",
@@ -153,14 +154,25 @@
                   active_content.changeParent(ideaId,newParent);
                 }
               });
-              $('.label').dblclick(function(){
+              jquery_map.find('.label').dblclick(function(){
                  $('.selected').removeClass('selected');
-                 var new_value=prompt('Edit idea',$(this).text());
-                 if (new_value) {
-                   active_content.updateTitle(parseFloat($(this).attr('idea')),new_value);
-                 }
+                 var t=$(this).text();
+                 var dim={height: $(this).innerHeight(), width: $(this).innerWidth()};
+                 var ideaId=$(this).attr('idea');
+                 $(this).text("");
+                 var ta=$("<textarea>"+t+"</textarea>").appendTo($(this));
+                 ta.height(dim.height); ta.width(dim.width);
+                 ta.focus();
+                 ta.blur(function(){
+                   active_content.updateTitle(ideaId,ta.val());
+                   ta.detach();
+                 });
+                 //var new_value=prompt('Edit idea',$(this).text());
+                 //if (new_value) {
+                 //  active_content.updateTitle(parseFloat($(this).attr('idea')),new_value);
+                 //}
                });
-               $('.label').click(function(event){
+               jquery_map.find('.label').click(function(event){
                   $('.selected').removeClass('selected');
                   $(event.target).addClass('selected')
                });
@@ -169,16 +181,16 @@
 
           $(function(){
             var active_content=content(ideas);
-            repaint_entire_map(active_content);
+            repaint_entire_map(active_content,$('#map1'));
             active_content.addEventListener('Child_Ranks_Changed', function(){
-              repaint_entire_map(active_content);
+              repaint_entire_map(active_content,$('#map1'));
             });
             active_content.addEventListener('Title_Updated', function(idea){
-              $('.map').find('.label[idea='+idea.id+']').text(idea.title);
-              paint_map_connections($('.map'),connect_classes);
+              $('#map1').find('.label[idea='+idea.id+']').text(idea.title);
+              paint_map_connections($('#map1'),connect_classes);
             });
             active_content.addEventListener('Idea_Added', function(idea){
-              repaint_entire_map(active_content);
+              repaint_entire_map(active_content,$('#map1'));
               $('.selected').removeClass('selected');
               $('.label[idea='+idea.id+']').effect('bounce',{},500,function(){
                 $('.label[idea='+idea.id+']').addClass('selected')
@@ -189,11 +201,11 @@
               $('.label[idea='+ideaId+']').parent().parent().parent().children('.label').addClass('.selected');
               $('.label[idea='+ideaId+']').parent().hide("fade",{},500,function(){
               $('.label[idea='+ideaId+']').parent().detach();
-              paint_map_connections($('.map'),connect_classes);
+              paint_map_connections($('#map1'),connect_classes);
               });
             });
             active_content.addEventListener('Parent_Changed', function(ideaId){
-              repaint_entire_map(active_content);
+              repaint_entire_map(active_content,$('#map1'));
               $('.selected').removeClass('selected');
               $('.label[idea='+ideaId+']').addClass('selected')
             });
