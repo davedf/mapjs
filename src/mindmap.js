@@ -20,6 +20,24 @@ function ideas_to_nodes(json_idea,direction){
   }
   return node_div;
 }
+function mapDiff(start,target){
+  var result={moved:[], resized:[], renamed:[]};
+  var startNodes=start.nodes||{}
+  var targetNodes=target.nodes||{}
+  _.each(start.nodes,function(oldNode,id){ 
+    var targetNode=targetNodes[id]; 
+    if (targetNode) {
+      if (!_.isEqual(oldNode.offset,targetNode.offset)) result.moved.push (id); 
+      if (!_.isEqual(oldNode.dimensions,targetNode.dimensions)) result.resized.push (id); 
+      if (!(oldNode.text===targetNode.text)) result.renamed.push(id);
+    }
+  });
+  result.added=_.difference(_.keys(targetNodes), _.keys(startNodes));
+  result.deleted=_.difference(_.keys(startNodes), _.keys(targetNodes));
+  result.connected=_.difference(target.connectors,start.connectors);
+  result.disconnected=_.difference(start.connectors,target.connectors);
+  return result;
+}
 function widest_child(jquery_elem){
   if (jquery_elem.children('.node').length==0) return jquery_elem.outerWidth();
   var max=0;
@@ -55,12 +73,13 @@ function connectClass (node, parent,connect_classes){
     return connect_classes.up_right;
 }
 function repaint_connection_to_parent(node, connect_classes){
-    var vertical_sensitivity_threshold=5;
     var parent=node.parent().parent().parent().children('.label:first');
     if (node.length>0 && parent.length>0){
       var connect= node.siblings('.connect'); //|| won't work, because this is an empty array if nothing
       if (connect.length==0){ connect= $('<div>&nbsp</div>').appendTo(node.parent()); connect.addClass('connect');}
       else connect.removeClass(_.toArray(connect_classes).join(" "));
+      connect.attr('from',node.attr('idea'));
+      connect.attr('to', parent.attr('idea'));
       var nodeMid=midpoint(node);
       var parentMid=midpoint(parent);
       connect.offset({top:Math.min(nodeMid.y,parentMid.y),left:Math.min(nodeMid.x,parentMid.x)});
@@ -69,3 +88,17 @@ function repaint_connection_to_parent(node, connect_classes){
       connect.addClass(connectClass(node,parent,connect_classes));    
     }
   }
+function visual_to_damjan(jquery_map_root){
+  var result={nodes:{}, connectors:[]}
+  _.each(jquery_map_root.find('.label'),function(element){ 
+      result.nodes[$(element).attr('idea')]= { 
+          offset: $(element).offset(), 
+          dimensions: {width:$(element).innerWidth(),height:$(element).innerHeight()}, 
+          text:$(element).text() 
+      };  
+  });
+  _.each(jquery_map_root.find('.connect'),function(element){ 
+      result.connectors.push( { from: $(element).attr('from'), to: $(element).attr('to') });
+  });  
+  return result;
+}
