@@ -119,6 +119,10 @@ function updateConnectors(jquery_map_container,nodeIdx,nodeCurrentElement,map_ob
       jquery_map_container.find('.connect[from='+connector.from+'][to='+connector.to+']'));
   });
 }
+function updateConnectorsJq(jquery_map_container,nodeIdx){
+  var changed_connectors=jquery_map_container.find('.connect[from='+nodeIdx+']').add(jquery_map_container.find('.connect[to='+nodeIdx+']'));
+  _.each(changed_connectors, function(connector){ repositionConnectorFromJq(jquery_map_container, $(connector) )});
+}
 function update_map(jquery_map_container, map_object){
   var existing_map=visual_to_damjan(jquery_map_container);
   var diff=mapDiff(existing_map,map_object);

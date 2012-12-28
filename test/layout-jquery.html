@@ -1,0 +1,139 @@
+<html>
+    <head>
+  <script src="../lib/underscore-1.4.3-min.js"></script>
+  <script src="../lib/jquery-1.8.3.js"></script>
+  <script src="../lib/jquery-ui-1.9.2.custom.min.js"></script>
+  <script src="../src/observable.js"></script>
+  <script src="../src/content.js"></script>
+  <script src="../src/mindmap.js"></script>
+  <link rel="stylesheet" type="text/css" href="../lib/jquery-ui-1.9.2.custom.min.css"/>
+  <link rel="stylesheet" type="text/css" href="jquery-map.css" /> 
+  <style>
+    #map2 {position:absolute;width:1000; height:1000}
+    #map1 {z-Index:-30;visibility:hidden; }
+  </style>
+    </head>
+    <body>
+    <div tabstop="0" id="map2" class="map"> </div>
+    <div tabstop="0" id="map1" class="map"> </div>
+    <script src="testtree.js"></script>
+    <script>
+          function dom_repaint_entire_map(active_content, jquery_map){
+              jquery_map.children().detach();
+              ideas_to_nodes(active_content).appendTo(jquery_map);
+              paint_map_connections(jquery_map,connect_classes);
+            }
+            function jquery_repaint_map(active_content, active_jq_map){
+              var background_jq_map=$('#map1');
+              dom_repaint_entire_map(active_content,background_jq_map);
+              update_map(active_jq_map,visual_to_damjan(background_jq_map));
+            }
+            function attach_event_listeners(jquery_label,jquery_map,ideas){
+              var oldPos; 
+              jquery_label.draggable({
+                drag: function(event,ui){
+                  updateConnectorsJq(jquery_map,ui.helper.attr('idea'));
+                },
+                start: function(event,ui){
+                 oldPos=ui.helper.offset(); 
+                },
+                stop: function(event,ui){
+                  var nodeId=ui.helper.attr('idea');
+                  var parentConnector=jquery_map.find('.connect[from='+nodeId+']');
+                  var siblingConnectors=jquery_map.find('.connect[to='+parentConnector.attr('to')+']');
+                  var sibling_labels=_.map(siblingConnectors, function(connector){
+                    return jquery_map.find('.label[idea='+$(connector).attr('from')+']');
+                  });
+                  var groups=_.groupBy(sibling_labels,function(item){return item.offset().top<=ui.helper.offset().top})
+                  var firstBelowId;
+                  firstBelowId=$(_.min(groups[false], function(label_span) { return label_span.offset().top })).attr('idea');
+                  console.log('positioning above',firstBelowId);
+                  if (!ideas.positionBefore(nodeId,firstBelowId)){
+                    ui.helper.animate(oldPos,{
+                          duration:200,
+                          step:function(){
+                            updateConnectorsJq(jquery_map,nodeId);
+                          }
+                    });
+                  }
+                }
+              });
+              jquery_label.droppable({
+                accept: ".label",
+                activeClass: "active",
+                hoverClass: "hover",
+                drop: function(event,ui){
+                  var newParent= $(event.target).attr('idea');
+                  var ideaId= $(ui.helper).attr('idea');
+                  ideas.changeParent(ideaId,newParent);
+                }
+              });
+              jquery_label.dblclick(function(){
+                 $('.selected').removeClass('selected');
+                 var originalText=$(this).text();
+                 var originalLabel=$(this);
+                 var dim={height: $(this).innerHeight(), width: $(this).innerWidth()};
+                 var ideaId=$(this).attr('idea');
+                 $(this).text("");
+                 var ta=$("<textarea>"+originalText+"</textarea>").appendTo($(this));
+                 ta.height(dim.height); ta.width(dim.width);
+                 ta.focus();
+                 ta.blur(function(){
+                   var newVal=ta.val();
+                   ideas.updateTitle(ideaId,newVal);
+                 });
+                 ta.keyup(function(e){
+                  if (e.keyCode==13){ //ENTER
+                    ta.blur();
+                  }
+                  else if (e.keyCode==27){
+                    originalLabel.text(originalText); 
+                    ta.detach();
+                  }
+                 });
+               });
+               jquery_label.click(function(event){
+                  $('.selected').removeClass('selected');
+                  $(event.target).addClass('selected')
+               });
+          }
+
+          $(function(){
+            var active_content=content(test_tree());
+            jquery_repaint_map(active_content,$('#map2'));
+            attach_event_listeners($('#map2').find('.label'), $('#map2'),active_content);
+            active_content.addEventListener('positionBefore', function(){
+              jquery_repaint_map(active_content,$('#map2'));
+            });
+            active_content.addEventListener('updateTitle', function(ideaId, newTitle){
+              jquery_repaint_map(active_content,$('#map2'));
+            });
+            active_content.addEventListener('addSubIdea', function(parentIdea,title,newIdeaId){
+              jquery_repaint_map(active_content,$('#map2'));
+              $('.selected').removeClass('selected');
+              $('#map1').find('.label[idea='+newIdeaId+']').effect('bounce',{},500,function(){
+                $('#map1').find('.label[idea='+newIdeaId+']').addClass('selected')
+              });
+            });
+            active_content.addEventListener('removeSubIdea', function(ideaId){
+              jquery_repaint_map(active_content,$('#map2'));
+            });
+            active_content.addEventListener('changeParent', function(ideaId,parentId){
+              jquery_repaint_map(active_content,$('#map2'));
+            });
+            $(document).keydown(function(e) {
+              var selectedId= $('.selected').attr('idea');
+              if (!selectedId) return;
+              if(e.which == 13) {// ENTER
+                active_content.addSubIdea(selectedId,'A cunning plan');
+              }
+              if(e.which == 8) { // BACKSPACE
+                active_content.removeSubIdea(selectedId);
+                e.preventDefault();
+              } 
+            });
+          }
+          );
+      </script>
+    </body>
+</html>
