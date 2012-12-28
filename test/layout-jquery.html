@@ -18,22 +18,17 @@
     <div tabstop="0" id="map1" class="map"> </div>
     <script src="testtree.js"></script>
     <script>
-          function dom_repaint_entire_map(active_content, jquery_map){
-              jquery_map.children().detach();
-              ideas_to_nodes(active_content).appendTo(jquery_map);
-              paint_map_connections(jquery_map,connect_classes);
-            }
-            function jquery_repaint_map(active_content, active_jq_map,onComplete){
-              var background_jq_map=$('#map1');
-              dom_repaint_entire_map(active_content,background_jq_map);
-              update_map(active_jq_map,visual_to_damjan(background_jq_map),onComplete);
-            }
-          $(function(){
-              var active_content=content(test_tree());
-              jquery_repaint_map(active_content,$('#map2'));
-              attach_label_listeners($('#map2').find('.label'), $('#map2'),active_content);
-              attach_map_listeners(active_content,$('#map2'), jquery_repaint_map);
-            });
+      function jquery_repaint_map(active_content, active_jq_map,onComplete){
+        var background_jq_map=$('#map1');
+        dom_repaint_entire_map(active_content,background_jq_map);
+        update_map(active_jq_map,visual_to_damjan(background_jq_map),onComplete);
+      }
+      $(function(){
+        var active_content=content(test_tree());
+        jquery_repaint_map(active_content,$('#map2'));
+        attach_label_listeners($('#map2').find('.label'), $('#map2'),active_content);
+        attach_map_listeners(active_content,$('#map2'), jquery_repaint_map);
+      });
       </script>
     </body>
 </html>

@@ -303,7 +303,8 @@ function attach_label_listeners(jquery_label,jquery_map,ideas){
     });
     ta.keyup(function(e){
       if (e.keyCode==13){ //ENTER
-        ta.blur();
+        var newVal=ta.val();
+        ideas.updateTitle(ideaId,newVal);
       }
       else if (e.keyCode==27){
         originalLabel.text(originalText); 
@@ -350,4 +351,11 @@ function attach_map_listeners(content_aggregate,jquery_map, repaint_callback){
       e.preventDefault();
     } 
   });
+}
+function dom_repaint_entire_map(active_content, jquery_map, onComplete){
+  jquery_map.children().detach();
+  ideas_to_nodes(active_content).appendTo(jquery_map);
+  paint_map_connections(jquery_map);
+
+  if (onComplete) onComplete();
 }
