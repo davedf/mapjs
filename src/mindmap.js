@@ -123,10 +123,10 @@ function updateConnectorsJq(jquery_map_container,nodeIdx){
   var changed_connectors=jquery_map_container.find('.connect[from='+nodeIdx+']').add(jquery_map_container.find('.connect[to='+nodeIdx+']'));
   _.each(changed_connectors, function(connector){ repositionConnectorFromJq(jquery_map_container, $(connector) )});
 }
-function update_map(jquery_map_container, map_object){
+function update_map(jquery_map_container, map_object,callback){
   var existing_map=visual_to_damjan(jquery_map_container);
   var diff=mapDiff(existing_map,map_object);
-  var effectChain=undefined;
+  var effectChain=callback;
   for(var idx in diff.connected){
     var connector=addConnector(
       jquery_map_container,
@@ -246,4 +246,108 @@ function visual_to_damjan(jquery_map_root){
       result.connectors.push( { from: $(element).attr('from'), to: $(element).attr('to') });
   });  
   return result;
+}
+function attach_label_listeners(jquery_label,jquery_map,ideas){
+  var oldPos; 
+  jquery_label.draggable({
+    drag: function(event,ui){
+      updateConnectorsJq(jquery_map,ui.helper.attr('idea'));
+    },
+    start: function(event,ui){
+      oldPos=ui.helper.offset(); 
+    },
+    stop: function(event,ui){
+      var nodeId=ui.helper.attr('idea');
+      var parentConnector=jquery_map.find('.connect[from='+nodeId+']');
+      var siblingConnectors=jquery_map.find('.connect[to='+parentConnector.attr('to')+']');
+      var sibling_labels=_.map(siblingConnectors, function(connector){
+        return jquery_map.find('.label[idea='+$(connector).attr('from')+']');
+      });
+      var groups=_.groupBy(sibling_labels,function(item){return item.offset().top<=ui.helper.offset().top})
+    var firstBelowId;
+  firstBelowId=$(_.min(groups[false], function(label_span) { return label_span.offset().top })).attr('idea');
+  console.log('positioning above',firstBelowId);
+  if (!ideas.positionBefore(nodeId,firstBelowId)){
+    ui.helper.animate(oldPos,{
+      duration:200,
+      step:function(){
+        updateConnectorsJq(jquery_map,nodeId);
+      }
+    });
+  }
+    }
+  });
+  jquery_label.droppable({
+    accept: ".label",
+    activeClass: "active",
+    hoverClass: "hover",
+    drop: function(event,ui){
+      var newParent= $(event.target).attr('idea');
+      var ideaId= $(ui.helper).attr('idea');
+      ideas.changeParent(ideaId,newParent);
+    }
+  });
+  jquery_label.dblclick(function(){
+    $('.selected').removeClass('selected');
+    var originalText=$(this).text();
+    var originalLabel=$(this);
+    var dim={height: $(this).innerHeight(), width: $(this).innerWidth()};
+    var ideaId=$(this).attr('idea');
+    $(this).text("");
+    var ta=$("<textarea>"+originalText+"</textarea>").appendTo($(this));
+    ta.height(dim.height); ta.width(dim.width);
+    ta.focus();
+    ta.blur(function(){
+      var newVal=ta.val();
+      ideas.updateTitle(ideaId,newVal);
+    });
+    ta.keyup(function(e){
+      if (e.keyCode==13){ //ENTER
+        ta.blur();
+      }
+      else if (e.keyCode==27){
+        originalLabel.text(originalText); 
+        ta.detach();
+      }
+    });
+  });
+  jquery_label.click(function(event){
+    $('.selected').removeClass('selected');
+    $(event.target).addClass('selected')
+  });
+}
+function attach_map_listeners(content_aggregate,jquery_map, repaint_callback){
+  content_aggregate.addEventListener('positionBefore', function(){
+    repaint_callback(content_aggregate,jquery_map);
+  });
+  content_aggregate.addEventListener('updateTitle', function(ideaId, newTitle){
+    repaint_callback(content_aggregate,jquery_map);
+  });
+  content_aggregate.addEventListener('addSubIdea', function(parentIdea,title,newIdeaId){
+    repaint_callback(content_aggregate,jquery_map, function(){
+      $('.selected').removeClass('selected');
+      var newLabel=jquery_map.find('.label[idea='+newIdeaId+']');
+      newLabel.effect('bounce',{},500,function(){
+        newLabel.addClass('selected')
+        attach_label_listeners(newLabel, jquery_map,content_aggregate);
+      });
+    });
+  });
+  content_aggregate.addEventListener('removeSubIdea', function(ideaId){
+    repaint_callback(content_aggregate,jquery_map);
+  });
+  content_aggregate.addEventListener('changeParent', function(ideaId,parentId){
+    repaint_callback(content_aggregate,jquery_map);
+  });
+  $(document).keydown(function(e) {
+    var selectedId= $('.selected').attr('idea');
+    if (!selectedId) return;
+    if(e.which == 13) {// ENTER
+      content_aggregate.addSubIdea(selectedId,'A cunning plan');
+    }
+    if(e.which == 8) { // BACKSPACE
+      content_aggregate.removeSubIdea(selectedId);
+      e.preventDefault();
+    } 
+  });
 }
