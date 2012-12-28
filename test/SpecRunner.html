@@ -6,52 +6,43 @@
 
   <link rel="shortcut icon" type="image/png" href="../test/lib/jasmine-1.2.0/jasmine_favicon.png">
   <link rel="stylesheet" type="text/css" href="../test-lib/jasmine-1.2.0/jasmine.css">
+
   <script type="text/javascript" src="../test-lib/jasmine-1.2.0/jasmine.js"></script>
   <script type="text/javascript" src="../test-lib/jasmine-1.2.0/jasmine-html.js"></script>
   <script type="text/javascript" src="../test-lib/jasmine-jquery/jasmine-jquery.js"></script>
-
-  <!-- include source files here... -->
 
   <script type="text/javascript" src="../lib/jquery-1.8.3.js"></script>
   <script type="text/javascript" src="../lib/underscore-1.4.3-min.js"></script>
   <script type="text/javascript" src="../src/observable.js"></script>
   <script type="text/javascript" src="../src/content.js"></script>
   <script type="text/javascript" src="../src/mindmap.js"></script>
-  <!-- include spec files here... -->
+  <script type="text/javascript" src="../src/layout.js"></script>
+
   <script type="text/javascript" src="positioning-spec.js"></script>
   <script type="text/javascript" src="content-spec.js"></script>
+  <script type="text/javascript" src="layout-spec.js"></script>
   <script type="text/javascript">
     (function() {
       var jasmineEnv = jasmine.getEnv();
       jasmineEnv.updateInterval = 1000;
-
       var htmlReporter = new jasmine.HtmlReporter();
-
       jasmineEnv.addReporter(htmlReporter);
-
       jasmineEnv.specFilter = function(spec) {
         return htmlReporter.specFilter(spec);
       };
-
       var currentWindowOnload = window.onload;
-
       window.onload = function() {
         if (currentWindowOnload) {
           currentWindowOnload();
         }
         execJasmine();
       };
-
       function execJasmine() {
         jasmineEnv.execute();
       }
-
     })();
-  //  setTimeout(function () { window.location.reload(); }, 1000);
   </script>
-
 </head>
-
 <body>
 </body>
 </html>

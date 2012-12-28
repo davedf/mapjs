@@ -1,0 +1,73 @@
+<html>
+<body>
+	<div id="container"></div>
+	<script type="text/javascript" src="observable.js"></script>
+	<script type="text/javascript" src="kinetic-v4.2.0.js"></script>
+	<script type="text/javascript" src="kinetic.bezier.js"></script>
+	<script type="text/javascript" src="kinetic.connector.js"></script>
+	<script type="text/javascript" src="mediator.js"></script>
+	<script>
+	var stage = new Kinetic.Stage({
+		container: 'container',
+		width: 1000,
+		height: 1000
+	});
+	var layer = new Kinetic.Layer();
+	stage.add(layer);
+	var model = observable({});
+	var mediator = new MAPJS.KineticMediator(model, layer);
+	var events = [{
+			type: 'nodeCreated',
+			id: 1,
+			text: 'Node 1',
+			x: 100,
+			y: 100
+		}, [{
+			type: 'nodeCreated',
+			id: 2,
+			text: 'Node 2',
+			x: 200,
+			y: 100
+		}, {
+			type: 'connectorCreated',
+			fromNode: 1,
+			toNode: 2
+		}], [{
+			type: 'nodeMoved',
+			id: 2,
+			x: 200,
+			y: 75
+		}, {
+			type: 'nodeCreated',
+			id: 3,
+			text: 'Node 3',
+			x: 200,
+			y: 125
+		}, {
+			type: 'connectorCreated',
+			fromNode: 1,
+			toNode: 3
+		}], [{
+			type: 'connectorRemoved',
+			fromNode: 1,
+			toNode: 2
+		}, {
+			type: 'nodeRemoved',
+			id: 2
+		}, {
+			type: 'nodeMoved',
+			id: 3,
+			x: 200,
+			y: 100
+		}]
+	];
+	events.forEach(function (event, position) {
+		setTimeout(function () {
+			var evs = event.length ? event : [event], i;
+			for (i = 0; i < evs.length; i++)
+				model.dispatchEvent(evs[i].type, evs[i]);
+		}, 1000 * position);
+	});
+	</script>
+</body>
+</html>
