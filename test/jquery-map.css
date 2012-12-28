@@ -1,0 +1,48 @@
+
+          .node{
+            display:block;vertical-align:middle; margin-left:30px; margin-top:10px; margin-bottom:10px; padding:5px;
+          }
+          .children {
+            display:inline-block;vertical-align:middle;
+          }
+          .label {
+            display:inline-block; vertical-align:middle; border:5px solid black;padding:5px; 
+            border-radius:10% ; max-width:150px; cursor:pointer;
+            background-color:white;
+          }
+          .selected {background-color:yellow;}          
+          .active {background-color:gray;}          
+          .hover {background-color:red}          
+          .label {
+            border: 1px solid black; 
+          }
+          .map {overflow:scroll;position:absolute;top:0;left:0}
+
+          .connect{
+            position:absolute;
+            z-index:-10;
+          }
+          .connect_down_left{
+            border-top-left-radius: 50%;
+            border-left: 0.3em solid #2C2C2C;
+            border-top: 0.3em solid #2C2C2C;
+          }
+          .connect_up_left{
+            border-bottom-left-radius: 50%;
+            border-left: 0.3em solid #2C2C2C;
+            border-bottom: 0.3em solid #2C2C2C;
+          }
+          .connect_down_right{
+            border-top-right-radius: 50%;
+            border-right: 0.3em solid #2C2C2C;
+            border-top: 0.3em solid #2C2C2C;
+          }
+          .connect_up_right{
+            border-bottom-right-radius: 50%;
+            border-right: 0.3em solid #2C2C2C;
+            border-bottom: 0.3em solid #2C2C2C;
+          }
+          .connect_horizontal{
+            border-top: 0.3em solid #2C2C2C;
+            padding-bottom: 0.3em;
+          }
