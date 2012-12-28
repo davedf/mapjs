@@ -90,14 +90,19 @@ function repositionConnectorFromJq(jquery_map_container,connect){
 function delayedShow(label, callback){
   return function(){ label.fadeIn(100,callback) };
 }
-function delayedMove(label, offset, callback,stepCallback){
-  return function(){ label.animate(offset,{duration:200,complete:callback,step:stepCallback}) };
+function delayedMove(label, css_props, callback,stepCallback){
+  return function(){ label.animate(css_props,{duration:200,complete:callback,step:stepCallback}) };
 }
-function delayedLabelMove(jquery_map_container, index, map_object, callback){
+function delayedLabelRename(jquery_map_container,title,index,callback){
     var label=jquery_map_container.find('.label[idea='+index+']');
-    return delayedMove(label,map_object.nodes[index].offset,function(){
+    return function(){
+      label.text(title);
       if (callback) callback();
-    },
+    }
+}
+function delayedLabelCssAnimation(jquery_map_container, css_props,index, map_object, callback){
+    var label=jquery_map_container.find('.label[idea='+index+']');
+    return delayedMove(label,css_props,callback,
     function(now,fx){
         updateConnectors(jquery_map_container,index,fx.elem,map_object) 
       }
@@ -133,17 +138,24 @@ function update_map(jquery_map_container, map_object){
     effectChain=delayedShow(label,effectChain);
   };
   for(var idx in diff.moved){
-    effectChain=delayedLabelMove(jquery_map_container,diff.moved[idx], map_object, effectChain);
+    effectChain=delayedLabelCssAnimation(jquery_map_container,map_object.nodes[diff.moved[idx]].offset,diff.moved[idx], map_object, effectChain);
   }
+  for ( var idx in diff.renamed){
+    effectChain=delayedLabelRename(jquery_map_container,map_object.nodes[diff.renamed[idx]].text,diff.renamed[idx],effectChain);
+  }
+  for (var idx in diff.resized){
+    effectChain=delayedLabelCssAnimation(jquery_map_container,map_object.nodes[diff.resized[idx]].dimensions,diff.resized[idx], map_object, effectChain);
+  }
+
+
   for(var idx in diff.deleted){
-      var connector= jquery_map_container.find('.label[idea='+diff.deleted[idx]+']'); 
-      effectChain=delayedHide(connector,effectChain);
+      var label= jquery_map_container.find('.label[idea='+diff.deleted[idx]+']'); 
+      effectChain=delayedHide(label,effectChain);
   }
   for(var idx in diff.disconnected){
       var connector= jquery_map_container.find('.connect[from='+diff.disconnected[idx].from+'][to='+diff.disconnected[idx].to+']'); 
       effectChain=delayedHide(connector,effectChain);
   }
-  //connected
   //renamed
   //resized
   effectChain();
