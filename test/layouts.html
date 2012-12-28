@@ -6,110 +6,17 @@
   <script src="../src/observable.js"></script>
   <script src="../src/content.js"></script>
   <script src="../src/mindmap.js"></script>
-  <link rel="stylesheet" type="text/css" href="../lib/jquery-ui-1.9.2.custom.min.css">
-  
-      <style>
-          .node{
-            display:block;vertical-align:middle; margin-left:30px; margin-top:10px; margin-bottom:10px; padding:5px;
-          }
-          .children {
-            display:inline-block;vertical-align:middle;
-          }
-          .label {
-            display:inline-block; vertical-align:middle; border:5px solid black;padding:5px; 
-            border-radius:10% ; max-width:150px; cursor:pointer;
-            background-color:white;
-          }
-          .selected {background-color:yellow;}          
-          .active {background-color:gray;}          
-          .hover {background-color:red}          
-          .label {
-            border: 1px solid black; 
-          }
-          .map {overflow:scroll;position:absolute;top:0;left:0}
+  <link rel="stylesheet" type="text/css" href="../lib/jquery-ui-1.9.2.custom.min.css"/>
+  <link rel="stylesheet" type="text/css" href="jquery-map.css" /> 
+  <style>
           #map2 {z-Index:-20;position:absolute;top:0;left:1000;background-color:gray; width:1000; height:1000}
-          .connect{
-            position:absolute;
-            z-index:-10;
-          }
-          .connect_down_left{
-            border-top-left-radius: 50%;
-            border-left: 0.3em solid #2C2C2C;
-            border-top: 0.3em solid #2C2C2C;
-          }
-          .connect_up_left{
-            border-bottom-left-radius: 50%;
-            border-left: 0.3em solid #2C2C2C;
-            border-bottom: 0.3em solid #2C2C2C;
-          }
-          .connect_down_right{
-            border-top-right-radius: 50%;
-            border-right: 0.3em solid #2C2C2C;
-            border-top: 0.3em solid #2C2C2C;
-          }
-          .connect_up_right{
-            border-bottom-right-radius: 50%;
-            border-right: 0.3em solid #2C2C2C;
-            border-bottom: 0.3em solid #2C2C2C;
-          }
-          .connect_horizontal{
-            border-top: 0.3em solid #2C2C2C;
-            padding-bottom: 0.3em;
-          }
-        </style>
+  </style>
     </head>
     <body>
     <div tabstop="0" id="map2" class="map"> </div>
     <div tabstop="0" id="map1" class="map"> </div>
-      <script>
-          var ideas= {
-              title: 'Node 1',
-              ideas: {
-                1: { title: 'Node 1.1',
-                     ideas: {
-                       1: {title: 'Node 1.1.1'},
-                       2: {title: 'Node 1.1.2'},
-                       1.5: {title: 'Node 1.1.3'}
-                     }
-                   },
-                2: { title: 'Node 1.2',
-                     ideas: {
-                       1: {title: 'Node 1.2.1'},
-                       2: {title: 'Node 1.2.2',
-                          ideas: {
-                            1: {title: 'Node 1.2.2.1'},
-                            2: {title: 'Node 1.2.2.2'},
-                            3: {title: 'Node 1.2.2.3'}
-                            }
-                          },
-                       3: {title: 'Node 1.2.3'}
-                     }
-                   },
-                3: {title: 'Node 1.3'},
-                '-1': { title: 'Node 1.4',
-                     ideas: {
-                       1: {title: 'Node 1.4.1'},
-                       2: {title: 'Node 1.4.2'},
-                       3: {title: 'Node 1.4.3'}
-                     }
-                   },
-                '-2': { title: 'Node 1.5',
-                     ideas: {
-                       1: {title: 'Node 1.5.1'},
-                       2: {title: 'Node 1.5.2',
-                          ideas: {
-                            1: {title: 'Node 1.5.2.1'},
-                            2: {title: 'Node 1.5.2.2'},
-                            3: {title: 'Node 1.5.2.3'}
-                            }
-                          },
-                          3: {title: 'Node 1.5.3 Mozilla is a free software community best known for producing the Firefox web browser. The Mozilla community uses, develops, spreads and supports Mozilla products and works to advance the goals of the Open Web described in the Mozilla Manifesto.[1] The community is supported institutionally by the Mozilla Foundation and its tax-paying subsidiary, the Mozilla Corporation.[2] '}
-                     }
-                   },
-                '-3': {title: 'Node 1.6'}
-              }
-          }
-
+    <script src="testtree.js"></script>
+    <script>
           function repaint_entire_map(active_content, jquery_map){
               jquery_map.children().detach();
               ideas_to_nodes(active_content).appendTo(jquery_map);
@@ -167,10 +74,6 @@
                     ta.detach();
                   }
                  });
-                 //var new_value=prompt('Edit idea',$(this).text());
-                 //if (new_value) {
-                 //  active_content.updateTitle(parseFloat($(this).attr('idea')),new_value);
-                 //}
                });
                jquery_map.find('.label').click(function(event){
                   $('.selected').removeClass('selected');
@@ -180,7 +83,7 @@
             }
 
           $(function(){
-            var active_content=content(ideas);
+            var active_content=content(test_tree());
             repaint_entire_map(active_content,$('#map1'));
             active_content.addEventListener('positionBefore', function(){
               repaint_entire_map(active_content,$('#map1'));
