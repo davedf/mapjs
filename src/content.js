@@ -85,20 +85,22 @@ var content;
       var idea=findIdeaById(ideaId);
       if (!idea) return false;
       idea.title=title;
-      contentAggregate.dispatchEvent('Title_Updated', idea);
+      contentAggregate.dispatchEvent('updateTitle', ideaId,title);
       return true;
     };
     contentAggregate.addSubIdea = function(parentId,ideaTitle){
+      var newId=arguments[2];
+      if (newId && findIdeaById(newId)) return false;
       var parent=findIdeaById(parentId);
       if (!parent) return false;
-      var newIdea=init({title:ideaTitle,id:contentAggregate.maxId()+1});
+      var newIdea=init({title:ideaTitle,id:(newId||(contentAggregate.maxId()+1))});
       appendSubIdea(parent,newIdea);
-      contentAggregate.dispatchEvent('Idea_Added',newIdea);
+      contentAggregate.dispatchEvent('addSubIdea',parentId,ideaTitle,newIdea.id);
       return true;
     }
     contentAggregate.removeSubIdea = function (subIdeaId){
       var result = traverseAndRemoveIdea(contentAggregate,subIdeaId);
-      if (result) contentAggregate.dispatchEvent('Idea_Removed',subIdeaId);
+      if (result) contentAggregate.dispatchEvent('removeSubIdea',subIdeaId);
       return result;
     }
     contentAggregate.changeParent = function (ideaId, newParentId){
@@ -112,7 +114,7 @@ var content;
       traverseAndRemoveIdea(contentAggregate,ideaId);
       if (!idea) return false;
       appendSubIdea(parent,idea);
-      contentAggregate.dispatchEvent('Parent_Changed',ideaId);
+      contentAggregate.dispatchEvent('changeParent',ideaId,newParentId);
       return true;
     }
     contentAggregate.positionBefore = function (ideaId, positionBeforeIdeaId) {
@@ -153,7 +155,7 @@ var content;
       }
       parentIdea.ideas[new_rank] = parentIdea.ideas[current_rank];
       delete parentIdea.ideas[current_rank];
-      contentAggregate.dispatchEvent('Child_Ranks_Changed',parentIdea);
+      contentAggregate.dispatchEvent('positionBefore',ideaId,positionBeforeIdeaId);
       return true;
     }
     init(contentAggregate);

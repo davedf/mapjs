@@ -1,4 +1,96 @@
 describe("Map visualisations", function() {
+  describe ("map diff", function(){
+    it ("detects changes in node positions", function(){
+      var result=mapDiff(
+          {nodes:{ '1': { offset : { top: 10, left: 5 }}}},
+          {nodes:{ '1': { offset : { top: 20, left: 15}}}}
+        );
+      expect (result.moved).toEqual(['1']);
+      expect (result.added).toEqual([]);
+      expect (result.renamed).toEqual([]);
+      expect (result.deleted).toEqual([]);
+      expect (result.resized).toEqual([]);
+    });
+    it ("detects new nodes", function(){
+      var result=mapDiff(
+          {nodes: {} },
+          {nodes:{ '1': { offset : { top: 20, left: 15}}}}
+        );
+      expect (result.added).toEqual(['1']);
+      expect (result.moved).toEqual([]);
+      expect (result.deleted).toEqual([]);
+      expect (result.renamed).toEqual([]);
+      expect (result.resized).toEqual([]);
+    });
+    it ("detects removed nodes", function(){
+      var result=mapDiff(
+          {nodes:{ '1': { offset : { top: 20, left: 15}}}},
+          {nodes: {} }
+        );
+      expect (result.deleted).toEqual(['1']);
+      expect (result.renamed).toEqual([]);
+      expect (result.added).toEqual([]);
+      expect (result.moved).toEqual([]);
+      expect (result.resized).toEqual([]);
+    });
+    it ("detects nodes with changed sizes, even if they moved", function(){
+      var result=mapDiff(
+          {nodes:{ '1': { offset : { top: 10, left: 5 }, dimensions: { width:100,height:100 }},
+                   '2': { offset : { top: 10, left: 5 }, dimensions: { width:100,height:100 }}}},
+          {nodes:{ '1': { offset : { top: 10, left: 15 }, dimensions: { width:10,height:10 }},
+                   '2': { offset : { top: 10, left: 5 }, dimensions: { width:10,height:10 }}}}
+        );
+      expect (result.deleted).toEqual([]);
+      expect (result.renamed).toEqual([]);
+      expect (result.added).toEqual([]);
+      expect (result.resized).toEqual(['1','2']);
+      expect (result.moved).toEqual(['1']);
+    });
+    it ("detects changes to text", function(){
+      var result=mapDiff(
+          {nodes:{ '1': {text:'old'}}},
+          {nodes:{ '1': {text:'new'}}}
+        );
+      expect (result.renamed).toEqual(['1']);
+      expect (result.moved).toEqual([]);
+      expect (result.added).toEqual([]);
+      expect (result.deleted).toEqual([]);
+      expect (result.resized).toEqual([]);
+    });
+    it ("detects new connections", function(){
+      var result=mapDiff(
+          {connectors:[]},
+          {connectors:[{from:1, to:2}]}
+        );
+      expect (result.connected).toEqual([{from:1, to:2}]);
+    });
+    it ("detects removed connections", function(){
+      var result=mapDiff(
+          {connectors:[{from:1, to:2}]},
+          {connectors:[]}
+        );
+      expect (result.disconnected).toEqual([{from:1, to:2}]);
+    });
+    it ("does not detect any changes if lists are equal", function(){
+
+      var result=mapDiff(
+          {nodes:{ '1': { text:'some title', offset : { top: 10, left: 5 }, dimensions: { width:100,height:100 }},
+                   '2': { text:'other title',offset : { top: 1, left: 50 }, dimensions: { width:10,height:10 }}},
+           connectors:[{from:1, to:2}]},
+          {nodes:{ '1': { text:'some title', offset : { top: 10, left: 5 }, dimensions: { width:100,height:100 }},
+                   '2': { text:'other title',offset : { top: 1, left: 50 }, dimensions: { width:10,height:10 }}},
+           connectors:[{from:1, to:2}]}
+          );
+      expect (result.renamed).toEqual([]);
+      expect (result.moved).toEqual([]);
+      expect (result.added).toEqual([]);
+      expect (result.deleted).toEqual([]);
+      expect (result.resized).toEqual([]);
+      expect (result.connected).toEqual([]);
+      expect (result.disconnected).toEqual([]);
+
+    });
+  });
   describe ("ideas_to_nodes", function(){
     function expect_node_label(jquery_selector, expected_label){
       expect(jquery_selector).toBe('div.node'); 
