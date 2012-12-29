@@ -1,7 +1,10 @@
 var MAPJS = MAPJS || {};
 MAPJS.KineticMediator = function (mapModel, layer) {
 	var nodeByIdeaId = {},
-		connectorByFromIdeaId_ToIdeaId = {};
+		connectorByFromIdeaId_ToIdeaId = {},
+		connectorKey = function (fromIdeaId, toIdeaId) {
+			return fromIdeaId + '_' + toIdeaId;
+		};
 	mapModel.addEventListener('nodeCreated', function (n) {
 		var node = new Kinetic.Idea({
 			x: n.x,
@@ -17,6 +20,7 @@ MAPJS.KineticMediator = function (mapModel, layer) {
 	});
 	mapModel.addEventListener('nodeRemoved', function (n) {
 		var node = nodeByIdeaId[n.id];
+		delete nodeByIdeaId[n.id];
 		node.transitionTo({
 			opacity: 0.25,
 			duration: 0.5,
@@ -31,9 +35,6 @@ MAPJS.KineticMediator = function (mapModel, layer) {
 			duration: 0.5
 		});
 	});
-	var connectorKey = function (ideaFromId, ideaToId) {
-		return ideaFromId + '_' + ideaToId;
-	};
 	mapModel.addEventListener('connectorCreated', function (n) {
 		var connector = new Kinetic.Connector({
 			shapeFrom: nodeByIdeaId[n.fromNode],
@@ -51,7 +52,9 @@ MAPJS.KineticMediator = function (mapModel, layer) {
 		});
 	});
 	mapModel.addEventListener('connectorRemoved', function (n) {
-		var connector = connectorByFromIdeaId_ToIdeaId[connectorKey(n.fromNode, n.toNode)];
+		var key = connectorKey(n.fromNode, n.toNode),
+			connector = connectorByFromIdeaId_ToIdeaId[key];
+		delete connectorByFromIdeaId_ToIdeaId[key];
 		connector.transitionTo({
 			opacity: 0.25,
 			duration: 0.5,
