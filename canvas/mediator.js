@@ -1,34 +1,13 @@
 var MAPJS = MAPJS || {};
 MAPJS.KineticMediator = function (mapModel, layer) {
 	var nodeByIdeaId = {},
-		connectorByFromIdeaId_ToIdeaId = {},
-		getTextOptions = function (x, y, label) {
-			return {
-				x: x,
-				y: y,
-				opacity: 0,
-				stroke: '#888',
-				strokeWidth: 3,
-				fill: '#ddd',
-				text: label,
-				fontSize: 11,
-				fontFamily: 'Calibri',
-				textFill: '#555',
-				padding: 12,
-				align: 'center',
-				fontStyle: 'italic',
-				shadow: {
-					color: 'black',
-					blur: 10,
-					offset: [8, 8],
-					opacity: 0.2
-				},
-				cornerRadius: 10,
-				draggable: true
-			};
-		};
+		connectorByFromIdeaId_ToIdeaId = {};
 	mapModel.addEventListener('nodeCreated', function (n) {
-		var node = new Kinetic.Text(getTextOptions(n.x, n.y, n.text));
+		var node = new Kinetic.Idea({
+			x: n.x,
+			y: n.y,
+			text: n.text
+		});
 		nodeByIdeaId[n.id] = node;
 		layer.add(node);
 		node.transitionTo({
