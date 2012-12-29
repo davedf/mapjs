@@ -3,6 +3,12 @@ Kinetic.Connector = function (config) {
 		shapeTo = config.shapeTo,
 		self = this,
 		trackShapes = function () {
+			var tmp;
+			if (shapeFrom.attrs.x > shapeTo.attrs.x) {
+				tmp = shapeFrom;
+				shapeFrom = shapeTo;
+				shapeTo = tmp;
+			}
 			self.startPoint.x = shapeFrom.attrs.x + shapeFrom.getWidth();
 			self.startPoint.y = shapeFrom.attrs.y + 0.5 * shapeFrom.getHeight();
 			self.endPoint.x = shapeTo.attrs.x;

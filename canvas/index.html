@@ -103,8 +103,8 @@
 	(function () {
 		var stage = new Kinetic.Stage({
 			container: 'container-layout',
-			width: 300,
-			height: 200
+			width: 400,
+			height: 400
 		});
 		var layer = new Kinetic.Layer();
 		var idea = content({
@@ -129,10 +129,24 @@
 							}
 						}
 					},
+					'-2': {
+						id: 13,
+						title: '13',
+						ideas: {
+							1: {
+								id: 15,
+								title: '15'
+							}
+						}
+					},
 					3: {
 						id: 9,
 						title: '12'
 					},
+					'-1': {
+						id: 14,
+						title: '14'
+					}
 				}
 			});
 		var dp = function (title) {
@@ -155,8 +169,8 @@
 			for (ideaId in layout.nodes) {
 				nodePosition = layout.nodes[ideaId];
 				nodes[ideaId] = new Kinetic.Idea({
-					x: nodePosition.x,
-					y: nodePosition.y,
+					x: nodePosition.x + 100,
+					y: nodePosition.y + 100,
 					text: nodePosition.title
 				});
 				layer.add(nodes[ideaId]);

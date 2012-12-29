@@ -44,7 +44,7 @@ var MAPJS = MAPJS || {};
 				if (isLeftSubtree)
 					subIdeaRank = - subIdeaRank;
 				leftOrRight = subIdeaRank > 0 ? 1 : 0;
-				calculatePositions(undefined, dimensionProvider, margin, x0 + (leftOrRight ? result.width : 0), subIdeaCurrentY0[leftOrRight], subIdeaDimensions, isLeftSubtree || leftOrRight === 0);
+				calculatePositions(undefined, dimensionProvider, margin, x0 + (leftOrRight ? result.width : -subIdeaDimensions.width), subIdeaCurrentY0[leftOrRight], subIdeaDimensions, isLeftSubtree || leftOrRight === 0);
 				subIdeaCurrentY0[leftOrRight] += subIdeaDimensions.Height;
 			}
 		}

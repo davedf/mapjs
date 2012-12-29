@@ -216,7 +216,7 @@ describe('layout', function () {
 			result;
 		result = MAPJS.calculateLayout(contentAggregate, dimensionProvider);
 		expect(result.nodes[9]).toEqual({
-			x: 10,
+			x: -90,
 			y: 10,
 			title: '123'
 		});
@@ -245,7 +245,7 @@ describe('layout', function () {
 			result;
 		result = MAPJS.calculateLayout(contentAggregate, dimensionProvider);
 		expect(result.nodes[10]).toEqual({
-			x: 10,
+			x: -210,
 			y: 10,
 			title: '1234'
 		});
