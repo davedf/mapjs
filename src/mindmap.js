@@ -254,7 +254,7 @@ function attach_label_listeners(jquery_label,jquery_map,ideas){
       updateConnectorsJq(jquery_map,ui.helper.attr('idea'));
     },
     start: function(event,ui){
-      oldPos=ui.helper.offset(); 
+      oldPos=ui.helper.position(); 
     },
     stop: function(event,ui){
       var nodeId=ui.helper.attr('idea');
@@ -264,17 +264,15 @@ function attach_label_listeners(jquery_label,jquery_map,ideas){
         return jquery_map.find('.label[idea='+$(connector).attr('from')+']');
       });
       var groups=_.groupBy(sibling_labels,function(item){return item.offset().top<=ui.helper.offset().top})
-    var firstBelowId;
-  firstBelowId=$(_.min(groups[false], function(label_span) { return label_span.offset().top })).attr('idea');
-  console.log('positioning above',firstBelowId);
-  if (!ideas.positionBefore(nodeId,firstBelowId)){
-    ui.helper.animate(oldPos,{
-      duration:200,
-      step:function(){
-        updateConnectorsJq(jquery_map,nodeId);
+      var firstBelowId=$(_.min(groups[false], function(label_span) { return label_span.offset().top })).attr('idea');
+      if (!ideas.positionBefore(nodeId,firstBelowId)){
+        ui.helper.animate(ui.helper.css('position')=='relative'?{top:0,left:0}:oldPos,{
+          duration:200,
+          step:function(){
+            updateConnectorsJq(jquery_map,nodeId);
+          }
+        });
       }
-    });
-  }
     }
   });
   jquery_label.droppable({
