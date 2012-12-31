@@ -1,4 +1,6 @@
+/*global Kinetic*/
 Kinetic.Bezier = function (config) {
+	'use strict';
 	config.name = "Bezier";
 	this.color = config.stroke;
 	this.lineWidth = config.strokeWidth;
@@ -15,14 +17,22 @@ Kinetic.Bezier = function (config) {
 };
 Kinetic.Bezier.prototype = {
 	_drawCurve: function () {
-		var context = this.getContext();
+		'use strict';
+		var context = this.getContext(),
+			headlen,
+			angle,
+			ax,
+			ay;
 		context.save();
 		context.beginPath();
 		context.moveTo(this.startPoint.x, this.startPoint.y);
 		context.bezierCurveTo(
-			this.controlPoint1.x, this.controlPoint1.y,
-			this.controlPoint2.x, this.controlPoint2.y,
-			this.endPoint.x, this.endPoint.y
+			this.controlPoint1.x,
+			this.controlPoint1.y,
+			this.controlPoint2.x,
+			this.controlPoint2.y,
+			this.endPoint.x,
+			this.endPoint.y
 		);
 		context.strokeStyle = this.color;
 		context.lineWidth = this.lineWidth;
@@ -30,11 +40,11 @@ Kinetic.Bezier.prototype = {
 			context.stroke();
 			context.closePath();
 			context.beginPath();
-			var headlen = 13;
-			var angle = Math.atan2(this.endPoint.y - this.controlPoint2.y, this.endPoint.x - this.controlPoint2.x);
+			headlen = 13;
+			angle = Math.atan2(this.endPoint.y - this.controlPoint2.y, this.endPoint.x - this.controlPoint2.x);
 			context.lineJoin = "round";
-			var ax = this.endPoint.x - headlen * Math.cos(angle - Math.PI / 6);
-			var ay = this.endPoint.y - headlen * Math.sin(angle - Math.PI / 6);
+			ax = this.endPoint.x - headlen * Math.cos(angle - Math.PI / 6);
+			ay = this.endPoint.y - headlen * Math.sin(angle - Math.PI / 6);
 			context.moveTo(this.endPoint.x, this.endPoint.y);
 			context.lineTo(this.endPoint.x - headlen * Math.cos(angle + Math.PI / 6), this.endPoint.y - headlen * Math.sin(angle + Math.PI / 6));
 			context.lineTo(ax, ay);
@@ -46,6 +56,7 @@ Kinetic.Bezier.prototype = {
 		context.restore();
 	},
 	transform: function (delta) {
+		'use strict';
 		this.startPoint.x += delta.dx;
 		this.startPoint.y += delta.dy;
 		this.endPoint.x += delta.dx;

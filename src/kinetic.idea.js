@@ -1,4 +1,6 @@
+/*global Kinetic*/
 Kinetic.Idea = function (config) {
+	'use strict';
 	config.stroke = '#888';
 	config.strokeWidth = 3;
 	config.fill = '#ddd';
@@ -20,5 +22,4 @@ Kinetic.Idea = function (config) {
 	Kinetic.Text.apply(this, [config]);
 	this.classType = "Idea";
 };
-
 Kinetic.Global.extend(Kinetic.Idea, Kinetic.Text);

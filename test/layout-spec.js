@@ -23,7 +23,7 @@ describe('layout', function () {
 				Height: 40
 			});
 		});
-		it('', function () {
+		it('should return (width1 + width2 + 4 * margin, max(height1, height2) + 2 * margin)', function () {
 			var contentAggregate = content({
 					id: 7,
 					title: '1',

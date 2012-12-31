@@ -1,5 +1,6 @@
 var MAPJS = MAPJS || {};
 (function () {
+	'use strict';
 	MAPJS.calculateDimensions = function calculateDimensions(idea, dimensionProvider, margin) {
 		var dimensions = dimensionProvider(idea.title),
 			result = {
@@ -8,8 +9,12 @@ var MAPJS = MAPJS || {};
 				height: dimensions.height + 2 * margin,
 				title: idea.title
 			},
-			leftOrRight, subIdeaWidths = [0, 0], subIdeaHeights = [0, 0],
-			subIdeaRank, subIdea, subIdeaDimensions;
+			leftOrRight,
+			subIdeaWidths = [0, 0],
+			subIdeaHeights = [0, 0],
+			subIdeaRank,
+			subIdea,
+			subIdeaDimensions;
 		if (idea.ideas) {
 			result.ideas = {};
 			for (subIdeaRank in idea.ideas) {
@@ -25,11 +30,15 @@ var MAPJS = MAPJS || {};
 		result.Height = Math.max(result.height, subIdeaHeights[0], subIdeaHeights[1]);
 		return result;
 	};
-
 	MAPJS.calculatePositions = function calculatePositions(idea, dimensionProvider, margin, x0, y0) {
 		var result = arguments[5] || MAPJS.calculateDimensions(idea, dimensionProvider, margin),
 			isLeftSubtree = arguments[6],
-			ranks, subIdeaRank, i, subIdeaDimensions, leftOrRight, subIdeaCurrentY0 = [y0, y0];
+			ranks,
+			subIdeaRank,
+			i,
+			subIdeaDimensions,
+			leftOrRight,
+			subIdeaCurrentY0 = [y0, y0];
 		result.x = x0 + margin;
 		result.y = y0 + 0.5 * (result.Height - result.height) + margin;
 		if (result.ideas) {
@@ -38,11 +47,12 @@ var MAPJS = MAPJS || {};
 				ranks.push(parseFloat(subIdeaRank));
 			}
 			ranks.sort(function ascending(firstRank, secondRank) { return secondRank - firstRank; });
-			for (i = ranks.length - 1; i >= 0 ; i--) {
+			for (i = ranks.length - 1; i >= 0; i -= 1) {
 				subIdeaRank = ranks[i];
 				subIdeaDimensions = result.ideas[subIdeaRank];
-				if (isLeftSubtree)
-					subIdeaRank = - subIdeaRank;
+				if (isLeftSubtree) {
+					subIdeaRank = -subIdeaRank;
+				}
 				leftOrRight = subIdeaRank > 0 ? 1 : 0;
 				calculatePositions(undefined, dimensionProvider, margin, x0 + (leftOrRight ? result.width : -subIdeaDimensions.width), subIdeaCurrentY0[leftOrRight], subIdeaDimensions, isLeftSubtree || leftOrRight === 0);
 				subIdeaCurrentY0[leftOrRight] += subIdeaDimensions.Height;
@@ -50,35 +60,34 @@ var MAPJS = MAPJS || {};
 		}
 		return result;
 	};
-
 	MAPJS.calculateLayout = function (idea, dimensionProvider) {
 		var result = {
 			nodes: {},
 			connectors: []
 		},
-		calculateLayoutInner = function (positions) {
-			var subIdeaRank;
-			result.nodes[positions.id] = {
-				x: positions.x,
-				y: positions.y,
-				title: positions.title
-			};
-			if (positions.ideas) {
-				for (subIdeaRank in positions.ideas) {
-					calculateLayoutInner(positions.ideas[subIdeaRank]);
-					result.connectors.push({
-						from: positions.id,
-						to: positions.ideas[subIdeaRank].id
-					});
+			calculateLayoutInner = function (positions) {
+				var subIdeaRank;
+				result.nodes[positions.id] = {
+					x: positions.x,
+					y: positions.y,
+					title: positions.title
+				};
+				if (positions.ideas) {
+					for (subIdeaRank in positions.ideas) {
+						calculateLayoutInner(positions.ideas[subIdeaRank]);
+						result.connectors.push({
+							from: positions.id,
+							to: positions.ideas[subIdeaRank].id
+						});
+					}
 				}
-			}
-		};
+			};
 		calculateLayoutInner(MAPJS.calculatePositions(idea, dimensionProvider, 10, 0, 0));
 		return result;
 	};
-})();
-
+}());
 MAPJS.calculateLayout2 = function calculateLayout(idea, dimensionProvider) {
+	'use strict';
 	var padding = 10,
 		dimensions = dimensionProvider(idea.title),
 		result = {

@@ -1,4 +1,6 @@
+/*global Kinetic*/
 Kinetic.Connector = function (config) {
+	'use strict';
 	var shapeFrom = config.shapeFrom,
 		shapeTo = config.shapeTo,
 		self = this,

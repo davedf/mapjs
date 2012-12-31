@@ -1,5 +1,7 @@
+/*global Kinetic*/
 var MAPJS = MAPJS || {};
 MAPJS.KineticMediator = function (mapModel, layer) {
+	'use strict';
 	var nodeByIdeaId = {},
 		connectorByFromIdeaId_ToIdeaId = {},
 		connectorKey = function (fromIdeaId, toIdeaId) {
