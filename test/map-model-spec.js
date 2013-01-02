@@ -92,4 +92,39 @@ describe('MapModel', function () {
 			expect(nodeSelectionChangedListener).toHaveBeenCalledWith(1, false);
 		});
 	});
+	describe('methods delegated to idea', function () {
+		var anIdea, underTest;
+		beforeEach(function () {
+			anIdea = content({});
+			underTest = new MAPJS.MapModel(function () {
+				return {
+				};
+			});
+			underTest.setIdea(anIdea);
+		});
+		it('should invoke idea.addSubIdea with currently selected idea as parentId when addSubIdea method is invoked', function () {
+			spyOn(anIdea, 'addSubIdea');
+			underTest.selectNode(123);
+
+			underTest.addSubIdea();
+
+			expect(anIdea.addSubIdea).toHaveBeenCalledWith(123, 'double click to edit');
+		});
+		it('should invoke idea.removeSubIdea with currently selected idea as parentId when removeSubIdea method is invoked', function () {
+			spyOn(anIdea, 'removeSubIdea');
+			underTest.selectNode(321);
+
+			underTest.removeSubIdea();
+
+			expect(anIdea.removeSubIdea).toHaveBeenCalledWith(321);
+		});
+		it('should invoke idea.updateTitle with currently selected idea as ideaId when updateTitle method is invoked', function () {
+			spyOn(anIdea, 'updateTitle');
+			underTest.selectNode(111);
+
+			underTest.updateTitle('new title');
+
+			expect(anIdea.updateTitle).toHaveBeenCalledWith(111, 'new title');
+		});
+	});
 });

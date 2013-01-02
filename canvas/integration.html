@@ -1,6 +1,7 @@
 <html>
 <body>
 	<div id="container"></div>
+	<script type="text/javascript" src="../lib/jquery-1.8.3.js"></script>
 	<script type="text/javascript" src="../lib/underscore-1.4.3-min.js"></script>
 	<script type="text/javascript" src="../lib/kinetic-v4.2.0.js"></script>
 	<script type="text/javascript" src="../src/observable.js"></script>
@@ -20,6 +21,7 @@
 			}),
 				layer = new Kinetic.Layer(),
 				idea = content({
+					id: 1,
 					title: 'Hello 1'
 				}),
 				dimensionProvider = function (title) {
@@ -40,14 +42,16 @@
 			mapModel.setIdea(idea);
 			[
 				mapModel.selectNode.bind(mapModel, 1),
-				idea.updateTitle.bind(idea, 1, 'Hello 001'),
-				idea.addSubIdea.bind(idea, 1, 'World 2'),
-				idea.addSubIdea.bind(idea, 1, 'Third 3'),
-				idea.addSubIdea.bind(idea, 1, 'Fourth 4'),
+				mapModel.updateTitle.bind(mapModel, 'Hello 001'),
+				mapModel.addSubIdea.bind(mapModel, 'World 2'),
+				mapModel.addSubIdea.bind(mapModel, 'Third 3'),
+				mapModel.addSubIdea.bind(mapModel, 'Fourth 4'),
 				mapModel.selectNode.bind(mapModel, 4),
-				idea.addSubIdea.bind(idea, 4, 'Fifth 5'),
+				mapModel.addSubIdea.bind(mapModel, 'Fifth 5'),
 				idea.positionBefore.bind(idea, 3, 2),
-				idea.changeParent.bind(idea, 3, 2)
+				idea.changeParent.bind(idea, 3, 2),
+				mapModel.selectNode.bind(mapModel, 3),
+				mapModel.removeSubIdea.bind(mapModel)
 			].forEach(function (command, index) {
 				setTimeout(command, 1000 * (index + 1));
 			});

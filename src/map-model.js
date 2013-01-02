@@ -69,4 +69,13 @@ MAPJS.MapModel = function (layoutCalculator) {
 			self.dispatchEvent('nodeSelectionChanged', id, true);
 		}
 	};
+	this.addSubIdea = function (title) {
+		idea.addSubIdea(currentlySelectedIdeaId, title || 'double click to edit');
+	};
+	this.removeSubIdea = function () {
+		idea.removeSubIdea(currentlySelectedIdeaId);
+	};
+	this.updateTitle = function (title) {
+		idea.updateTitle(currentlySelectedIdeaId, title);
+	};
 };

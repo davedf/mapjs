@@ -14,6 +14,7 @@ MAPJS.KineticMediator = function (mapModel, layer) {
 			text: n.title,
 			opacity: 0
 		});
+		node.on('click tap', mapModel.selectNode.bind(mapModel, n.id));
 		nodeByIdeaId[n.id] = node;
 		layer.add(node);
 		node.transitionTo({
@@ -73,4 +74,17 @@ MAPJS.KineticMediator = function (mapModel, layer) {
 			callback: connector.remove.bind(connector)
 		});
 	});
+	(function () {
+		var keyboardEventHandlers = {
+			13: mapModel.addSubIdea.bind(mapModel),
+			8: mapModel.removeSubIdea.bind(mapModel)
+		};
+		$(document).keydown(function (evt) {
+			var eventHandler = keyboardEventHandlers[evt.which];
+			if (eventHandler) {
+				eventHandler();
+				evt.preventDefault();
+			}
+		});
+	}());
 };

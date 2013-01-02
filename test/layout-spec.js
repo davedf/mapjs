@@ -165,16 +165,17 @@ describe('layout', function () {
 			}
 		});
 	});
-	it('', function () {
+	it('should place a root node on (margin, margin)', function () {
 		var contentAggregate = content({ id: 7 }),
 			result;
 		result = MAPJS.calculateLayout(contentAggregate, dimensionProvider);
 		expect(result.nodes[7]).toEqual({
+			id: 7,
 			x: 10,
 			y: 10
 		});
 	});
-	it('', function () {
+	it('should place root node left of its only right child', function () {
 		var contentAggregate = content({
 				id: 7,
 				title: '1',
@@ -188,17 +189,19 @@ describe('layout', function () {
 			result;
 		result = MAPJS.calculateLayout(contentAggregate, dimensionProvider);
 		expect(result.nodes[7]).toEqual({
+			id: 7,
 			x: 10,
 			y: 15,
 			title: '1'
 		});
 		expect(result.nodes[8]).toEqual({
+			id: 8,
 			x: 70,
 			y: 10,
 			title: '12'
 		});
 	});
-	it('', function () {
+	it('should place root node right of its only left child', function () {
 		var contentAggregate = content({
 				id: 7,
 				title: '1',
@@ -216,12 +219,13 @@ describe('layout', function () {
 			result;
 		result = MAPJS.calculateLayout(contentAggregate, dimensionProvider);
 		expect(result.nodes[9]).toEqual({
+			id: 9,
 			x: -90,
 			y: 10,
 			title: '123'
 		});
 	});
-	it('', function () {
+	it('should work recursively', function () {
 		var contentAggregate = content({
 				id: 7,
 				title: '1',
@@ -245,6 +249,7 @@ describe('layout', function () {
 			result;
 		result = MAPJS.calculateLayout(contentAggregate, dimensionProvider);
 		expect(result.nodes[10]).toEqual({
+			id: 10,
 			x: -210,
 			y: 10,
 			title: '1234'
