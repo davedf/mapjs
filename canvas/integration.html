@@ -1,0 +1,57 @@
+<html>
+<body>
+	<div id="container"></div>
+	<script type="text/javascript" src="../lib/underscore-1.4.3-min.js"></script>
+	<script type="text/javascript" src="../lib/kinetic-v4.2.0.js"></script>
+	<script type="text/javascript" src="../src/observable.js"></script>
+	<script type="text/javascript" src="../src/kinetic.bezier.js"></script>
+	<script type="text/javascript" src="../src/kinetic.idea.js"></script>
+	<script type="text/javascript" src="../src/kinetic.connector.js"></script>
+	<script type="text/javascript" src="../src/content.js"></script>
+	<script type="text/javascript" src="../src/layout.js"></script>
+	<script type="text/javascript" src="../src/map-model.js"></script>
+	<script type="text/javascript" src="kinetic-mediator.js"></script>
+	<script>
+		(function () {
+			var stage = new Kinetic.Stage({
+				container: 'container',
+				width: 1000,
+				height: 1000
+			}),
+				layer = new Kinetic.Layer(),
+				idea = content({
+					title: 'Hello 1'
+				}),
+				dimensionProvider = function (title) {
+					var text = new Kinetic.Idea({
+						text: title
+					});
+					return {
+						width: text.getWidth(),
+						height: text.getHeight()
+					};
+				},
+				mapModel = new MAPJS.MapModel(function layoutCalculator(idea) {
+					return MAPJS.calculateLayout(idea, dimensionProvider);
+				}),
+				mediator = new MAPJS.KineticMediator(mapModel, layer);
+			window.idea = idea;
+			stage.add(layer);
+			mapModel.setIdea(idea);
+			[
+				mapModel.selectNode.bind(mapModel, 1),
+				idea.updateTitle.bind(idea, 1, 'Hello 001'),
+				idea.addSubIdea.bind(idea, 1, 'World 2'),
+				idea.addSubIdea.bind(idea, 1, 'Third 3'),
+				idea.addSubIdea.bind(idea, 1, 'Fourth 4'),
+				mapModel.selectNode.bind(mapModel, 4),
+				idea.addSubIdea.bind(idea, 4, 'Fifth 5'),
+				idea.positionBefore.bind(idea, 3, 2),
+				idea.changeParent.bind(idea, 3, 2)
+			].forEach(function (command, index) {
+				setTimeout(command, 1000 * (index + 1));
+			});
+		}());
+	</script>
+</body>
+</html>

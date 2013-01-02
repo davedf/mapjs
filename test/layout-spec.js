@@ -274,37 +274,4 @@ describe('layout', function () {
 	it('should use toBeRightOf matcher', function () {
 		expect({ offset: { x: 30} }).toBeRightOf({ offset: { x: 0 }, dimensions: { width : 10 }});
 	})
-	it('should center node corresponding to root idea to the offset', function () {
-		var contentAggregate = content({ id: 7 }),
-			result;
-		result = MAPJS.calculateLayout2(contentAggregate, dimensionProvider);
-		var node = result.nodes[7];
-		console.log(node);
-		expect(node).toBeVerticallyAlignedWith(viewportCenter);
-		expect(node).toBeHorizontallyAlignedWith(viewportCenter);
-		expect(node.dimensions).toEqual({
-			width: 20,
-			height: 10
-		});
-	});
-	it('should', function () {
-		var contentAggregate = content({
-				id: 7,
-				title: '1',
-				ideas: {
-					1: {
-						id: 8,
-						title: '12'
-					}
-				}
-			}),
-			result, root, child, connector;
-		result = MAPJS.calculateLayout2(contentAggregate, dimensionProvider);
-		root = result.nodes[7];
-		child = result.nodes[8];
-		connector = result.connectors[0];
-		expect(child).toBeVerticallyAlignedWith(root);
-		expect(child).toBeRightOf(root);
-		expect(result.nodes).toHaveNoIntersections();
-	});
 });

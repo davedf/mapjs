@@ -22,4 +22,7 @@ Kinetic.Idea = function (config) {
 	Kinetic.Text.apply(this, [config]);
 	this.classType = "Idea";
 };
+Kinetic.Idea.prototype.setIsSelected = function (isSelected) {
+	this.attrs.fill = isSelected ? '#aaa' : '#ddd';
+};
 Kinetic.Global.extend(Kinetic.Idea, Kinetic.Text);

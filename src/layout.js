@@ -63,11 +63,12 @@ var MAPJS = MAPJS || {};
 	MAPJS.calculateLayout = function (idea, dimensionProvider) {
 		var result = {
 			nodes: {},
-			connectors: []
+			connectors: {}
 		},
 			calculateLayoutInner = function (positions) {
-				var subIdeaRank;
+				var subIdeaRank, from, to;
 				result.nodes[positions.id] = {
+					id: positions.id,
 					x: positions.x,
 					y: positions.y,
 					title: positions.title
@@ -75,10 +76,12 @@ var MAPJS = MAPJS || {};
 				if (positions.ideas) {
 					for (subIdeaRank in positions.ideas) {
 						calculateLayoutInner(positions.ideas[subIdeaRank]);
-						result.connectors.push({
-							from: positions.id,
-							to: positions.ideas[subIdeaRank].id
-						});
+						from = positions.id;
+						to = positions.ideas[subIdeaRank].id;
+						result.connectors[to] = {
+							from: from,
+							to: to
+						};
 					}
 				}
 			};
@@ -86,32 +89,3 @@ var MAPJS = MAPJS || {};
 		return result;
 	};
 }());
-MAPJS.calculateLayout2 = function calculateLayout(idea, dimensionProvider) {
-	'use strict';
-	var padding = 10,
-		dimensions = dimensionProvider(idea.title),
-		result = {
-			nodes: {},
-			connectors: []
-		},
-		currentNode = {
-			offset: {
-				x: -0.5 * dimensions.width,
-				y: -0.5 * dimensions.height
-			},
-			dimensions: dimensions
-		};
-	result.nodes[idea.id] = currentNode;
-	if (idea.ideas) {
-		var firstChild = _.toArray(idea.ideas)[0],
-			childResult = calculateLayout(firstChild, dimensionProvider);
-		_.each(
-			childResult.nodes,
-			function (value, key) {
-				value.offset.x = currentNode.offset.x + currentNode.dimensions.width + padding;
-			}
-		);
-		_.extend(result.nodes, childResult.nodes);
-	}
-	return result;
-};
