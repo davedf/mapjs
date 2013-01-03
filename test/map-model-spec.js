@@ -1,4 +1,4 @@
-/*global beforeEach, content, describe, expect, it, jasmine, MAPJS*/
+/*global beforeEach, content, describe, expect, it, jasmine, spyOn, MAPJS*/
 describe('MapModel', function () {
 	'use strict';
 	it('should be able to instantiate MapModel', function () {
@@ -6,30 +6,30 @@ describe('MapModel', function () {
 			underTest = new MAPJS.MapModel(layoutCalculator);
 		expect(underTest).not.toBeUndefined();
 	});
-	describe('events dispatched by MapModel', function () {
+	describe('events dispatched by MapModel when idea/layout is changed', function () {
 		var underTest,
 			anIdea,
 			layoutBefore,
 			layoutAfter;
 		beforeEach(function () {
-			var layoutCalculatorLayout = undefined,
+			var layoutCalculatorLayout,
 				layoutCalculator = function () {
 					return layoutCalculatorLayout;
 				};
 			layoutBefore = {
-					nodes: {
-						to_be_removed: {
-							x: 10,
-							y: 20,
-							title: 'This node will be removed'
-						},
-						to_be_moved: {
-							x: 50,
-							y: 20,
-							title: 'second'
-						}
+				nodes: {
+					to_be_removed: {
+						x: 10,
+						y: 20,
+						title: 'This node will be removed'
+					},
+					to_be_moved: {
+						x: 50,
+						y: 20,
+						title: 'second'
 					}
-				};
+				}
+			};
 			layoutAfter = {
 				nodes: {
 					to_be_moved: {
@@ -44,7 +44,7 @@ describe('MapModel', function () {
 					}
 				}
 			};
-			underTest = new MAPJS.MapModel(layoutCalculator),
+			underTest = new MAPJS.MapModel(layoutCalculator);
 			layoutCalculatorLayout = layoutBefore;
 			anIdea = content({});
 			underTest.setIdea(anIdea);
@@ -92,7 +92,7 @@ describe('MapModel', function () {
 			expect(nodeSelectionChangedListener).toHaveBeenCalledWith(1, false);
 		});
 	});
-	describe('methods delegated to idea', function () {
+	describe('methods delegating to idea', function () {
 		var anIdea, underTest;
 		beforeEach(function () {
 			anIdea = content({});

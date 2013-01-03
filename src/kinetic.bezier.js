@@ -54,17 +54,6 @@ Kinetic.Bezier.prototype = {
 		context.stroke();
 		context.closePath();
 		context.restore();
-	},
-	transform: function (delta) {
-		'use strict';
-		this.startPoint.x += delta.dx;
-		this.startPoint.y += delta.dy;
-		this.endPoint.x += delta.dx;
-		this.endPoint.y += delta.dy;
-		this.controlPoint1.x += delta.dx;
-		this.controlPoint1.y += delta.dy;
-		this.controlPoint2.x += delta.dx;
-		this.controlPoint2.y += delta.dy;
 	}
 };
 Kinetic.Global.extend(Kinetic.Bezier, Kinetic.Line);

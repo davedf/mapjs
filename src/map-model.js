@@ -5,7 +5,7 @@ MAPJS.MapModel = function (layoutCalculator) {
 	var self = this,
 		currentLayout = {
 			nodes: {},
-			connectors: []
+			connectors: {}
 		},
 		idea,
 		updateCurrentLayout = function (newLayout) {
@@ -77,5 +77,43 @@ MAPJS.MapModel = function (layoutCalculator) {
 	};
 	this.updateTitle = function (title) {
 		idea.updateTitle(currentlySelectedIdeaId, title);
+	};
+
+	var currentDroppable,
+		updateCurrentDroppable = function (value) {
+			if (currentDroppable !== value) {
+				if (currentDroppable) {
+					self.dispatchEvent('nodeDroppableChanged', currentDroppable, false);
+				}
+				currentDroppable = value;
+				if (currentDroppable) {
+					self.dispatchEvent('nodeDroppableChanged', currentDroppable, true);
+				}
+			}
+		};
+	this.nodeDragMove = function (id, x, y) {
+		var nodeId, node;
+		for (nodeId in currentLayout.nodes) {
+			node = currentLayout.nodes[nodeId];
+			if (nodeId !== id && x >= node.x && y >= node.y && x <= node.x + (node.width || 50) && y <= node.y + (node.height || 50) && nodeId !== currentDroppable) {
+				updateCurrentDroppable(nodeId);
+				return;
+			}
+		}
+		updateCurrentDroppable(undefined);
+	};
+	this.dropNode = function (id, x, y) {
+		var nodeId, node;
+		updateCurrentDroppable(undefined);
+		for (nodeId in currentLayout.nodes) {
+			node = currentLayout.nodes[nodeId];
+			if (nodeId !== id && x >= node.x && y >= node.y && x <= node.x + (node.width || 50) && y <= node.y + (node.height || 50)) {
+				if (!idea.changeParent(id, nodeId)) {
+					self.dispatchEvent('nodeMoved', currentLayout.nodes[id]);
+				}
+				return;
+			}
+		}
+		self.dispatchEvent('nodeMoved', currentLayout.nodes[id]);
 	};
 };
