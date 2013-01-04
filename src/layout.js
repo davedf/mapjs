@@ -71,6 +71,8 @@ var MAPJS = MAPJS || {};
 					id: positions.id,
 					x: positions.x,
 					y: positions.y,
+					width: positions.width,
+					height: positions.height,
 					title: positions.title
 				};
 				if (positions.ideas) {

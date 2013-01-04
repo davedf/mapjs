@@ -11,6 +11,7 @@
 	<script type="text/javascript" src="../src/content.js"></script>
 	<script type="text/javascript" src="../src/layout.js"></script>
 	<script type="text/javascript" src="../src/map-model.js"></script>
+	<script type="text/javascript" src="../test/testtree.js"></script>
 	<script type="text/javascript" src="kinetic-mediator.js"></script>
 	<script>
 		(function () {
@@ -21,10 +22,11 @@
 				draggable: false
 			}),
 				layer = new Kinetic.Layer(),
-				idea = content({
-					id: 1,
-					title: 'Hello 1'
-				}),
+				// idea = content({
+				// 	id: 1,
+				// 	title: 'Hello 1'
+				// }),
+				idea = content(test_tree()),
 				dimensionProvider = function (title) {
 					var text = new Kinetic.Idea({
 						text: title
@@ -39,23 +41,24 @@
 				}),
 				mediator = new MAPJS.KineticMediator(mapModel, layer);
 			window.idea = idea;
+			window.mapModel = mapModel;
 			stage.add(layer);
 			mapModel.setIdea(idea);
-			[
-				mapModel.selectNode.bind(mapModel, 1),
-				mapModel.updateTitle.bind(mapModel, 'Hello 001'),
-				mapModel.addSubIdea.bind(mapModel, 'World 2'),
-				mapModel.addSubIdea.bind(mapModel, 'Third 3'),
-				mapModel.addSubIdea.bind(mapModel, 'Fourth 4'),
-				mapModel.selectNode.bind(mapModel, 4),
-				mapModel.addSubIdea.bind(mapModel, 'Fifth 5'),
-				idea.positionBefore.bind(idea, 3, 2),
-				idea.changeParent.bind(idea, 3, 2),
-				mapModel.selectNode.bind(mapModel, 3),
-				mapModel.removeSubIdea.bind(mapModel)
-			].forEach(function (command, index) {
-				setTimeout(command, 1000 * (index + 1));
-			});
+			// [
+			// 	mapModel.selectNode.bind(mapModel, 1),
+			// 	mapModel.updateTitle.bind(mapModel, 'Hello 001'),
+			// 	mapModel.addSubIdea.bind(mapModel, 'World 2'),
+			// 	mapModel.addSubIdea.bind(mapModel, 'Third 3'),
+			// 	mapModel.addSubIdea.bind(mapModel, 'Fourth 4'),
+			// 	mapModel.selectNode.bind(mapModel, 4),
+			// 	mapModel.addSubIdea.bind(mapModel, 'Fifth 5'),
+			// 	idea.positionBefore.bind(idea, 3, 2),
+			// 	idea.changeParent.bind(idea, 3, 2),
+			// 	mapModel.selectNode.bind(mapModel, 3),
+			// 	mapModel.removeSubIdea.bind(mapModel)
+			// ].forEach(function (command, index) {
+			// 	setTimeout(command, 1000 * (index + 1));
+			// });
 		}());
 	</script>
 </body>

@@ -172,7 +172,9 @@ describe('layout', function () {
 		expect(result.nodes[7]).toEqual({
 			id: 7,
 			x: 10,
-			y: 10
+			y: 10,
+			width: 40,
+			height: 30
 		});
 	});
 	it('should place root node left of its only right child', function () {
@@ -192,12 +194,16 @@ describe('layout', function () {
 			id: 7,
 			x: 10,
 			y: 15,
+			width: 60,
+			height: 40,
 			title: '1'
 		});
 		expect(result.nodes[8]).toEqual({
 			id: 8,
 			x: 70,
 			y: 10,
+			width: 80,
+			height: 50,
 			title: '12'
 		});
 	});
@@ -222,6 +228,8 @@ describe('layout', function () {
 			id: 9,
 			x: -90,
 			y: 10,
+			width: 100,
+			height: 60,
 			title: '123'
 		});
 	});
@@ -252,6 +260,8 @@ describe('layout', function () {
 			id: 10,
 			x: -210,
 			y: 10,
+			width: 120,
+			height: 70,
 			title: '1234'
 		});
 	});

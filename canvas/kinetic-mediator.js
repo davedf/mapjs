@@ -16,7 +16,13 @@ MAPJS.KineticMediator = function (mapModel, layer) {
 			opacity: 0
 		});
 		node.on('click tap', mapModel.selectNode.bind(mapModel, n.id));
-		node.on('dragstart', node.moveToTop.bind(node));
+		node.on('dragstart', function () {
+			node.moveToTop();
+			node.attrs.shadow.offset = {
+				x: 8,
+				y: 8
+			};
+		});
 		node.on('dragmove', function () {
 			mapModel.nodeDragMove(
 				n.id,
@@ -25,10 +31,14 @@ MAPJS.KineticMediator = function (mapModel, layer) {
 			);
 		});
 		node.on('dragend', function () {
-			mapModel.dropNode(
+			node.attrs.shadow.offset = {
+				x: 4,
+				y: 4
+			};
+			mapModel.nodeDragEnd(
 				n.id,
-				node.attrs.x + 0.5 * node.getWidth(),
-				node.attrs.y + 0.5 * node.getHeight()
+				node.attrs.x,
+				node.attrs.y
 			);
 		});
 		nodeByIdeaId[n.id] = node;
@@ -39,15 +49,14 @@ MAPJS.KineticMediator = function (mapModel, layer) {
 		});
 	});
 	mapModel.addEventListener('nodeSelectionChanged', function (ideaId, isSelected) {
+		console.log('nodeSelectionChanged');
 		var node = nodeByIdeaId[ideaId];
 		node.setIsSelected(isSelected);
 	});
 	mapModel.addEventListener('nodeDroppableChanged', function (ideaId, isDroppable) {
+		console.log('nodeDroppableChanged', ideaId, isDroppable);
 		var node = nodeByIdeaId[ideaId];
-		node.transitionTo({
-			opacity: isDroppable ? 0.5 : 1,
-			duration: 0.4
-		});
+		node.attrs.fill = isDroppable ? '#ecc' : '#ddd';
 	});
 	mapModel.addEventListener('nodeRemoved', function (n) {
 		console.log('nodeRemoved');

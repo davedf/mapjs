@@ -8,6 +8,7 @@ MAPJS.MapModel = function (layoutCalculator) {
 			connectors: {}
 		},
 		idea,
+		currentlySelectedIdeaId,
 		updateCurrentLayout = function (newLayout) {
 			var nodeId, newNode, oldNode, newConnector, oldConnector;
 			for (nodeId in currentLayout.connectors) {
@@ -21,6 +22,9 @@ MAPJS.MapModel = function (layoutCalculator) {
 				oldNode = currentLayout.nodes[nodeId];
 				newNode = newLayout.nodes[nodeId];
 				if (!newNode) {
+					if (nodeId == currentlySelectedIdeaId) {
+						currentlySelectedIdeaId = undefined;
+					}
 					self.dispatchEvent('nodeRemoved', oldNode);
 				}
 			}
@@ -49,8 +53,7 @@ MAPJS.MapModel = function (layoutCalculator) {
 		},
 		onIdeaChanged = function () {
 			updateCurrentLayout(layoutCalculator(idea));
-		},
-		currentlySelectedIdeaId;
+		};
 	observable(this);
 	this.setIdea = function (anIdea) {
 		if (idea) {
@@ -78,10 +81,10 @@ MAPJS.MapModel = function (layoutCalculator) {
 	this.updateTitle = function (title) {
 		idea.updateTitle(currentlySelectedIdeaId, title);
 	};
-
+	//Todo - clean up this shit below
 	var currentDroppable,
 		updateCurrentDroppable = function (value) {
-			if (currentDroppable !== value) {
+			if (currentDroppable != value) {
 				if (currentDroppable) {
 					self.dispatchEvent('nodeDroppableChanged', currentDroppable, false);
 				}
@@ -90,30 +93,39 @@ MAPJS.MapModel = function (layoutCalculator) {
 					self.dispatchEvent('nodeDroppableChanged', currentDroppable, true);
 				}
 			}
+		},
+		canDropOnNode = function (id, x, y, node) {
+			return id != node.id
+				&& x >= node.x
+				&& y >= node.y
+				&& x <= node.x + node.width - 2 * 10
+				&& y <= node.y + node.height - 2 * 10;
 		};
 	this.nodeDragMove = function (id, x, y) {
 		var nodeId, node;
 		for (nodeId in currentLayout.nodes) {
 			node = currentLayout.nodes[nodeId];
-			if (nodeId !== id && x >= node.x && y >= node.y && x <= node.x + (node.width || 50) && y <= node.y + (node.height || 50) && nodeId !== currentDroppable) {
+			if (canDropOnNode(id, x, y, node)) {
 				updateCurrentDroppable(nodeId);
 				return;
 			}
 		}
 		updateCurrentDroppable(undefined);
 	};
-	this.dropNode = function (id, x, y) {
+	this.nodeDragEnd = function (id, x, y) {
 		var nodeId, node;
 		updateCurrentDroppable(undefined);
 		for (nodeId in currentLayout.nodes) {
 			node = currentLayout.nodes[nodeId];
-			if (nodeId !== id && x >= node.x && y >= node.y && x <= node.x + (node.width || 50) && y <= node.y + (node.height || 50)) {
+			if (canDropOnNode(id, x, y, node)) {
 				if (!idea.changeParent(id, nodeId)) {
 					self.dispatchEvent('nodeMoved', currentLayout.nodes[id]);
 				}
+				updateCurrentDroppable(undefined);
 				return;
 			}
 		}
+		updateCurrentDroppable(undefined);
 		self.dispatchEvent('nodeMoved', currentLayout.nodes[id]);
 	};
 };

@@ -13,8 +13,8 @@ Kinetic.Idea = function (config) {
 	config.shadow = {
 		color: 'black',
 		blur: 10,
-		offset: [8, 8],
-		opacity: 0.2
+		offset: [4, 4],
+		opacity: 0.4
 	};
 	config.cornerRadius = 10;
 	config.draggable = true;
