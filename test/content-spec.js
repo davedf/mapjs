@@ -101,10 +101,6 @@ describe ("content aggregate", function(){
             idea.addSubIdea(71,'Second idea');
             var asArray=_.toArray(idea.ideas);
             expect(asArray.length).toBe(2);
-            expect(asArray[0].title).toBe('First idea');
-            expect(asArray[0].ideas).toBeFalsy();
-            expect(asArray[1].title).toBe('Second idea');
-            expect(asArray[1].ideas).toBeFalsy();
         
         });
         it ('assigns the next available ID to the new idea if the ID was not provided', function(){
@@ -127,12 +123,13 @@ describe ("content aggregate", function(){
             idea.addSubIdea(71);
             expect(idea.findChildRankById(72)).toBe(1);
         });
-        it ('assigns a rank greater than any of its siblings', function(){
-          var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 10: { id:3, title:'I3'}, 15 : {id:4, title:'I4'}}});
-          idea.addSubIdea(1);
-          var new_key=idea.findChildRankById(5);
-          expect(Math.abs(new_key)).not.toBeLessThan(15);
+        it ('when adding nodes to 2nd level items and more, adds a node at a rank greater than any of its siblings', function(){
+          var idea=content({id:1, ideas: { 1: {id:5, ideas:{ 5: { id: 2}, 10: { id:3}, 15 : {id:4}}}}});
+          idea.addSubIdea(5,'x',6);
+          var new_key=idea.ideas[1].findChildRankById(6);
+          expect(new_key).not.toBeLessThan(15);
         });
+
         it ('propagates to children if it does not match the requested id, succeeding if any child ID matches', function(){
           var ideas=content({id:1, title:'My Idea', 
                             ideas: {  1: {id:2, title:'My First Subidea', ideas:{1:{id:3, title:'My First sub-sub-idea'}}}}});
@@ -159,15 +156,38 @@ describe ("content aggregate", function(){
           expect(Math.abs(new_key)).not.toBeLessThan(16);
         });
         describe ('balances positive/negative ranks when adding to aggegate root', function(){
-          describe ('adds a negative rank if there are more positive ranks than negative', function(){
+          it ('gives first child a positive rank', function(){
+            var idea=content({id:1});
+            idea.addSubIdea(1,'new',2);
+            expect(idea.findChildRankById(2)).not.toBeLessThan(0);
+          });
+          it ('gives second child a negative rank', function(){
+            var idea=content({id:1});
+            idea.addSubIdea(1,'new',2);
+            idea.addSubIdea(1,'new',3);
+            expect(idea.findChildRankById(3)).toBeLessThan(0);
+          });
+          it ('adds a negative rank if there are more positive ranks than negative', function(){
             var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 10: { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}});
             idea.addSubIdea(1);
             expect(idea.findChildRankById(5)).toBeLessThan(0);
           });
-          describe ('adds a positive rank if there are less or equal positive ranks than negative', function(){
+          it ('adds a positive rank if there are less or equal positive ranks than negative', function(){
             var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, '-15' : {id:4, title:'I4'}}});
             idea.addSubIdea(1);
             expect(idea.findChildRankById(5)).not.toBeLessThan(0);
+          });
+          it ('when adding positive rank nodes, adds a node at a rank greater than any of its siblings', function(){
+            var idea=content({id:1, ideas: { '-3': {id:5}, '-5': { id: 2}, 10: { id:3}, 15 : {id:4}}});
+            idea.addSubIdea(1,'x',6);
+            var new_key=idea.findChildRankById(6);
+            expect(new_key).not.toBeLessThan(15);
+          });
+          it ('when adding negative rank nodes, adds a node at a rank lesser than any of its siblings', function(){
+            var idea=content({id:1, ideas: { '-3': {id:5}, '-5': { id: 2}, 10: { id:3}, 15 : {id:4}, 20 : {id:6}}});
+            idea.addSubIdea(1,'x',7);
+            var new_key=idea.findChildRankById(7);
+            expect(new_key).toBeLessThan(-5);
           });
         });
     });

@@ -45,13 +45,15 @@ var content;
     maxKey=function(kv_map,sign){
       sign=sign||1;
       if (_.size(kv_map)==0) return 0;
-      return _(_(_(kv_map).keys()).map(parseFloat)).max(function(x){return x*sign});
+      var current_keys=_.keys(kv_map);
+      current_keys.push(0); /* ensure at least 0 is there for negative ranks */ 
+      return _.max(_.map(current_keys,parseFloat),function(x){return x*sign});
     }
     nextChildRank=function(parentIdea){
       var childRankSign=1;
       if (parentIdea.id==contentAggregate.id){
         counts= _.countBy(parentIdea.ideas, function(v,k){ return k<0; });
-        if (counts.true<counts.false) childRankSign=-1;
+        if ((counts.true||0)<counts.false) childRankSign=-1;
       }
       var new_rank=maxKey(parentIdea.ideas,childRankSign)+childRankSign;
       return new_rank;
