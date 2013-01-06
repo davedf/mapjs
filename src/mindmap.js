@@ -218,6 +218,13 @@ function update_map(jquery_map_container, map_object,callback){
 
 
 /* generic (DOM/Jquery) event handling */
+function above(referenceElement,aboveElement){
+  return referenceElement.offset().top+referenceElement.outerHeight()/2>aboveElement.offset().top+aboveElement.outerHeight()/2;
+}
+function onSameSide(firstElement, secondElement, referenceElement){
+  return (referenceElement.offset().left-firstElement.offset().left)*
+         (referenceElement.offset().left-secondElement.offset().left)>0;
+}
 function attach_label_listeners(jquery_label,jquery_map,ideas){
   var oldPos; 
   jquery_label.draggable({
@@ -230,12 +237,14 @@ function attach_label_listeners(jquery_label,jquery_map,ideas){
     stop: function(event,ui){
       var nodeId=ui.helper.attr('idea');
       var parentConnector=jquery_map.find('.connect[from='+nodeId+']');
-      var siblingConnectors=jquery_map.find('.connect[to='+parentConnector.attr('to')+']');
+      var parentId=parentConnector.attr('to');
+      var siblingConnectors=jquery_map.find('.connect[to='+parentId+']');
       var sibling_labels=_.map(siblingConnectors, function(connector){
         return jquery_map.find('.label[idea='+$(connector).attr('from')+']');
       });
-      var groups=_.groupBy(sibling_labels,function(item){return item.offset().top<=ui.helper.offset().top})
-      var firstBelowId=$(_.min(groups[false], function(label_span) { return label_span.offset().top })).attr('idea');
+      var parent_label=jquery_map.find('.label[idea='+parentId+']');
+      var groups= _.groupBy(sibling_labels,function(item){ return onSameSide(item,ui.helper,parent_label) && above(item,ui.helper)});
+      var firstBelowId=$(_.min(groups[true], function(label_span) { return label_span.offset().top })).attr('idea');
       if (!ideas.positionBefore(nodeId,firstBelowId)){
         ui.helper.animate(ui.helper.css('position')=='relative'?{top:0,left:0}:oldPos,{
           duration:200,
