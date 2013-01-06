@@ -42,7 +42,9 @@
     <ul class="dropdown-menu">
       <li><a id="menuAdd" href="#">New child node</a></li>    
       <li><a id="menuEdit" href="#">Edit node</a></li>    
-      <li><a id="menuDelete" href="#">Delete node</a></li>    
+      <li><a id="menuDelete" href="#">Delete node</a></li>
+      <li class="divider"></li>
+      <li><a id="menuClear" href="#">Clear Map</a></li>    
     </ul> 
 </ul>
           </div><!--/.nav-collapse -->
@@ -52,7 +54,9 @@
 
 
     <div id="map1"></div>
+    <div class="text-align:center; width:100%">
     <div id="map2" class="container" ></div>
+    </div>
    <script src="../test/testtree.js"></script>
   <script src="../lib/underscore-1.4.3-min.js"></script>
   <script src="../lib/jquery-1.8.3.js"></script>
@@ -76,7 +80,7 @@
       $(function(){
         var active_content=content(test_tree());
 //        dom_repaint_entire_map(active_content,$('#map2'));
-        selectedId=function(){
+        var selectedId=function(){
            return $('#map2').find('.'+customClasses.selectedClass).attr('idea') || active_content.id;
         }
         jquery_repaint_map(active_content,$('#map2'));
@@ -96,7 +100,10 @@
         });
         $('#menuDelete').click(function(){
           active_content.removeSubIdea(selectedId()); 
-        })
+        });
+        $('#menuClear').click(function(){
+          _.each(active_content.ideas, function(idea){ active_content.removeSubIdea(idea.id);})
+        });
       });
       </script>
   </body>
