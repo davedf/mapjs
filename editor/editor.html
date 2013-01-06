@@ -31,18 +31,20 @@
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
           <a class="brand" href="#">Project name</a>
           <div class="nav-collapse collapse">
             <ul class="nav">
-              <li class="active"><a href="#">Home</a></li>
-              <li><a href="#about">About</a></li>
-              <li><a href="#contact">Contact</a></li>
-            </ul>
+           <li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+        Edit Map
+      <b class="caret"></b>
+    </a>
+    <ul class="dropdown-menu">
+      <li><a id="menuAdd" href="#">New child node</a></li>    
+      <li><a id="menuEdit" href="#">Edit node</a></li>    
+      <li><a id="menuDelete" href="#">Delete node</a></li>    
+    </ul> 
+</ul>
           </div><!--/.nav-collapse -->
         </div>
       </div>
@@ -61,21 +63,41 @@
   <script src="../src/mindmap.js"></script>
     <script>
       var customClasses={ selectedClass:'btn-success', hoverClass:'btn-warning' }
+      function addToSelected(){
+        content_aggregate.addSubIdea(selectedId,'A cunning plan');
+      };
       function jquery_repaint_map(active_content, active_jq_map,onComplete){
         var background_jq_map=$('#map1');
         dom_repaint_entire_map(active_content,background_jq_map);
-        $('#map1 .MAP_label').addClass('btn btn-large');
+        $('#map1 .MAP_label').addClass('btn');
         update_map(active_jq_map,visual_to_map(background_jq_map),onComplete);
-        active_jq_map.find('.MAP_label').addClass('btn btn-large');
+        active_jq_map.find('.MAP_label').addClass('btn');
       }
       $(function(){
         var active_content=content(test_tree());
 //        dom_repaint_entire_map(active_content,$('#map2'));
+        selectedId=function(){
+           return $('#map2').find('.'+customClasses.selectedClass).attr('idea') || active_content.id;
+        }
         jquery_repaint_map(active_content,$('#map2'));
         attach_label_listeners($('#map2').find('.MAP_label'), $('#map2'),active_content, customClasses );
         attach_map_listeners(active_content,$('#map2'), jquery_repaint_map,customClasses);
-        
-       });
+        $('#menuAdd').click(function(){
+           active_content.addSubIdea(selectedId(),'A cunning plan');  
+        });
+        $('#menuEdit').click(function(){
+           var selected=selectedId();
+           editLabel(
+             $('#map2 .MAP_label[idea='+selected+']'),
+             function(newValue){
+              active_content.updateTitle(selected,newValue);
+             }
+           );
+        });
+        $('#menuDelete').click(function(){
+          active_content.removeSubIdea(selectedId()); 
+        })
+      });
       </script>
   </body>
 </html>

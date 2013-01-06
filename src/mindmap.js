@@ -29,7 +29,7 @@ function widest_child(jquery_elem){
   return jquery_elem.outerWidth()+max;
 }
 function midpoint_jq_rel (jquery_element){
-  return {x:jquery_element.position().left+jquery_element.width()/2,y:jquery_element.position().top+jquery_element.height()/2}
+  return {x:jquery_element.position().left+jquery_element.outerWidth()/2,y:jquery_element.position().top+jquery_element.outerHeight()/2}
 }
 var connect_classes={
   horizontal: "connect_horizontal",
@@ -275,33 +275,39 @@ function attach_label_listeners(jquery_label,jquery_map,ideas,options){
     }
   });
   jquery_label.dblclick(function(){
-    jquery_map.find('.'+options.selectedClass).removeClass(options.selectedClass);
-    var originalText=$(this).text();
-    var originalLabel=$(this);
-    var dim={height: $(this).innerHeight(), width: $(this).innerWidth()};
     var ideaId=$(this).attr('idea');
-    $(this).text("");
-    var ta=$("<textarea>"+originalText+"</textarea>").appendTo($(this));
-    ta.height(dim.height); ta.width(dim.width);
-    ta.focus();
-    ta.blur(function(){
-      var newVal=ta.val();
-      ideas.updateTitle(ideaId,newVal);
-    });
-    ta.keyup(function(e){
-      if (e.keyCode==13){ //ENTER
-        var newVal=ta.val();
-        ideas.updateTitle(ideaId,newVal);
-      }
-      else if (e.keyCode==27){
-        originalLabel.text(originalText); 
-        ta.detach();
-      }
+    editLabel(this, function(newValue){
+      ideas.updateTitle(ideaId,newValue);
     });
   });
   jquery_label.click(function(event){
     jquery_map.find('.'+options.selectedClass).removeClass(options.selectedClass);
     $(event.target).addClass(options.selectedClass)
+  });
+}
+function editLabel(labelElement,callback){
+  var originalText=$(labelElement).text();
+  var originalLabel=$(labelElement);
+  var dim={height: $(labelElement).innerHeight(), width: $(labelElement).innerWidth()};
+  $(labelElement).text("");
+  var ta=$("<textarea>"+originalText+"</textarea>").appendTo($(labelElement));
+  ta.height(dim.height); ta.width(dim.width);
+  ta.focus();
+  ta.blur(function(){
+    var newVal=ta.val();
+    callback(newVal);
+  });
+  ta.keydown(function(e){
+    if (e.keyCode==13){ //ENTER
+      var newVal=ta.val();
+      e.stopPropagation();
+      callback(newVal);
+    }
+    else if (e.keyCode==27){
+      originalLabel.text(originalText); 
+      ta.detach();
+      e.stopPropagation();
+    }
   });
 }
 function attach_map_listeners(content_aggregate,jquery_map, repaint_callback,options){
@@ -337,10 +343,12 @@ function attach_map_listeners(content_aggregate,jquery_map, repaint_callback,opt
     if (!selectedId) return;
     if(e.which == 13) {// ENTER
       content_aggregate.addSubIdea(selectedId,'A cunning plan');
+      e.stopPropagation();
     }
     if(e.which == 8) { // BACKSPACE
       content_aggregate.removeSubIdea(selectedId);
       e.preventDefault();
+      e.stopPropagation();
     } 
   });
 }
