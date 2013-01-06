@@ -20,13 +20,15 @@ function mapDiff(start,target){
 /* dom positioning */
 function abs_sort(val,key) { return Math.abs(key);}
 function widest_child(jquery_elem){
-  if (jquery_elem.children('.node').length==0) return jquery_elem.outerWidth();
+  var childNodes=jquery_elem.children('.children').children('.node');
+  if ( childNodes.length==0) return jquery_elem.outerWidth(true);
   var max=0;
-  _.each(jquery_elem.children('.node'),function(node){
-    var current=widest_child(node);
+  _.each(childNodes,function(node){
+    var current=widest_child($(node));
     if (max<current) max=current;
   });
-  return jquery_elem.outerWidth()+max;
+  return jquery_elem.children('.MAP_label').outerWidth(true)+max+
+         jquery_elem.outerWidth(true)-jquery_elem.width();
 }
 function midpoint_jq_rel (jquery_element){
   return {x:jquery_element.position().left+jquery_element.outerWidth()/2,y:jquery_element.position().top+jquery_element.outerHeight()/2}
@@ -98,7 +100,8 @@ function repositionConnectorFromJq(jquery_map_container,connect){
 }
 
 function paint_map_connections(jquery_element){
-  jquery_element.width(2*widest_child(jquery_element.find('.node:first')));
+  var required_width=3*widest_child(jquery_element.find('.node:first'));
+  jquery_element.width(required_width);
   _.each($('.node .node .MAP_label'),function(node){
     repaint_connection_to_parent(jquery_element,$(node));
   });
@@ -158,7 +161,7 @@ function delayedLabelCssAnimation(jquery_map_container, css_props,index, map_obj
     );
 }
 function delayedHide(element, callback){
-  return function(){ element.fadeOut(100,function(){ element.detach();callback();}) };
+  return function(){ element.fadeOut(100,function(){ element.detach();if (callback) callback();}) };
 }
 
 function delayedConnect(jquery_map_container,fromId, toId, callBack){
