@@ -1,6 +1,6 @@
 
           .node{
-            display:block;vertical-align:middle; margin-left:30px; margin-top:10px; margin-bottom:10px; padding:5px;
+            display:block;vertical-align:middle; margin:10px; padding:5px;
           }
           .children {
             display:inline-block;vertical-align:middle;
@@ -14,7 +14,7 @@
           .selected {background-color:yellow;}          
           .active {background-color:gray;}          
           .hover {background-color:red}          
-          .map {overflow:scroll;position:absolute;top:0;left:0}
+          .map {width:100%;text-align:center;overflow:scroll;position:absolute;top:0;left:0}
 
           .connect{
             position:absolute;
