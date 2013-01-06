@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Bootstrap, from Twitter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="../lib/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+      #map2 {position:absolute;width:1000; height:1000}
+      #map1 {position:absolute; top:0px;left:0px;z-Index:-30;visibility:hidden; }
+    </style>
+    <link href="../lib/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="../lib/jquery-ui-1.9.2.custom.min.css"/>
+    <link rel="stylesheet" type="text/css" href="mindmap.css" /> 
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="#">Project name</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="active"><a href="#">Home</a></li>
+              <li><a href="#about">About</a></li>
+              <li><a href="#contact">Contact</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+    <div id="map1"></div>
+    <div id="map2" class="container" ></div>
+   <script src="../test/testtree.js"></script>
+  <script src="../lib/underscore-1.4.3-min.js"></script>
+  <script src="../lib/jquery-1.8.3.js"></script>
+  <script src="../lib/jquery-ui-1.9.2.custom.min.js"></script>
+  <script src="../lib/bootstrap/js/bootstrap.js"></script>
+  <script src="../src/observable.js"></script>
+  <script src="../src/content.js"></script>
+  <script src="../src/mindmap.js"></script>
+    <script>
+      var customClasses={ selectedClass:'btn-success', hoverClass:'btn-warning' }
+      function jquery_repaint_map(active_content, active_jq_map,onComplete){
+        var background_jq_map=$('#map1');
+        dom_repaint_entire_map(active_content,background_jq_map);
+        $('#map1 .MAP_label').addClass('btn btn-large');
+        update_map(active_jq_map,visual_to_map(background_jq_map),onComplete);
+        active_jq_map.find('.MAP_label').addClass('btn btn-large');
+      }
+      $(function(){
+        var active_content=content(test_tree());
+//        dom_repaint_entire_map(active_content,$('#map2'));
+        jquery_repaint_map(active_content,$('#map2'));
+        attach_label_listeners($('#map2').find('.MAP_label'), $('#map2'),active_content, customClasses );
+        attach_map_listeners(active_content,$('#map2'), jquery_repaint_map,customClasses);
+        
+       });
+      </script>
+  </body>
+</html>

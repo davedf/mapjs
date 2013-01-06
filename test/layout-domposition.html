@@ -15,14 +15,14 @@
     <script>
           function dom_repaint_and_reattach(active_content,jquery_map,onComplete){
             dom_repaint_entire_map(active_content,jquery_map, function(){
-              attach_label_listeners(jquery_map.find('.label'), jquery_map,active_content);
+              attach_label_listeners(jquery_map.find('.MAP_label'), jquery_map,active_content);
               if(onComplete) onComplete();
             });
           }
           $(function(){
               var active_content=content(test_tree());
               dom_repaint_entire_map(active_content,$('#map1'));
-              attach_label_listeners($('#map1').find('.label'), $('#map1'),active_content);
+              attach_label_listeners($('#map1').find('.MAP_label'), $('#map1'),active_content);
               attach_map_listeners(active_content,$('#map1'), dom_repaint_and_reattach);
             });
       </script>
