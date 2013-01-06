@@ -81,8 +81,21 @@ var content;
         false
       );
     }
-
+    /* intentionally not returning 0 case, to help with split sorting into 2 groups */
+    sign=function(number){
+      return number<0?-1:1;
+    }
     /**** aggregate command processing methods ****/
+    contentAggregate.flip = function (ideaId){
+      var current_rank=contentAggregate.findChildRankById(ideaId);
+      if (!current_rank) return false;
+      var max_rank = maxKey(contentAggregate.ideas,-1*sign(current_rank)); 
+      new_rank = max_rank - 10 * sign(current_rank);
+      contentAggregate.ideas[new_rank] = contentAggregate.ideas[current_rank];
+      delete contentAggregate.ideas[current_rank];
+      contentAggregate.dispatchEvent('flip',ideaId);
+      return true;
+    }
     contentAggregate.updateTitle = function (ideaId, title) {
       var idea=findIdeaById(ideaId);
       if (!idea) return false;

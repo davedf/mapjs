@@ -226,26 +226,33 @@ function onSameSide(firstElement, secondElement, referenceElement){
          (referenceElement.offset().left-secondElement.offset().left)>0;
 }
 function attach_label_listeners(jquery_label,jquery_map,ideas){
-  var oldPos; 
+  var oldPos,oldOffset; 
   jquery_label.draggable({
     drag: function(event,ui){
       updateConnectorsJq(jquery_map,ui.helper.attr('idea'));
     },
     start: function(event,ui){
-      oldPos=ui.helper.position(); 
+      oldPos=ui.helper.position();
+      oldOffset=ui.helper.offset(); 
     },
     stop: function(event,ui){
       var nodeId=ui.helper.attr('idea');
       var parentConnector=jquery_map.find('.connect[from='+nodeId+']');
       var parentId=parentConnector.attr('to');
-      var siblingConnectors=jquery_map.find('.connect[to='+parentId+']');
-      var sibling_labels=_.map(siblingConnectors, function(connector){
-        return jquery_map.find('.label[idea='+$(connector).attr('from')+']');
-      });
       var parent_label=jquery_map.find('.label[idea='+parentId+']');
-      var groups= _.groupBy(sibling_labels,function(item){ return onSameSide(item,ui.helper,parent_label) && above(item,ui.helper)});
-      var firstBelowId=$(_.min(groups[true], function(label_span) { return label_span.offset().top })).attr('idea');
-      if (!ideas.positionBefore(nodeId,firstBelowId)){
+      var result;
+      if (onSameSide(ui.helper,{offset:function(){return oldOffset}},parent_label)){
+        var siblingConnectors=jquery_map.find('.connect[to='+parentId+']');
+        var sibling_labels=_.map(siblingConnectors, function(connector){
+          return jquery_map.find('.label[idea='+$(connector).attr('from')+']');
+        });
+        var groups= _.groupBy(sibling_labels,function(item){ return onSameSide(item,ui.helper,parent_label) && above(item,ui.helper)});
+        var firstBelowId=$(_.min(groups[true], function(label_span) { return label_span.offset().top })).attr('idea');
+        result=ideas.positionBefore(nodeId,firstBelowId);
+      }
+      else
+        result=ideas.flip(nodeId);
+      if (!result){
         ui.helper.animate(ui.helper.css('position')=='relative'?{top:0,left:0}:oldPos,{
           duration:200,
           step:function(){
@@ -316,6 +323,9 @@ function attach_map_listeners(content_aggregate,jquery_map, repaint_callback){
     repaint_callback(content_aggregate,jquery_map);
   });
   content_aggregate.addEventListener('changeParent', function(ideaId,parentId){
+    repaint_callback(content_aggregate,jquery_map);
+  });
+  content_aggregate.addEventListener('flip', function(ideaId,parentId){
     repaint_callback(content_aggregate,jquery_map);
   });
   $(document).keydown(function(e) {
