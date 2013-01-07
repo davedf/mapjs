@@ -39,6 +39,7 @@ var MAPJS = MAPJS || {};
 			i,
 			subIdeaDimensions,
 			leftOrRight,
+			totalHeights = [0, 0],
 			subIdeaCurrentY0 = [y0, y0];
 		x0 += result.WidthLeft;
 		result.x = x0 + margin;
@@ -47,7 +48,14 @@ var MAPJS = MAPJS || {};
 			ranks = [];
 			for (subIdeaRank in result.ideas) {
 				ranks.push(parseFloat(subIdeaRank));
+				subIdeaDimensions = result.ideas[subIdeaRank];
+				if (isLeftSubtree) {
+					subIdeaRank = -subIdeaRank;
+				}
+				totalHeights[subIdeaRank < 0 ? 0 : 1] += subIdeaDimensions.Height;
 			}
+			subIdeaCurrentY0[0] += 0.5 * (result.Height - totalHeights[0]);
+			subIdeaCurrentY0[1] += 0.5 * (result.Height - totalHeights[1]);
 			ranks.sort(function ascending(firstRank, secondRank) { return secondRank - firstRank; });
 			for (i = ranks.length - 1; i >= 0; i -= 1) {
 				subIdeaRank = ranks[i];

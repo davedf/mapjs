@@ -291,6 +291,22 @@ describe('layout', function () {
 		expect(result.nodes[9].y).toBe(10);
 		expect(result.nodes[8].y).toBe(70);
 	});
+	it('should space children on one side evenly (verticaly)', function () {
+		var contentAggregate = content({
+				id: 10,
+				title: '123',
+				ideas: {
+					'-2': {
+						id: 11,
+						title: ''
+					}
+				}
+			}),
+			result;
+		result = MAPJS.calculateLayout(contentAggregate, dimensionProvider);
+		console.dir(result.nodes);
+		expect(result.nodes[11].y).toBe(25);
+	});
 
 	it('should use toBeRightOf matcher', function () {
 		expect({ offset: { x: 30} }).toBeRightOf({ offset: { x: 0 }, dimensions: { width : 10 }});
