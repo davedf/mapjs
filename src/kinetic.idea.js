@@ -35,8 +35,6 @@ Kinetic.Idea = function (config) {
 			};
 		ideaInput = $('<input type="text" class="ideaInput" />')
 			.css({
-				position: 'absolute',
-				display: 'block',
 				top: canvasPosition.top + self.attrs.y,
 				left: canvasPosition.left + self.attrs.x,
 				width: self.getWidth(),
@@ -47,8 +45,8 @@ Kinetic.Idea = function (config) {
 			.keydown(function (e) {
 				if (e.which === 13) {
 					onCommit();
-					e.stopPropagation();
 				}
+				e.stopPropagation();
 			})
 			.blur(onCommit)
 			.focus();

@@ -2,22 +2,28 @@
 <body>
 	<style>
 		.ideaInput {
-			font-family: 'Helvetica';
-			font-style: italic;
-			color: #555;
-			font-size: 14;
-			text-align: center;
+			position: absolute;
 			border: none;
 			z-index: 999;
-			position: absolute;
 			background-color: transparent;
-			display: none;
+			color: #555;
+			font-family: 'Calibri';
+			font-style: italic;
+			font-size: 15;
+			text-align: center;
 		}
 		.ideaInput:focus {
 			outline: none;
 		}
 	</style>
 	<div id="container"></div>
+	<ul>
+		<li>bug: quickly adding children (animation interrupted)</li>
+		<li>usability: add sibling of the currently active element on enter (not a child), give focus to newly created node</li>
+		<li>change order</li>
+		<li>multiline</li>
+		<li>viewport</li>
+	</ul>
 	<script type="text/javascript" src="../lib/jquery-1.8.3.js"></script>
 	<script type="text/javascript" src="../lib/underscore-1.4.3-min.js"></script>
 	<script type="text/javascript" src="../lib/kinetic-v4.2.0.js"></script>
@@ -39,10 +45,6 @@
 				draggable: false
 			}),
 				layer = new Kinetic.Layer(),
-				// idea = content({
-				// 	id: 1,
-				// 	title: 'Hello 1'
-				// }),
 				idea = content(test_tree()),
 				dimensionProvider = function (title) {
 					var text = new Kinetic.Idea({
@@ -57,8 +59,6 @@
 					return MAPJS.calculateLayout(idea, dimensionProvider);
 				}),
 				mediator = new MAPJS.KineticMediator(mapModel, layer);
-			window.idea = idea;
-			window.mapModel = mapModel;
 			stage.add(layer);
 			mapModel.setIdea(idea);
 			// [
