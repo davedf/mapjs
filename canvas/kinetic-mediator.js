@@ -1,4 +1,4 @@
-/*global Kinetic*/
+/*global console, Kinetic*/
 var MAPJS = MAPJS || {};
 MAPJS.KineticMediator = function (mapModel, layer) {
 	'use strict';
@@ -40,6 +40,9 @@ MAPJS.KineticMediator = function (mapModel, layer) {
 				node.attrs.x,
 				node.attrs.y
 			);
+		});
+		node.on(':textChanged', function (newText) {
+			mapModel.updateTitle(newText);
 		});
 		nodeByIdeaId[n.id] = node;
 		layer.add(node);

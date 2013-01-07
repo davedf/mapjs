@@ -1,10 +1,24 @@
 <html>
 <body>
-	<div id="container-connector"></div>
-	<div id="container-mediator"></div>
-	<div id="container-layout"></div>
-	<input id="btn" type="button" value="Click me">
+	<style>
+		.ideaInput {
+			font-family: 'Helvetica';
+			font-style: italic;
+			color: #555;
+			font-size: 14;
+			text-align: center;
+			border: none;
+			z-index: 999;
+			position: absolute;
+			background-color: transparent;
+			display: none;
+		}
+		.ideaInput:focus {
+			outline: none;
+		}
+	</style>
 	<div id="container"></div>
+	<script type="text/javascript" src="../lib/jquery-1.8.3.js"></script>
 	<script type="text/javascript" src="../lib/underscore-1.4.3-min.js"></script>
 	<script type="text/javascript" src="../lib/kinetic-v4.2.0.js"></script>
 	<script type="text/javascript" src="../src/observable.js"></script>
@@ -13,311 +27,31 @@
 	<script type="text/javascript" src="../src/kinetic.connector.js"></script>
 	<script type="text/javascript" src="../src/content.js"></script>
 	<script type="text/javascript" src="../src/layout.js"></script>
+	<script type="text/javascript" src="../src/map-model.js"></script>
+	<script type="text/javascript" src="../test/testtree.js"></script>
 	<script type="text/javascript" src="kinetic-mediator.js"></script>
 	<script>
-	(function () {
-		var stage = new Kinetic.Stage({
-			container: 'container-connector',
-			width: 200,
-			height: 200
-		});
-		var layer = new Kinetic.Layer();
-		var text1 = new Kinetic.Idea({ x: 10, y: 20, text: "Hello" });
-		var text2 = new Kinetic.Idea({ x: 100, y: 80, text: "World" });
-		var connector = new Kinetic.Connector({
-			shapeFrom: text1,
-			shapeTo: text2,
-			stroke: '#888',
-			strokeWidth: 2
-		});
-		layer.add(text1);
-		layer.add(text2);
-		layer.add(connector);
-		stage.add(layer);
-	})();
-
-	(function () {
-		var stage = new Kinetic.Stage({
-			container: 'container-mediator',
-			width: 400,
-			height: 200
-		});
-		var layer = new Kinetic.Layer();
-		stage.add(layer);
-		var model = observable({});
-		var mediator = new MAPJS.KineticMediator(model, layer);
-		var events = [{
-				type: 'nodeCreated',
-				id: 1,
-				text: 'Node 1',
-				x: 100,
-				y: 100
-			}, [{
-				type: 'nodeCreated',
-				id: 2,
-				text: 'Node 2',
-				x: 200,
-				y: 100
-			}, {
-				type: 'connectorCreated',
-				fromNode: 1,
-				toNode: 2
-			}], [{
-				type: 'nodeMoved',
-				id: 2,
-				x: 200,
-				y: 75
-			}, {
-				type: 'nodeCreated',
-				id: 3,
-				text: 'Node 3',
-				x: 200,
-				y: 125
-			}, {
-				type: 'connectorCreated',
-				fromNode: 1,
-				toNode: 3
-			}], [{
-				type: 'connectorRemoved',
-				fromNode: 1,
-				toNode: 2
-			}, {
-				type: 'nodeRemoved',
-				id: 2
-			}, {
-				type: 'nodeMoved',
-				id: 3,
-				x: 200,
-				y: 100
-			}]
-		];
-		events.forEach(function (event, position) {
-			setTimeout(function () {
-				var evs = event.length ? event : [event], i;
-				for (i = 0; i < evs.length; i++)
-					model.dispatchEvent(evs[i].type, evs[i]);
-			}, 1000 * position);
-		});
-	})();
-
-	(function () {
-		var stage = new Kinetic.Stage({
-			container: 'container-layout',
-			width: 400,
-			height: 400
-		});
-		var layer = new Kinetic.Layer();
-		var idea = content({
-				id: 7,
-				title: '1',
-				ideas: {
-					1: {
-						id: 8,
-						title: '11',
-						ideas: {
-							1: {
-								id: 10,
-								title: '111'
-							},
-							2: {
-								id: 11,
-								title: '112'
-							},
-							3: {
-								id: 12,
-								title: '113'
-							}
-						}
-					},
-					'-2': {
-						id: 13,
-						title: '13',
-						ideas: {
-							1: {
-								id: 15,
-								title: '15'
-							}
-						}
-					},
-					3: {
-						id: 9,
-						title: '12'
-					},
-					'-1': {
-						id: 14,
-						title: '14'
-					}
-				}
-			});
-		var dp = function (title) {
-			var text = new Kinetic.Idea({
-				text: title
-			});
-			return {
-				width: text.getWidth(),
-				height: text.getHeight()
-			};
-		};
-		MAPJS.tmpDraw = function (layer, idea) {
-			var layout = MAPJS.calculateLayout(idea, dp),
-				ideaId,
-				nodePosition,
-				text,
-				nodes = {},
-				i,
-				connector;
-			for (ideaId in layout.nodes) {
-				nodePosition = layout.nodes[ideaId];
-				nodes[ideaId] = new Kinetic.Idea({
-					x: nodePosition.x + 100,
-					y: nodePosition.y + 100,
-					text: nodePosition.title
-				});
-				layer.add(nodes[ideaId]);
-			};
-			for (i = 0; i < layout.connectors.length; i++) {
-				connector = layout.connectors[i];
-				layer.add(new Kinetic.Connector({
-					shapeFrom: nodes[connector.from],
-					shapeTo: nodes[connector.to],
-					stroke: '#888',
-					strokeWidth: 2
-				}));
-			}
-		};
-		MAPJS.tmpDraw(layer, idea);
-		stage.add(layer);
-	})();
-
-	(function () {
-		window.onload = function () {
-			var randomMap = function (level, options) {
-				var rnd = function (l, r) {
-					return l + Math.floor((r - l) * Math.random());
-				}, result = {
-					label: options.labels[rnd(0, options.labels.length)]
-				}, i;
-				if (level < options.maxLevel) {
-					result.c = [];
-					result.c.length = rnd(options.minChildren, options.maxChildren + 1);
-					for (i = 0; i <  result.c.length; i++) {
-						result.c[i] = randomMap(level + 1, options);
-					}
-				}
-				return result;
-			};
-			var margin = 12;
-			var calcWH = function (map) {
-				var i,
-					W = 0,
-					H = 0;
-				var l = new Kinetic.Idea({ text: map.label });
-				map.W = map.w = l.getWidth() + 2 * margin;
-				map.H = map.h = l.getHeight() + 2 * margin;
-				if (map.c) {
-					for (i = 0; i < map.c.length; i++) {
-						calcWH(map.c[i]);
-						W = Math.max(W, map.c[i].W);
-						H += map.c[i].H;
-					}
-					map.W += W;
-					map.H = Math.max(map.H, H);
-				}
-			};
+		(function () {
 			var stage = new Kinetic.Stage({
 				container: 'container',
 				width: 1000,
-				height: 1000
+				height: 1000,
+				draggable: false
+			}),
+				layer = new Kinetic.Layer(),
+				node = new Kinetic.Idea({
+					x: 20,
+					y: 20,
+					text: 'Hello world'
+				});
+			node.setIsSelected(true);
+			node.on(':textChanged', function (newText) {
+				node.setText(newText);
+				node.getStage().draw();
 			});
-			var layer = new Kinetic.Layer();
-			var draw = function (map, x0, y0) {
-				var labelx = x0,
-					labely = y0 + 0.5 * (map.H - map.h),
-					i, cy = y0,
-					currentDroppable;
-				map.text = new Kinetic.Idea({
-					x: labelx + margin,
-					y: labely + margin,
-					text: map.label
-				});
-				layer.add(map.text);
-				if (map.c) {
-					for (i = 0; i < map.c.length; i++) {
-						draw(map.c[i], x0 + map.w, cy);
-						map.c[i].connector = new Kinetic.Connector({
-							shapeFrom: map.text,
-							shapeTo: map.c[i].text,
-							stroke: '#888',
-							strokeWidth: 2,
-						});
-						layer.add(map.c[i].connector);
-						cy += map.c[i].H;
-					}
-				}
-				map.text.on('dragmove', function () {
-					map.text.moveToTop();
-					var droppable = stage.getIntersection({x: map.text.attrs.x, y: map.text.attrs.y });
-					if (droppable && droppable.shape && droppable.shape !== currentDroppable) {
-						currentDroppable = droppable.shape;
-						currentDroppable.transitionTo({
-							opacity: 0.5,
-							duration: 0.2
-						});
-					} else if (!droppable && currentDroppable) {
-						currentDroppable.transitionTo({
-							opacity: 1,
-							duration: 0.2
-						});
-						currentDroppable = undefined;
-					}
-				});
-				map.text.on('dragend', function () {
-					if (currentDroppable) {
-						currentDroppable.transitionTo({
-							opacity: 1,
-							duration: 0.2
-						});
-						alert('do something');
-					} else {
-						map.text.transitionTo({
-							x: labelx + margin,
-							y: labely + margin,
-							easing: 'bounce-ease-out',
-							duration: 0.4
-						});
-					}
-				});
-			};
-			document.getElementById('btn').onclick = function () {
-				var map = randomMap(
-					1, {
-						maxLevel: 4,
-						minChildren: 2,
-						maxChildren: 4,
-						labels: [
-							'Hello',
-							'World',
-							'JavaScript' ,
-							'TDD',
-							'Gvojko',
-							'Danijel',
-							'Two line\ntitle',
-							'Longer title',
-							'Impact',
-							'Mapping',
-							'Jokes',
-							'Bug tracking',
-							'Measurements'
-						]
-					}
-				);
-				calcWH(map);
-				layer.remove();
-				draw(map, 0, 0);
-				stage.add(layer);
-			};
-		};
-	})();
+			layer.add(node);
+			stage.add(layer);
+		}());
 	</script>
 </body>
 </html>
