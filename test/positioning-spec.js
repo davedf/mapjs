@@ -94,8 +94,8 @@ describe("Map visualisations", function() {
   describe ("ideas_to_nodes", function(){
     function expect_node_label(jquery_selector, expected_label){
       expect(jquery_selector).toBe('div.node'); 
-      expect(jquery_selector).toContain('span.label');
-      expect(jquery_selector.children('.label')).toHaveText(expected_label);
+      expect(jquery_selector).toContain('span.MAP_label');
+      expect(jquery_selector.children('.MAP_label')).toHaveText(expected_label);
     }
 
     describe("node positioning", function(){
@@ -159,10 +159,10 @@ describe("Map visualisations", function() {
         expect_node_label(right_child.children('.children').children('.node').last(),'My Second sub-sub-idea');
       });
       it ('marks node with the idea ID', function(){
-        var actual=ideas_to_nodes({id:'idea1',title:'My idea'})
+        var actual=ideas_to_nodes({id:17,title:'My idea'})
         expect(actual).toBe('div.node');
-        expect(actual.attr('idea')).toBe('idea1');
-        expect(actual.children('.label').attr('idea')).toBe('idea1');
+        expect(actual.attr('idea')).toBe('17');
+        expect(actual.children('.MAP_label').attr('idea')).toBe('17');
       });
     });
   });
