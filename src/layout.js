@@ -26,6 +26,7 @@ var MAPJS = MAPJS || {};
 				subIdeaHeights[leftOrRight] += subIdeaDimensions.Height;
 			}
 		}
+		result.WidthLeft = subIdeaWidths[0] || 0;
 		result.Width = result.width + subIdeaWidths[0] + subIdeaWidths[1];
 		result.Height = Math.max(result.height, subIdeaHeights[0], subIdeaHeights[1]);
 		return result;
@@ -39,6 +40,7 @@ var MAPJS = MAPJS || {};
 			subIdeaDimensions,
 			leftOrRight,
 			subIdeaCurrentY0 = [y0, y0];
+		x0 += result.WidthLeft;
 		result.x = x0 + margin;
 		result.y = y0 + 0.5 * (result.Height - result.height) + margin;
 		if (result.ideas) {

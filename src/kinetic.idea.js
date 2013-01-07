@@ -22,7 +22,7 @@ Kinetic.Idea = function (config) {
 	config.name = "Idea";
 	Kinetic.Text.apply(this, [config]);
 	this.classType = "Idea";
-	this.on('click', function () {
+	this.on('dblclick', function () {
 		self.attrs.textFill = '#aaa';
 		var canvasPosition = $('canvas').offset(),
 			currentText = self.getText(),

@@ -20,7 +20,8 @@ describe('layout', function () {
 				width: 60,
 				height: 40,
 				Width: 60,
-				Height: 40
+				Height: 40,
+				WidthLeft: 0
 			});
 		});
 		it('should return (width1 + width2 + 4 * margin, max(height1, height2) + 2 * margin)', function () {
@@ -42,6 +43,7 @@ describe('layout', function () {
 				height: 40,
 				Width: 140,
 				Height: 50,
+				WidthLeft: 0,
 				ideas: {
 					1: {
 						id: 8,
@@ -49,7 +51,8 @@ describe('layout', function () {
 						width: 80,
 						height: 50,
 						Width: 80,
-						Height: 50
+						Height: 50,
+						WidthLeft: 0
 					}
 				}
 			});
@@ -88,7 +91,8 @@ describe('layout', function () {
 				width: 60,
 				height: 40,
 				Width: 60,
-				Height: 40
+				Height: 40,
+				WidthLeft: 0
 			});
 		});
 		it('', function () {
@@ -112,6 +116,7 @@ describe('layout', function () {
 				height: 40,
 				Width: 140,
 				Height: 50,
+				WidthLeft: 0,
 				ideas: {
 					1: {
 						id: 8,
@@ -121,7 +126,8 @@ describe('layout', function () {
 						width: 80,
 						height: 50,
 						Width: 80,
-						Height: 50
+						Height: 50,
+						WidthLeft: 0
 					}
 				}
 			});
@@ -226,7 +232,7 @@ describe('layout', function () {
 		result = MAPJS.calculateLayout(contentAggregate, dimensionProvider);
 		expect(result.nodes[9]).toEqual({
 			id: 9,
-			x: -90,
+			x: 10,
 			y: 10,
 			width: 100,
 			height: 60,
@@ -258,7 +264,7 @@ describe('layout', function () {
 		result = MAPJS.calculateLayout(contentAggregate, dimensionProvider);
 		expect(result.nodes[10]).toEqual({
 			id: 10,
-			x: -210,
+			x: 10,
 			y: 10,
 			width: 120,
 			height: 70,
