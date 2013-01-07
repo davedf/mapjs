@@ -1,22 +1,20 @@
 
           .node{
-            display:block;vertical-align:middle; margin-left:30px; margin-top:10px; margin-bottom:10px; padding:5px;
+            display:block;vertical-align:middle; margin:10px; padding:5px;
           }
           .children {
             display:inline-block;vertical-align:middle;
           }
-          .label {
+          .MAP_label {
             display:inline-block; vertical-align:middle; border:5px solid black;padding:5px; 
             border-radius:10% ; max-width:150px; cursor:pointer;
             background-color:white;
+            border: 1px solid black; 
           }
           .selected {background-color:yellow;}          
           .active {background-color:gray;}          
           .hover {background-color:red}          
-          .label {
-            border: 1px solid black; 
-          }
-          .map {overflow:scroll;position:absolute;top:0;left:0}
+          .map {width:100%;text-align:center;overflow:scroll;position:absolute;top:0;left:0}
 
           .connect{
             position:absolute;

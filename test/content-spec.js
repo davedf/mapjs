@@ -252,6 +252,44 @@ describe ("content aggregate", function(){
           expect(addedListener).toHaveBeenCalledWith(3);
         });
     });
+    describe ("flip", function(){
+      it ('assigns the idea the largest positive rank if the current rank was negative', function(){
+        var idea=content({id:1, ideas: { '-5': { id: 2}, 10: { id:3}, 15 : {id:4}}});
+        var result=idea.flip(2); 
+        expect(result).toBeTruthy();
+        expect(idea.ideas[10].id).toBe(3);
+        expect(idea.ideas[15].id).toBe(4);
+        var new_key=idea.findChildRankById(2);
+        expect(new_key).not.toBeLessThan(15);
+      });
+      it ('assigns the idea the smallest negative rank if the current rank was positive', function(){
+        var idea=content({id:1, ideas: { '-5': { id: 2}, 10: { id:3}, 15 : {id:4}}});
+        var result=idea.flip(3); 
+        expect(result).toBeTruthy();
+        expect(idea.ideas['-5'].id).toBe(2);
+        expect(idea.ideas[15].id).toBe(4);
+        var new_key=idea.findChildRankById(3);
+        expect(new_key).toBeLessThan(-5);
+      });
+      it ('fails if called on idea that was not a child of the aggregate root', function(){
+        var idea=content({id:0,ideas:{9:{id:1, ideas: { '-5': { id: 2}, '-10': { id:3}, '-15' : {id:4}}}}});
+        spyOn(idea,'dispatchEvent');
+        expect(idea.flip(2)).toBeFalsy();
+        expect(idea.dispatchEvent).not.toHaveBeenCalled();
+      });
+      it ('fails if called on non-existing idea that was not a child of the aggregate root', function(){
+        var idea=content({id:0,ideas:{9:{id:1, ideas: { '-5': { id: 2}, '-10': { id:3}, '-15' : {id:4}}}}});
+        spyOn(idea,'dispatchEvent');
+        expect(idea.flip(99)).toBeFalsy();
+        expect(idea.dispatchEvent).not.toHaveBeenCalled();
+      });
+      it ('fires a flip event with arguments matching function call if successful', function(){
+        var idea=content({id:1, ideas: { '-5': { id: 2}, 10: { id:3}, 15 : {id:4}}});
+        spyOn(idea,'dispatchEvent');
+        idea.flip(2); 
+        expect(idea.dispatchEvent).toHaveBeenCalledWith('flip',2);
+      }); 
+    });
     describe ("positionBefore", function(){
       it ('reorders immediate children by changing the rank of an idea to be immediately before the provided idea', function(){
         var idea=content({id:1, ideas: { 5: { id: 2}, 10: { id:3}, 15 : {id:4}}});
@@ -263,7 +301,7 @@ describe ("content aggregate", function(){
         expect(new_key).toBeLessThan(10);
         expect(new_key).not.toBeLessThan(5);
       });
-      it ('fails nothing if the idea should be ordered before itself', function(){
+      it ('fails if the idea should be ordered before itself', function(){
         var idea=content({id:1, ideas: { 5: { id: 2}, 12: { id:3}, 15 : {id:4}}});
         spyOn(idea,'dispatchEvent');
         var result=idea.positionBefore(3,3); 
@@ -307,7 +345,7 @@ describe ("content aggregate", function(){
         var new_key=idea.findChildRankById(4);
         expect(new_key).toBeLessThan(5);
       });
-      it ('puts the child in the last rank if the boundary idea was not defined', function(){
+      it ('gives the idea the largest positive rank if the boundary idea was not defined and current rank was positive', function(){
         var idea=content({id:1, ideas: { 5: { id: 2}, 10: { id:3}, 15 : {id:4}}});
         var result=idea.positionBefore(2); 
         expect(result).toBeTruthy();
