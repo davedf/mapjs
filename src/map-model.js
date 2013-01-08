@@ -116,6 +116,7 @@ MAPJS.MapModel = function (layoutCalculator) {
 		var nodeBeingDragged = currentLayout.nodes[id],
 			nodeId,
 			node,
+			rootNode = currentLayout.nodes[idea.id],
 			verticallyClosestNode;
 		updateCurrentDroppable(undefined);
 		for (nodeId in currentLayout.nodes) {
@@ -125,14 +126,21 @@ MAPJS.MapModel = function (layoutCalculator) {
 					self.dispatchEvent('nodeMoved', currentLayout.nodes[id]);
 				}
 				return;
-			} else if (nodeBeingDragged.x === node.x && y < node.y) {
+			} else if ((nodeBeingDragged.x === node.x || nodeBeingDragged.x + nodeBeingDragged.width === node.x + node.width) && y < node.y) {
 				if (!verticallyClosestNode || node.y < verticallyClosestNode.y) {
 					verticallyClosestNode = node;
 				}
 			}
 		}
+		if (rootNode.x < nodeBeingDragged.x && x < rootNode.x || rootNode.x > nodeBeingDragged.x && rootNode.x < x) {
+			if (idea.flip(id)) {
+				return;
+			}
+		}
 		if (verticallyClosestNode) {
-			idea.positionBefore(id, verticallyClosestNode.id);
+			if (idea.positionBefore(id, verticallyClosestNode.id)) {
+				return;
+			}
 		}
 		self.dispatchEvent('nodeMoved', currentLayout.nodes[id]);
 	};

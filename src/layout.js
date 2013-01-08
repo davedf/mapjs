@@ -56,7 +56,15 @@ var MAPJS = MAPJS || {};
 			}
 			subIdeaCurrentY0[0] += 0.5 * (result.Height - totalHeights[0]);
 			subIdeaCurrentY0[1] += 0.5 * (result.Height - totalHeights[1]);
-			ranks.sort(function ascending(firstRank, secondRank) { return secondRank - firstRank; });
+			ranks.sort(function ascending(firstRank, secondRank) {
+				if (firstRank >= 0 && secondRank >= 0) {
+					return secondRank - firstRank;
+				} else if (firstRank < 0 && secondRank < 0) {
+					return firstRank - secondRank;
+				} else {
+					return secondRank - firstRank;
+				}
+			});
 			for (i = ranks.length - 1; i >= 0; i -= 1) {
 				subIdeaRank = ranks[i];
 				subIdeaDimensions = result.ideas[subIdeaRank];

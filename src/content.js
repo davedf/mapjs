@@ -46,7 +46,7 @@ var content;
       sign=sign||1;
       if (_.size(kv_map)==0) return 0;
       var current_keys=_.keys(kv_map);
-      current_keys.push(0); /* ensure at least 0 is there for negative ranks */ 
+      current_keys.push(0); /* ensure at least 0 is there for negative ranks */
       return _.max(_.map(current_keys,parseFloat),function(x){return x*sign});
     }
     nextChildRank=function(parentIdea){
@@ -89,11 +89,12 @@ var content;
     contentAggregate.flip = function (ideaId){
       var current_rank=contentAggregate.findChildRankById(ideaId);
       if (!current_rank) return false;
-      var max_rank = maxKey(contentAggregate.ideas,-1*sign(current_rank)); 
+      var max_rank = maxKey(contentAggregate.ideas,-1*sign(current_rank));
       new_rank = max_rank - 10 * sign(current_rank);
       contentAggregate.ideas[new_rank] = contentAggregate.ideas[current_rank];
       delete contentAggregate.ideas[current_rank];
       contentAggregate.dispatchEvent('flip',ideaId);
+      contentAggregate.dispatchEvent('changed',undefined);
       return true;
     }
     contentAggregate.updateTitle = function (ideaId, title) {

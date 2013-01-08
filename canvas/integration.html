@@ -20,7 +20,6 @@
 	<ul>
 		<li>bug: quickly adding children (animation interrupted)</li>
 		<li>usability: add sibling of the currently active element on enter (not a child), give focus to newly created node</li>
-		<li>move between left and right (flip)</li>
 		<li>multiline</li>
 		<li>viewport</li>
 	</ul>
@@ -61,21 +60,6 @@
 				mediator = new MAPJS.KineticMediator(mapModel, layer);
 			stage.add(layer);
 			mapModel.setIdea(idea);
-			// [
-			// 	mapModel.selectNode.bind(mapModel, 1),
-			// 	mapModel.updateTitle.bind(mapModel, 'Hello 001'),
-			// 	mapModel.addSubIdea.bind(mapModel, 'World 2'),
-			// 	mapModel.addSubIdea.bind(mapModel, 'Third 3'),
-			// 	mapModel.addSubIdea.bind(mapModel, 'Fourth 4'),
-			// 	mapModel.selectNode.bind(mapModel, 4),
-			// 	mapModel.addSubIdea.bind(mapModel, 'Fifth 5'),
-			// 	idea.positionBefore.bind(idea, 3, 2),
-			// 	idea.changeParent.bind(idea, 3, 2),
-			// 	mapModel.selectNode.bind(mapModel, 3),
-			// 	mapModel.removeSubIdea.bind(mapModel)
-			// ].forEach(function (command, index) {
-			// 	setTimeout(command, 1000 * (index + 1));
-			// });
 		}());
 	</script>
 </body>
