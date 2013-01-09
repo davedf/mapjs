@@ -354,9 +354,11 @@ describe ("content aggregate", function(){
             }
           }
          });
+         spyOn(idea,'dispatchEvent');
          var result = idea.positionBefore(6, 3);
          expect(result).toBe(false);
          expect(idea.ideas[10].ideas.NaN).not.toBeDefined();
+         expect(idea.dispatchEvent).not.toHaveBeenCalled();
       });
       it ('orders negative ideas as negative ranks', function(){
         var idea=content({id:1, ideas: { '-5': { id: 2}, '-10': { id:3}, '-15' : {id:4}}});

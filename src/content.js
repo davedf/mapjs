@@ -155,6 +155,7 @@ var content;
       var new_rank = 0;
       if (positionBeforeIdeaId) {
         var after_rank = parentIdea.findChildRankById(positionBeforeIdeaId);
+        if (!after_rank) return false;
         var ranks_before = _(
           _(
             _(_(parentIdea.ideas).keys())
