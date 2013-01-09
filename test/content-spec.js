@@ -21,7 +21,7 @@ describe ("content aggregate", function(){
     });
     describe ("findChildRankById", function(){
       var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 10: { id:3, title:'I3'}, 15 : {id:4, title:'I4'}}});
-      it ('returns the key in the parent idea list of an idea by its id', function(){  
+      it ('returns the key in the parent idea list of an idea by its id', function(){
         expect( idea.findChildRankById(2)).toEqual(5);
         expect( idea.findChildRankById(3)).toEqual(10);
         expect( idea.findChildRankById(4)).toEqual(15);
@@ -71,11 +71,11 @@ describe ("content aggregate", function(){
           expect(second.title).toBe('Untouched');
         });
         it ('propagates changes to child ideas if the ID does not match, succeeding if there is a matching child', function(){
-          var ideas=content({id:1, title:'My Idea', 
+          var ideas=content({id:1, title:'My Idea',
                             ideas: {  1: {id:2, title:'My First Subidea', ideas:{1:{id:3, title:'My First sub-sub-idea'}}}}});
           var result=ideas.updateTitle(3,'Updated');
           expect(result).toBeTruthy();
-          expect(ideas.ideas[1].ideas[1].title).toBe('Updated'); 
+          expect(ideas.ideas[1].ideas[1].title).toBe('Updated');
           expect(ideas.updateTitle('Non Existing','XX')).toBeFalsy();
         });
         it ("fires an event matching the method call when the title changes", function(){
@@ -101,7 +101,7 @@ describe ("content aggregate", function(){
             idea.addSubIdea(71,'Second idea');
             var asArray=_.toArray(idea.ideas);
             expect(asArray.length).toBe(2);
-        
+
         });
         it ('assigns the next available ID to the new idea if the ID was not provided', function(){
             var idea=content({id:71,title:'My Idea'});
@@ -116,7 +116,7 @@ describe ("content aggregate", function(){
         it ('fails if the specified ID already exists', function(){
             var idea=content({id:71,title:'My Idea'});
             expect(idea.addSubIdea(71,'New Title',71)).toBeFalsy();
-            expect(_.size(idea.ideas)).toBe(0); 
+            expect(_.size(idea.ideas)).toBe(0);
         });
         it ('assigns the first subidea the rank of 1', function(){
             var idea=content({id:71,title:'My Idea'});
@@ -131,14 +131,14 @@ describe ("content aggregate", function(){
         });
 
         it ('propagates to children if it does not match the requested id, succeeding if any child ID matches', function(){
-          var ideas=content({id:1, title:'My Idea', 
+          var ideas=content({id:1, title:'My Idea',
                             ideas: {  1: {id:2, title:'My First Subidea', ideas:{1:{id:3, title:'My First sub-sub-idea'}}}}});
           var result=ideas.addSubIdea(3,'New New');
           expect(result).toBeTruthy();
-          expect(ideas.ideas[1].ideas[1].ideas[1].title).toBe('New New'); 
+          expect(ideas.ideas[1].ideas[1].ideas[1].title).toBe('New New');
         });
         it ('fails if no child ID in hierarchy matches requested id', function(){
-          var ideas=content({id:1, title:'My Idea', 
+          var ideas=content({id:1, title:'My Idea',
                             ideas: {  1: {id:2, title:'My First Subidea', ideas:{1:{id:3, title:'My First sub-sub-idea'}}}}});
           expect(ideas.addSubIdea(33,'New New')).toBeFalsy();
         });
@@ -216,13 +216,13 @@ describe ("content aggregate", function(){
         expect(listener).toHaveBeenCalledWith(4,5);
       });
       it ("fails if asked to make a idea it's own parent", function(){
-        expect(idea.changeParent(2,2)).toBeFalsy(); 
+        expect(idea.changeParent(2,2)).toBeFalsy();
       });
       it ("fails if asked to make a cycle (make a idea a child of it's own child)", function(){
-        expect(idea.changeParent(1,2)).toBeFalsy(); 
+        expect(idea.changeParent(1,2)).toBeFalsy();
       });
       it ("fails if asked to put an idea in it's current parent", function(){
-        expect(idea.changeParent(1,5)).toBeFalsy(); 
+        expect(idea.changeParent(1,5)).toBeFalsy();
       });
     });
     describe ("removeSubIdea", function(){
@@ -255,7 +255,7 @@ describe ("content aggregate", function(){
     describe ("flip", function(){
       it ('assigns the idea the largest positive rank if the current rank was negative', function(){
         var idea=content({id:1, ideas: { '-5': { id: 2}, 10: { id:3}, 15 : {id:4}}});
-        var result=idea.flip(2); 
+        var result=idea.flip(2);
         expect(result).toBeTruthy();
         expect(idea.ideas[10].id).toBe(3);
         expect(idea.ideas[15].id).toBe(4);
@@ -264,7 +264,7 @@ describe ("content aggregate", function(){
       });
       it ('assigns the idea the smallest negative rank if the current rank was positive', function(){
         var idea=content({id:1, ideas: { '-5': { id: 2}, 10: { id:3}, 15 : {id:4}}});
-        var result=idea.flip(3); 
+        var result=idea.flip(3);
         expect(result).toBeTruthy();
         expect(idea.ideas['-5'].id).toBe(2);
         expect(idea.ideas[15].id).toBe(4);
@@ -286,14 +286,14 @@ describe ("content aggregate", function(){
       it ('fires a flip event with arguments matching function call if successful', function(){
         var idea=content({id:1, ideas: { '-5': { id: 2}, 10: { id:3}, 15 : {id:4}}});
         spyOn(idea,'dispatchEvent');
-        idea.flip(2); 
+        idea.flip(2);
         expect(idea.dispatchEvent).toHaveBeenCalledWith('flip',2);
-      }); 
+      });
     });
     describe ("positionBefore", function(){
       it ('reorders immediate children by changing the rank of an idea to be immediately before the provided idea', function(){
         var idea=content({id:1, ideas: { 5: { id: 2}, 10: { id:3}, 15 : {id:4}}});
-        var result=idea.positionBefore(4,3); 
+        var result=idea.positionBefore(4,3);
         expect(result).toBeTruthy();
         expect(idea.ideas[5].id).toBe(2);
         expect(idea.ideas[10].id).toBe(3);
@@ -304,7 +304,7 @@ describe ("content aggregate", function(){
       it ('fails if the idea should be ordered before itself', function(){
         var idea=content({id:1, ideas: { 5: { id: 2}, 12: { id:3}, 15 : {id:4}}});
         spyOn(idea,'dispatchEvent');
-        var result=idea.positionBefore(3,3); 
+        var result=idea.positionBefore(3,3);
         expect(result).toBeFalsy();
         expect(idea.ideas[5].id).toBe(2);
         expect(idea.ideas[12].id).toBe(3);
@@ -314,7 +314,7 @@ describe ("content aggregate", function(){
       it ('fails if the idea should be ordered in the same place', function(){
         var idea=content({id:1, ideas: { 5: { id: 2}, 12: { id:3}, 15 : {id:4}}});
         spyOn(idea,'dispatchEvent');
-        var result=idea.positionBefore(3,4); 
+        var result=idea.positionBefore(3,4);
         expect(result).toBeFalsy();
         expect(idea.ideas[5].id).toBe(2);
         expect(idea.ideas[12].id).toBe(3);
@@ -323,12 +323,44 @@ describe ("content aggregate", function(){
       });
       it ('fails if it cannot find appropriate idea to reorder', function(){
         var idea=content({id:1, ideas: { 5: { id: 2}, 10: { id:3}, 15 : {id:4}}});
-        var result=idea.positionBefore(12,3); 
+        var result=idea.positionBefore(12,3);
         expect(result).toBeFalsy();
+      });
+      it ('fails if idea should be ordered before non-sibling', function() {
+         var idea=content({
+          id: 1,
+          ideas: {
+            5: {
+              id: 2,
+              ideas: {
+                5: {
+                  id: 3
+                },
+                10: {
+                  id: 4
+                }
+              }
+            },
+            10: {
+              id: 5,
+              ideas: {
+                5: {
+                  id: 6
+                },
+                10: {
+                  id: 7
+                }
+              }
+            }
+          }
+         });
+         var result = idea.positionBefore(6, 3);
+         expect(result).toBe(false);
+         expect(idea.ideas[10].ideas.NaN).not.toBeDefined();
       });
       it ('orders negative ideas as negative ranks', function(){
         var idea=content({id:1, ideas: { '-5': { id: 2}, '-10': { id:3}, '-15' : {id:4}}});
-        var result=idea.positionBefore(4,3); 
+        var result=idea.positionBefore(4,3);
         expect(result).toBeTruthy();
         expect(idea.ideas[-5].id).toBe(2);
         expect(idea.ideas[-10].id).toBe(3);
@@ -338,7 +370,7 @@ describe ("content aggregate", function(){
       });
       it ('puts the child in the first rank if the boundary idea was the first', function(){
         var idea=content({id:1, ideas: { 5: { id: 2}, 10: { id:3}, 15 : {id:4}}});
-        var result=idea.positionBefore(4,2); 
+        var result=idea.positionBefore(4,2);
         expect(result).toBeTruthy();
         expect(idea.ideas[5].id).toBe(2);
         expect(idea.ideas[10].id).toBe(3);
@@ -347,7 +379,7 @@ describe ("content aggregate", function(){
       });
       it ('gives the idea the largest positive rank if the boundary idea was not defined and current rank was positive', function(){
         var idea=content({id:1, ideas: { 5: { id: 2}, 10: { id:3}, 15 : {id:4}}});
-        var result=idea.positionBefore(2); 
+        var result=idea.positionBefore(2);
         expect(result).toBeTruthy();
         expect(idea.ideas[10].id).toBe(3);
         expect(idea.ideas[15].id).toBe(4);
@@ -357,7 +389,7 @@ describe ("content aggregate", function(){
       it ('fails if the boundary idea was not defined and child was already last', function(){
         var idea=content({id:1, ideas: { 5: { id: 2}, 10: { id:3}, 15 : {id:4}}});
         spyOn(idea,'dispatchEvent');
-        var result=idea.positionBefore(4); 
+        var result=idea.positionBefore(4);
         expect(result).toBeFalsy();
         expect(idea.ideas[5].id).toBe(2);
         expect(idea.ideas[10].id).toBe(3);
@@ -366,7 +398,7 @@ describe ("content aggregate", function(){
       });
       it ('puts the child closest to zero from the - side if the boundary idea was the smallest negative', function(){
         var idea=content({id:1, ideas: { '-5': { id: 2}, '-10': { id:3}, '-15' : {id:4}}});
-        var result=idea.positionBefore(4,2); 
+        var result=idea.positionBefore(4,2);
         expect(result).toBeTruthy();
         expect(idea.ideas[-5].id).toBe(2);
         expect(idea.ideas[-10].id).toBe(3);
@@ -376,7 +408,7 @@ describe ("content aggregate", function(){
       });
       it ('puts the child in the last negative rank if the boundary idea was not defined but current rank is negative', function(){
         var idea=content({id:1, ideas: { '-5': { id: 2}, '-10': { id:3}, '-15' : {id:4}}});
-        var result=idea.positionBefore(2); 
+        var result=idea.positionBefore(2);
         expect(result).toBeTruthy();
         expect(idea.ideas[-10].id).toBe(3);
         expect(idea.ideas[-15].id).toBe(4);
@@ -386,7 +418,7 @@ describe ("content aggregate", function(){
       it ('fails if the boundary idea was not defined and child was already last with negative ranks', function(){
         var idea=content({id:1, ideas: { '-5': { id: 2}, '-10': { id:3}, '-15' : {id:4}}});
         spyOn(idea,'dispatchEvent');
-        var result=idea.positionBefore(4); 
+        var result=idea.positionBefore(4);
         expect(result).toBeFalsy();
         expect(idea.ideas[-5].id).toBe(2);
         expect(idea.ideas[-10].id).toBe(3);

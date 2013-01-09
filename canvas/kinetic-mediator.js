@@ -1,4 +1,4 @@
-/*global console, Kinetic*/
+/*global console, document, jQuery, Kinetic*/
 var MAPJS = MAPJS || {};
 MAPJS.KineticMediator = function (mapModel, layer) {
 	'use strict';
@@ -10,6 +10,7 @@ MAPJS.KineticMediator = function (mapModel, layer) {
 	mapModel.addEventListener('nodeCreated', function (n) {
 		console.log('nodeCreated');
 		var node = new Kinetic.Idea({
+			level: n.level,
 			x: n.x,
 			y: n.y,
 			text: n.title,
@@ -41,8 +42,8 @@ MAPJS.KineticMediator = function (mapModel, layer) {
 				node.attrs.y
 			);
 		});
-		node.on(':textChanged', function (newText) {
-			mapModel.updateTitle(newText);
+		node.on(':textChanged', function (event) {
+			mapModel.updateTitle(event.text);
 		});
 		nodeByIdeaId[n.id] = node;
 		layer.add(node);
@@ -59,7 +60,8 @@ MAPJS.KineticMediator = function (mapModel, layer) {
 	mapModel.addEventListener('nodeDroppableChanged', function (ideaId, isDroppable) {
 		console.log('nodeDroppableChanged', ideaId, isDroppable);
 		var node = nodeByIdeaId[ideaId];
-		node.attrs.fill = isDroppable ? '#ecc' : '#ddd';
+		node.setIsDroppable(isDroppable);
+		//node.attrs.fill = isDroppable ? '#ecc' : '#ddd';
 	});
 	mapModel.addEventListener('nodeRemoved', function (n) {
 		console.log('nodeRemoved');
@@ -71,14 +73,14 @@ MAPJS.KineticMediator = function (mapModel, layer) {
 			callback: node.remove.bind(node)
 		});
 	});
-	mapModel.addEventListener('nodeMoved', function (n) {
-		console.log('nodeMoved');
+	mapModel.addEventListener('nodeMoved', function (n, reason) {
+		console.log('nodeMoved', reason);
 		var node = nodeByIdeaId[n.id];
 		node.transitionTo({
 			x: n.x,
 			y: n.y,
 			duration: 0.4,
-			easing: 'ease-in-out'
+			easing: (reason === 'failed' ? 'bounce-ease-out' : 'ease-in-out')
 		});
 	});
 	mapModel.addEventListener('nodeTitleChanged', function (n) {
@@ -93,7 +95,7 @@ MAPJS.KineticMediator = function (mapModel, layer) {
 			shapeFrom: nodeByIdeaId[n.from],
 			shapeTo: nodeByIdeaId[n.to],
 			stroke: '#888',
-			strokeWidth: 2,
+			strokeWidth: 1,
 			opacity: 0
 		});
 		connector.opacity = 0;
@@ -120,7 +122,7 @@ MAPJS.KineticMediator = function (mapModel, layer) {
 			13: mapModel.addSubIdea.bind(mapModel),
 			8: mapModel.removeSubIdea.bind(mapModel)
 		};
-		$(document).keydown(function (evt) {
+		jQuery(document).keydown(function (evt) {
 			var eventHandler = keyboardEventHandlers[evt.which];
 			if (eventHandler) {
 				eventHandler();
