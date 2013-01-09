@@ -1,5 +1,6 @@
 var observable = function (base) {
 	var eventListenersByType = {};
+  var eventSinks=[];
 	base.addEventListener = function (type, listener, priority) {
 		if (!listener) {
 			listener = type;
@@ -29,6 +30,10 @@ var observable = function (base) {
 			eventListenersByType[type]=eventListenersByType[type].filter(function(x){x!=listener;});
 		}
 	};
+  base.addEventSink=function(eventSink){
+    eventSinks.push(eventSink);
+
+  }
 	base.dispatchEvent = function () {
 		var eventArguments, eventType, listeners, i;
 		if (arguments.length === 1) {
@@ -38,6 +43,14 @@ var observable = function (base) {
 			eventArguments = Array.prototype.slice.call(arguments, 1);
 			eventType = arguments[0];
 		}
+		for (var i in eventSinks) {
+      try{
+        eventSinks[i].apply(base,arguments);
+			} catch (e) {
+				console.log(e);
+      }
+    }
+
 		listeners = base.listeners(eventType);
 		for (i = 0; i < listeners.length; i += 1) {
 			try {
