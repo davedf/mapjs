@@ -42,8 +42,8 @@ MAPJS.KineticMediator = function (mapModel, layer) {
 				node.attrs.y
 			);
 		});
-		node.on(':textChanged', function (newText) {
-			mapModel.updateTitle(newText);
+		node.on(':textChanged', function (event) {
+			mapModel.updateTitle(event.text);
 		});
 		nodeByIdeaId[n.id] = node;
 		layer.add(node);

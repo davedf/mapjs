@@ -18,6 +18,7 @@ Kinetic.Idea = function (config) {
 	Kinetic.Text.apply(this, [config]);
 	this.classType = 'Idea';
 	this.on('dblclick', function () {
+		//this only works for solid color nodes
 		self.attrs.textFill = self.attrs.fill;
 		var canvasPosition = jQuery('canvas').offset(),
 			currentText = self.getText(),
@@ -25,7 +26,9 @@ Kinetic.Idea = function (config) {
 			onCommit = function () {
 				self.setStyle(self.attrs);
 				self.getStage().draw();
-				self.fire(':textChanged', ideaInput.val());
+				self.fire(':textChanged', {
+					text: ideaInput.val()
+				});
 				ideaInput.remove();
 			};
 		ideaInput = jQuery('<input type="text" class="ideaInput" />')
@@ -59,18 +62,21 @@ Kinetic.Idea.prototype.setStyle = function (config) {
 	config.fontStyle = 'bold';
 	if (isDroppable) {
 		config.stroke = '#9F4F4F';
-		config.fill = '#CF4F4F';
+		config.fill = {
+			start: { x: 0, y: 0 },
+			end: {x: 0, y: 20 },
+			colorStops: [0, '#EF6F6F', 1, '#CF4F4F']
+		};
 		config.textFill = '#FFFFFF';
 	} else if (isSelected) {
-		config.stroke = '#4F9F4F';
 		config.fill = '#5FBF5F';
 		config.textFill = '#FFFFFF';
 	} else {
 		config.stroke = isRoot ? '#88F' : '#888';
 		config.fill = {
 			start: { x: 0, y: 0 },
-			end: {x: 0, y: '25' },
-			colorStops: isRoot ? [0, '#30C0FF', 1, '#3FCFFF'] : [0, '#FFFFFF', 1, '#F0F0F0']
+			end: {x: 0, y: 20 },
+			colorStops: isRoot ? [0, '#4FDFFF', 1, '#30C0FF'] : [0, '#FFFFFF', 1, '#E0E0E0']
 		};
 		config.textFill = isRoot ? '#FFFFFF' : '#5F5F5F';
 	}
