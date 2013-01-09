@@ -1,4 +1,4 @@
-/*global console, Kinetic*/
+/*global console, document, jQuery, Kinetic*/
 var MAPJS = MAPJS || {};
 MAPJS.KineticMediator = function (mapModel, layer) {
 	'use strict';
@@ -122,7 +122,7 @@ MAPJS.KineticMediator = function (mapModel, layer) {
 			13: mapModel.addSubIdea.bind(mapModel),
 			8: mapModel.removeSubIdea.bind(mapModel)
 		};
-		$(document).keydown(function (evt) {
+		jQuery(document).keydown(function (evt) {
 			var eventHandler = keyboardEventHandlers[evt.which];
 			if (eventHandler) {
 				eventHandler();

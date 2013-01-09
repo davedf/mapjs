@@ -1,12 +1,14 @@
+/*global _, beforeEach, content, describe, expect, it, MAPJS*/
 describe('layout', function () {
+	'use strict';
 	var dimensionProvider = function (text) {
-		length = (text || '').length + 1;
+		var length = (text || '').length + 1;
 		return {
 			width: length * 20,
 			height: length * 10
 		};
 	},
-	viewportCenter;
+		viewportCenter;
 	describe('Calculating dimensions', function () {
 		it('should return two margins plus text width/height as dimensions of a single idea', function () {
 			var contentAggregate = content({
@@ -137,7 +139,7 @@ describe('layout', function () {
 		viewportCenter = {
 			offset: { x: 0, y: 0 },
 			dimensions: { width: 0, height: 0 }
-		},
+		};
 		this.addMatchers({
 			toBeVerticallyAlignedWith: function (expected) {
 				return this.actual.offset.y + 0.5 * this.actual.dimensions.height === expected.offset.y + 0.5 * expected.dimensions.height;
@@ -152,34 +154,34 @@ describe('layout', function () {
 				return this.env.equals_(_.pick(this.actual, _.keys(expected)), expected);
 			},
 			toHaveNoIntersections: function () {
-				var firstId, secondId, first, second;
-				nodeList = this.actual;
+				var firstId, secondId, first, second, nodeList = this.actual, intersectionWidth, intrsectionHeight;
 				for (firstId in nodeList) {
 					first = nodeList[firstId];
 					for (secondId in nodeList) {
 						if (firstId < secondId) {
 							second = nodeList[secondId];
-							var intersectionWidth =
+							intersectionWidth =
 								Math.min(first.offset.x + first.dimensions.width, second.offset.x + second.dimensions.width) -
 								Math.max(first.offset.x, second.offset.x);
-							var intrsectionHeight =
+							intrsectionHeight =
 								Math.min(first.offset.y + first.dimensions.height, second.offset.y + second.dimensions.height) -
 								Math.max(first.offset.y, second.offset.y);
-							if (intersectionWidth >= 0 && intrsectionHeight >= 0)
+							if (intersectionWidth >= 0 && intrsectionHeight >= 0) {
 								return false;
 							}
+						}
 					}
 				}
 				return true;
 			}
 		});
 	});
-  it('should assign root node level 1', function(){
+	it('should assign root node level 1', function () {
 		var contentAggregate = content({ id: 7 }),
 			result = MAPJS.calculateLayout(contentAggregate, dimensionProvider);
 		expect(result.nodes[7].level).toEqual(1);
-  });
-  it('should assign child node levels recursively', function () {
+	});
+	it('should assign child node levels recursively', function () {
 		var contentAggregate = content({
 				id: 7,
 				ideas: {
@@ -187,12 +189,12 @@ describe('layout', function () {
 						id: 2,
 						ideas: {
 							1: {
-								id:22
+								id: 22
 							}
 						}
 					},
 					2: {
-						id:3
+						id: 3
 					}
 				}
 			}),
@@ -299,7 +301,7 @@ describe('layout', function () {
 					},
 					1: {
 						id: 9,
-						title: '123',
+						title: '123'
 					}
 				}
 			}),
@@ -321,7 +323,6 @@ describe('layout', function () {
 			}),
 			result;
 		result = MAPJS.calculateLayout(contentAggregate, dimensionProvider);
-		console.dir(result.nodes);
 		expect(result.nodes[11].y).toBe(25);
 	});
 	it('should compare objects partially using the partiallyMatches matcher', function () {
