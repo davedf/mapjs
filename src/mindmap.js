@@ -328,6 +328,9 @@ function attach_map_listeners(content_aggregate,jquery_map, repaint_callback,opt
     newLabel.effect('bounce',{},500,function(){
       newLabel.addClass(options.selectedClass)
       attach_label_listeners(newLabel, jquery_map,content_aggregate,options);
+	  if (options.newLabelCallBack) {
+		options.newLabelCallBack(newLabel);
+	  }
     });
     });
   });
