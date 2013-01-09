@@ -10,6 +10,7 @@ MAPJS.KineticMediator = function (mapModel, layer) {
 	mapModel.addEventListener('nodeCreated', function (n) {
 		console.log('nodeCreated');
 		var node = new Kinetic.Idea({
+			isRoot: n.isRoot,
 			x: n.x,
 			y: n.y,
 			text: n.title,
@@ -59,7 +60,8 @@ MAPJS.KineticMediator = function (mapModel, layer) {
 	mapModel.addEventListener('nodeDroppableChanged', function (ideaId, isDroppable) {
 		console.log('nodeDroppableChanged', ideaId, isDroppable);
 		var node = nodeByIdeaId[ideaId];
-		node.attrs.fill = isDroppable ? '#ecc' : '#ddd';
+		node.setIsDroppable(isDroppable);
+		//node.attrs.fill = isDroppable ? '#ecc' : '#ddd';
 	});
 	mapModel.addEventListener('nodeRemoved', function (n) {
 		console.log('nodeRemoved');
@@ -93,7 +95,7 @@ MAPJS.KineticMediator = function (mapModel, layer) {
 			shapeFrom: nodeByIdeaId[n.from],
 			shapeTo: nodeByIdeaId[n.to],
 			stroke: '#888',
-			strokeWidth: 2,
+			strokeWidth: 1,
 			opacity: 0
 		});
 		connector.opacity = 0;

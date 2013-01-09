@@ -32,6 +32,7 @@ MAPJS.MapModel = function (layoutCalculator) {
 				oldNode = currentLayout.nodes[nodeId];
 				newNode = newLayout.nodes[nodeId];
 				if (!oldNode) {
+					newNode.isRoot = newNode.id === idea.id;
 					self.dispatchEvent('nodeCreated', newNode);
 				} else {
 					if (newNode.x !== oldNode.x || newNode.y !== oldNode.y) {
