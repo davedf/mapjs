@@ -1,8 +1,8 @@
-/*global console, Kinetic*/
+/*global console, jQuery, Kinetic*/
 Kinetic.Idea = function (config) {
 	'use strict';
 	var self = this;
-	this.isRoot = config.isRoot || false;
+	this.level = config.level;
 	this.isSelected = false;
 	this.setStyle(config);
 	config.align = 'center';
@@ -19,7 +19,7 @@ Kinetic.Idea = function (config) {
 	this.classType = 'Idea';
 	this.on('dblclick', function () {
 		self.attrs.textFill = self.attrs.fill;
-		var canvasPosition = $('canvas').offset(),
+		var canvasPosition = jQuery('canvas').offset(),
 			currentText = self.getText(),
 			ideaInput,
 			onCommit = function () {
@@ -28,7 +28,7 @@ Kinetic.Idea = function (config) {
 				self.fire(':textChanged', ideaInput.val());
 				ideaInput.remove();
 			};
-		ideaInput = $('<input type="text" class="ideaInput" />')
+		ideaInput = jQuery('<input type="text" class="ideaInput" />')
 			.css({
 				top: canvasPosition.top + self.attrs.y,
 				left: canvasPosition.left + self.attrs.x,
@@ -51,7 +51,7 @@ Kinetic.Idea.prototype.setStyle = function (config) {
 	'use strict';
 	var isDroppable = this.isDroppable,
 		isSelected = this.isSelected,
-		isRoot = this.isRoot;
+		isRoot = this.level === 1;
 	config.strokeWidth = 1;
 	config.padding = 8;
 	config.fontSize = 10;
@@ -60,11 +60,11 @@ Kinetic.Idea.prototype.setStyle = function (config) {
 	if (isDroppable) {
 		config.stroke = '#9F4F4F';
 		config.fill = '#CF4F4F';
-		config.textFill = '#FFFFFF'
+		config.textFill = '#FFFFFF';
 	} else if (isSelected) {
 		config.stroke = '#4F9F4F';
 		config.fill = '#5FBF5F';
-		config.textFill = '#FFFFFF'
+		config.textFill = '#FFFFFF';
 	} else {
 		config.stroke = isRoot ? '#88F' : '#888';
 		config.fill = {

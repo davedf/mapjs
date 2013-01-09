@@ -10,7 +10,7 @@ MAPJS.KineticMediator = function (mapModel, layer) {
 	mapModel.addEventListener('nodeCreated', function (n) {
 		console.log('nodeCreated');
 		var node = new Kinetic.Idea({
-			isRoot: n.isRoot,
+			level: n.level,
 			x: n.x,
 			y: n.y,
 			text: n.title,
@@ -73,14 +73,14 @@ MAPJS.KineticMediator = function (mapModel, layer) {
 			callback: node.remove.bind(node)
 		});
 	});
-	mapModel.addEventListener('nodeMoved', function (n) {
-		console.log('nodeMoved');
+	mapModel.addEventListener('nodeMoved', function (n, reason) {
+		console.log('nodeMoved', reason);
 		var node = nodeByIdeaId[n.id];
 		node.transitionTo({
 			x: n.x,
 			y: n.y,
 			duration: 0.4,
-			easing: 'ease-in-out'
+			easing: (reason === 'failed' ? 'bounce-ease-out' : 'ease-in-out')
 		});
 	});
 	mapModel.addEventListener('nodeTitleChanged', function (n) {
