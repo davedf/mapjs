@@ -78,24 +78,27 @@ var MAPJS = MAPJS || {};
 		}
 		return result;
 	};
-	MAPJS.calculateLayout = function (idea, dimensionProvider) {
+	MAPJS.calculateLayout = function (idea, dimensionProvider,margin) {
+    margin=margin||10;
 		var result = {
 			nodes: {},
 			connectors: {}
 		},
-			calculateLayoutInner = function (positions) {
+			calculateLayoutInner = function (positions,level) {
 				var subIdeaRank, from, to;
+        level=level||1;
 				result.nodes[positions.id] = {
 					id: positions.id,
 					x: positions.x,
 					y: positions.y,
 					width: positions.width,
 					height: positions.height,
-					title: positions.title
+					title: positions.title,
+          level:level
 				};
 				if (positions.ideas) {
 					for (subIdeaRank in positions.ideas) {
-						calculateLayoutInner(positions.ideas[subIdeaRank]);
+						calculateLayoutInner(positions.ideas[subIdeaRank],level+1);
 						from = positions.id;
 						to = positions.ideas[subIdeaRank].id;
 						result.connectors[to] = {
