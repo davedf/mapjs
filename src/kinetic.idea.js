@@ -1,7 +1,24 @@
 /*global console, jQuery, Kinetic*/
 Kinetic.Idea = function (config) {
 	'use strict';
-	var self = this;
+  var _COLUMN_WORD_WRAP_LIMIT=25;
+  /*shamelessly copied from http://james.padolsey.com/javascript/wordwrap-for-javascript */
+  function wordwrap( str, width, brk, cut ) {
+    brk = brk || '\n';
+    width = width || 75;
+    cut = cut || false;
+    if (!str) { return str; }
+    var regex = '.{1,' +width+ '}(\\s|$)' + (cut ? '|.{' +width+ '}|.+$' : '|\\S+?(\\s|$)');
+    return str.match( RegExp(regex, 'g') ).join( brk );
+  }
+  function join_lines(string){
+    return string.replace(/\n/g," ");
+  }
+  function break_words(string){
+    return wordwrap(join_lines(string), _COLUMN_WORD_WRAP_LIMIT,"\n",false)
+  }
+  config.text=break_words(config.text); 
+  var self = this;
 	this.level = config.level;
 	this.isSelected = false;
 	this.setStyle(config);
@@ -27,7 +44,7 @@ Kinetic.Idea = function (config) {
 				self.setStyle(self.attrs);
 				self.getStage().draw();
 				self.fire(':textChanged', {
-					text: ideaInput.val()
+					text: break_words(ideaInput.val())
 				});
 				ideaInput.remove();
 			};
@@ -38,7 +55,7 @@ Kinetic.Idea = function (config) {
 				width: self.getWidth(),
 				height: self.getHeight()
 			})
-			.val(currentText)
+			.val(join_lines(currentText))
 			.appendTo('body')
 			.keydown(function (e) {
 				if (e.which === 13) {
