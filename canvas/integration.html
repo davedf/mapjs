@@ -21,7 +21,6 @@
 	</style>
 	<div id="container"></div>
 	<ul>
-		<li>bug: quickly adding children (animation interrupted)</li>
 		<li>usability: add sibling of the currently active element on enter (not a child), give focus to newly created node</li>
 		<li>multiline</li>
 		<li>viewport</li>
@@ -46,7 +45,6 @@
 				height: 2048,
 				draggable: false
 			}),
-				layer = new Kinetic.Layer(),
 				idea = content(test_tree()),
 				dimensionProvider = function (title) {
 					var text = new Kinetic.Idea({
@@ -60,8 +58,7 @@
 				mapModel = new MAPJS.MapModel(function layoutCalculator(idea) {
 					return MAPJS.calculateLayout(idea, dimensionProvider);
 				}),
-				mediator = new MAPJS.KineticMediator(mapModel, layer);
-			stage.add(layer);
+				mediator = new MAPJS.KineticMediator(mapModel, stage);
 			mapModel.setIdea(idea);
 		}());
 	</script>

@@ -91,4 +91,14 @@ Kinetic.Idea.prototype.setIsDroppable = function (isDroppable) {
 	this.isDroppable = isDroppable;
 	this.setStyle(this.attrs);
 };
+Kinetic.Idea.prototype.transitionToAndDontStopCurrentTransitions = function (config) {
+	'use strict';
+	var transition = new Kinetic.Transition(this, config),
+		animation = new Kinetic.Animation();
+	animation.func = transition._onEnterFrame.bind(transition);
+	animation.node = this.getLayer();
+	transition.onFinished = animation.stop.bind(animation);
+	transition.start();
+	animation.start();
+};
 Kinetic.Global.extend(Kinetic.Idea, Kinetic.Text);
