@@ -2,6 +2,8 @@
 Kinetic.Idea = function (config) {
 	'use strict';
   var _COLUMN_WORD_WRAP_LIMIT=25;
+  var _ENTER_KEY_CODE=13;
+  var _ESC_KEY_CODE=27;
   /*shamelessly copied from http://james.padolsey.com/javascript/wordwrap-for-javascript */
   function wordwrap( str, width, brk, cut ) {
     brk = brk || '\n';
@@ -40,14 +42,17 @@ Kinetic.Idea = function (config) {
 		var canvasPosition = jQuery('canvas').offset(),
 			currentText = self.getText(),
 			ideaInput,
-			onCommit = function () {
+      updateText = function (newText) {
 				self.setStyle(self.attrs);
 				self.getStage().draw();
 				self.fire(':textChanged', {
-					text: break_words(ideaInput.val())
+					text: break_words(newText||currentText)
 				});
 				ideaInput.remove();
-			};
+			},
+      onCommit=function(){
+        updateText(ideaInput.val());
+      };
 		ideaInput = jQuery('<input type="text" class="ideaInput" />')
 			.css({
 				top: canvasPosition.top + self.attrs.y,
@@ -58,9 +63,12 @@ Kinetic.Idea = function (config) {
 			.val(join_lines(currentText))
 			.appendTo('body')
 			.keydown(function (e) {
-				if (e.which === 13) {
+				if (e.which === _ENTER_KEY_CODE) {
 					onCommit();
 				}
+        else if (e.which === _ESC_KEY_CODE){
+          updateText(currentText);
+        }
 				e.stopPropagation();
 			})
 			.blur(onCommit)
