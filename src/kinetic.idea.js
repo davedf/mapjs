@@ -49,7 +49,7 @@ Kinetic.Idea = function (config) {
 		//this only works for solid color nodes
 		self.attrs.textFill = self.attrs.fill;
 		self.getLayer().draw();
-		var canvasPosition = jQuery('canvas').offset(),
+		var canvasPosition = jQuery(self.getLayer().getCanvas().getElement()).offset(),
 			currentText = self.getText(),
 			ideaInput,
 			updateText = function (newText) {
@@ -65,12 +65,10 @@ Kinetic.Idea = function (config) {
 			};
 		ideaInput = jQuery('<textarea type="text" class="ideaInput" ></textarea>')
 			.css({
-				top: canvasPosition.top + self.attrs.y,
-				left: canvasPosition.left + self.attrs.x,
+				top: canvasPosition.top + self.getAbsolutePosition().y,
+				left: canvasPosition.left + self.getAbsolutePosition().x,
 				width: self.getWidth(),
 				height: self.getHeight(),
-        padding: '5px 5px 5px 5px',
-        'background-color':'red'
 			})
 			.val(join_lines(currentText))
 			.appendTo('body')
