@@ -136,43 +136,9 @@ describe('layout', function () {
 		});
 	});
 	beforeEach(function () {
-		viewportCenter = {
-			offset: { x: 0, y: 0 },
-			dimensions: { width: 0, height: 0 }
-		};
 		this.addMatchers({
-			toBeVerticallyAlignedWith: function (expected) {
-				return this.actual.offset.y + 0.5 * this.actual.dimensions.height === expected.offset.y + 0.5 * expected.dimensions.height;
-			},
-			toBeHorizontallyAlignedWith: function (expected) {
-				return this.actual.offset.x + 0.5 * this.actual.dimensions.width === expected.offset.x + 0.5 * expected.dimensions.width;
-			},
-			toBeRightOf: function (expected) {
-				return this.actual.offset.x > expected.offset.x + expected.dimensions.width;
-			},
 			toPartiallyMatch: function (expected) {
 				return this.env.equals_(_.pick(this.actual, _.keys(expected)), expected);
-			},
-			toHaveNoIntersections: function () {
-				var firstId, secondId, first, second, nodeList = this.actual, intersectionWidth, intrsectionHeight;
-				for (firstId in nodeList) {
-					first = nodeList[firstId];
-					for (secondId in nodeList) {
-						if (firstId < secondId) {
-							second = nodeList[secondId];
-							intersectionWidth =
-								Math.min(first.offset.x + first.dimensions.width, second.offset.x + second.dimensions.width) -
-								Math.max(first.offset.x, second.offset.x);
-							intrsectionHeight =
-								Math.min(first.offset.y + first.dimensions.height, second.offset.y + second.dimensions.height) -
-								Math.max(first.offset.y, second.offset.y);
-							if (intersectionWidth >= 0 && intrsectionHeight >= 0) {
-								return false;
-							}
-						}
-					}
-				}
-				return true;
 			}
 		});
 	});
@@ -213,8 +179,8 @@ describe('layout', function () {
 		result = MAPJS.calculateLayout(contentAggregate, dimensionProvider);
 		expect(result.nodes[7]).toEqual({
 			id: 7,
-			x: 10,
-			y: 10,
+			x: -60,
+			y: -30,
 			width: 140,
 			height: 80,
 			title: 'Hello',
@@ -235,12 +201,12 @@ describe('layout', function () {
 			result;
 		result = MAPJS.calculateLayout(contentAggregate, dimensionProvider);
 		expect(result.nodes[7]).toPartiallyMatch({
-			x: 10,
-			y: 15
+			x: -20,
+			y: -10
 		});
 		expect(result.nodes[8]).toPartiallyMatch({
-			x: 70,
-			y: 10
+			x: 40,
+			y: -15
 		});
 	});
 	it('should place root node right of its only left child', function () {
@@ -261,8 +227,8 @@ describe('layout', function () {
 			result;
 		result = MAPJS.calculateLayout(contentAggregate, dimensionProvider);
 		expect(result.nodes[9]).toPartiallyMatch({
-			x: 10,
-			y: 10
+			x: -120,
+			y: -20
 		});
 	});
 	it('should work recursively', function () {
@@ -288,7 +254,7 @@ describe('layout', function () {
 			}),
 			result;
 		result = MAPJS.calculateLayout(contentAggregate, dimensionProvider);
-		expect(result.nodes[10].x).toBe(10);
+		expect(result.nodes[10].x).toBe(-240);
 	});
 	it('should place child nodes below each other', function () {
 		var contentAggregate = content({
@@ -307,8 +273,8 @@ describe('layout', function () {
 			}),
 			result;
 		result = MAPJS.calculateLayout(contentAggregate, dimensionProvider);
-		expect(result.nodes[9].y).toBe(10);
-		expect(result.nodes[8].y).toBe(70);
+		expect(result.nodes[9].y).toBe(-45);
+		expect(result.nodes[8].y).toBe(15);
 	});
 	it('should center children vertically', function () {
 		var contentAggregate = content({
@@ -323,7 +289,7 @@ describe('layout', function () {
 			}),
 			result;
 		result = MAPJS.calculateLayout(contentAggregate, dimensionProvider);
-		expect(result.nodes[11].y).toBe(25);
+		expect(result.nodes[11].y).toBe(-5);
 	});
 	it('should compare objects partially using the partiallyMatches matcher', function () {
 		expect({ x: 1, y: 2, z: 3 }).toPartiallyMatch({ x: 1, y: 2 });
@@ -332,8 +298,5 @@ describe('layout', function () {
 		expect({ x: 1, y: 2, z: 3 }).not.toPartiallyMatch({ x: 2, y: 2 });
 		expect({ x: 1, y: 2, z: 3 }).not.toPartiallyMatch({ x: 1, y: 3 });
 		expect({ x: 1, y: 2, z: 3 }).not.toPartiallyMatch({ x: 1, t: 2 });
-	});
-	it('should use toBeRightOf matcher', function () {
-		expect({ offset: { x: 30} }).toBeRightOf({ offset: { x: 0 }, dimensions: { width : 10 }});
 	});
 });

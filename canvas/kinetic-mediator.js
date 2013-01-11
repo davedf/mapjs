@@ -10,7 +10,6 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 		};
 	stage.add(layer);
 	mapModel.addEventListener('nodeCreated', function (n) {
-		console.log('nodeCreated');
 		var node = new Kinetic.Idea({
 			level: n.level,
 			x: n.x,
@@ -57,17 +56,14 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 		});
 	});
 	mapModel.addEventListener('nodeSelectionChanged', function (ideaId, isSelected) {
-		console.log('nodeSelectionChanged');
 		var node = nodeByIdeaId[ideaId];
 		node.setIsSelected(isSelected);
 	});
 	mapModel.addEventListener('nodeDroppableChanged', function (ideaId, isDroppable) {
-		console.log('nodeDroppableChanged', ideaId, isDroppable);
 		var node = nodeByIdeaId[ideaId];
 		node.setIsDroppable(isDroppable);
 	});
 	mapModel.addEventListener('nodeRemoved', function (n) {
-		console.log('nodeRemoved');
 		var node = nodeByIdeaId[n.id];
 		delete nodeByIdeaId[n.id];
 		node.transitionTo({
@@ -75,9 +71,9 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			duration: 0.4,
 			callback: node.remove.bind(node)
 		});
+		node.off('click tap dragstart dragmove dragend :textChanged :nodeEditRequested');
 	});
 	mapModel.addEventListener('nodeMoved', function (n, reason) {
-		console.log('nodeMoved', reason);
 		var node = nodeByIdeaId[n.id];
 		node.transitionTo({
 			x: n.x,
@@ -87,13 +83,11 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 		});
 	});
 	mapModel.addEventListener('nodeTitleChanged', function (n) {
-		console.log('nodeTitleChanged');
 		var node = nodeByIdeaId[n.id];
 		node.setText(n.title);
 		layer.draw();
 	});
 	mapModel.addEventListener('connectorCreated', function (n) {
-		console.log('connectorCreated');
 		var connector = new Kinetic.Connector({
 			shapeFrom: nodeByIdeaId[n.from],
 			shapeTo: nodeByIdeaId[n.to],
@@ -111,7 +105,6 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 		});
 	});
 	mapModel.addEventListener('connectorRemoved', function (n) {
-		console.log('connectorRemoved');
 		var key = connectorKey(n.from, n.to),
 			connector = connectorByFromIdeaId_ToIdeaId[key];
 		delete connectorByFromIdeaId_ToIdeaId[key];

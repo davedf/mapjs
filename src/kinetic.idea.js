@@ -65,8 +65,8 @@ Kinetic.Idea = function (config) {
 			};
 		ideaInput = jQuery('<input type="text" class="ideaInput" />')
 			.css({
-				top: canvasPosition.top + self.attrs.y,
-				left: canvasPosition.left + self.attrs.x,
+				top: canvasPosition.top + self.getStage().attrs.y + self.attrs.y,
+				left: canvasPosition.left + self.getStage().attrs.x + self.attrs.x,
 				width: self.getWidth(),
 				height: self.getHeight()
 			})
