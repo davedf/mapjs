@@ -36,21 +36,28 @@
 				container: 'container',
 				width: 1000,
 				height: 1000,
-				draggable: false
+				draggable: true
 			}),
 				layer = new Kinetic.Layer(),
-				node = new Kinetic.Idea({
+				node1 = new Kinetic.Idea({
 					x: 20,
 					y: 20,
 					text: 'Hello world'
+				}),
+				node2 = new Kinetic.Idea({
+					x: 120,
+					y: 120,
+					text: 'Hello world'
+				}),
+				connector = new Kinetic.Connector({
+					shapeFrom: node1,
+					shapeTo: node2
 				});
-			node.setIsSelected(true);
-			node.on(':textChanged', function (newText) {
-				node.setText(newText);
-				node.getStage().draw();
-			});
-			layer.add(node);
+			layer.add(node1);
+			layer.add(node2);
+			layer.add(connector);
 			stage.add(layer);
+			window.layer = layer;
 		}());
 	</script>
 </body>
