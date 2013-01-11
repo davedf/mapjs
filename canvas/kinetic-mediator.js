@@ -104,6 +104,7 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 		connector.opacity = 0;
 		connectorByFromIdeaId_ToIdeaId[connectorKey(n.from, n.to)] = connector;
 		layer.add(connector);
+		connector.moveToBottom();
 		connector.transitionTo({
 			opacity: 1,
 			duration: 0.4

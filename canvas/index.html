@@ -48,14 +48,17 @@
 					x: 120,
 					y: 120,
 					text: 'Hello world'
-				}),
+				});
 				connector = new Kinetic.Connector({
 					shapeFrom: node1,
 					shapeTo: node2
 				});
+			window.node1 = node1;
+			window.node2 = node2;
+			window.layer = layer;
+			layer.add(connector);
 			layer.add(node1);
 			layer.add(node2);
-			layer.add(connector);
 			stage.add(layer);
 			window.layer = layer;
 		}());
