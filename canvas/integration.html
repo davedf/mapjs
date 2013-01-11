@@ -25,11 +25,6 @@
 	<input type="button" onclick="mapModel.editNode()" value="edit"></input>
 	<input type="button" onclick="mapModel.clear()" value="clear"></input>
 	<div id="container"></div>
-	<ul>
-		<li>usability: add sibling of the currently active element on enter (not a child), give focus to newly created node</li>
-		<li>multiline</li>
-		<li>viewport</li>
-	</ul>
 	<script type="text/javascript" src="../lib/jquery-1.8.3.js"></script>
 	<script type="text/javascript" src="../lib/underscore-1.4.3-min.js"></script>
 	<script type="text/javascript" src="../lib/kinetic-v4.2.0.js"></script>
@@ -66,6 +61,7 @@
 			stage.attrs.x = 0.5 * stage.getWidth();
 			stage.attrs.y = 0.5 * stage.getHeight();
 			mapModel.setIdea(idea);
+			window.mapModel = mapModel;
 		}());
 	</script>
 </body>

@@ -71,7 +71,7 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			duration: 0.4,
 			callback: node.remove.bind(node)
 		});
-		node.off('click tap dragstart dragmove dragend mouseover mouseout :textChanged :nodeEditRequested');
+		node.off('click dblclick tap dragstart dragmove dragend mouseover mouseout :textChanged :nodeEditRequested');
 	});
 	mapModel.addEventListener('nodeMoved', function (n, reason) {
 		var node = nodeByIdeaId[n.id];

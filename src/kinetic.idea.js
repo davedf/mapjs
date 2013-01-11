@@ -39,17 +39,16 @@ Kinetic.Idea = function (config) {
 	Kinetic.Text.apply(this, [config]);
 	this.classType = 'Idea';
 	this.on('dblclick', self.fire.bind(self, ':nodeEditRequested'));
-	this.on('mouseover', function () {
-		self.getStage().setDraggable(false);
-	});
-	this.on('mouseout', function () {
-		self.getStage().setDraggable(true);
-	});
+	var setStageDraggable = function (isDraggable) {
+		self.getStage().setDraggable(isDraggable);
+	};
+	this.on('mouseover touchstart', setStageDraggable.bind(null, false));
+	this.on('mouseout touchend', setStageDraggable.bind(null, true));
 	this.editNode = function () {
 		//this only works for solid color nodes
 		self.attrs.textFill = self.attrs.fill;
 		self.getLayer().draw();
-		var canvasPosition = jQuery('canvas').offset(),
+		var canvasPosition = jQuery(self.getLayer().getCanvas().getElement()).offset(),
 			currentText = self.getText(),
 			ideaInput,
 			updateText = function (newText) {
@@ -63,10 +62,10 @@ Kinetic.Idea = function (config) {
 			onCommit = function () {
 				updateText(ideaInput.val());
 			};
-		ideaInput = jQuery('<input type="text" class="ideaInput" />')
+		ideaInput = jQuery('<textarea type="text" class="ideaInput" ></textarea>')
 			.css({
-				top: canvasPosition.top + self.getStage().attrs.y + self.attrs.y,
-				left: canvasPosition.left + self.getStage().attrs.x + self.attrs.x,
+				top: canvasPosition.top + self.getAbsolutePosition().y,
+				left: canvasPosition.left + self.getAbsolutePosition().x,
 				width: self.getWidth(),
 				height: self.getHeight()
 			})
