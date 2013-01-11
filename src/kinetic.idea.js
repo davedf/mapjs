@@ -44,7 +44,6 @@ Kinetic.Idea = function (config) {
 	};
 	this.on('mouseover touchstart', setStageDraggable.bind(null, false));
     this.on('mouseout touchend', setStageDraggable.bind(null, true));
-    
 	this.editNode = function () {
 		//this only works for solid color nodes
 		self.attrs.textFill = self.attrs.fill;
@@ -69,6 +68,7 @@ Kinetic.Idea = function (config) {
 				left: canvasPosition.left + self.getAbsolutePosition().x,
 				width: self.getWidth(),
 				height: self.getHeight(),
+        resize: 'none'
 			})
 			.val(join_lines(currentText))
 			.appendTo('body')

@@ -84,13 +84,14 @@ var MAPJS = MAPJS || {};
 			nodes: {},
 			connectors: {}
 		},
+			root = MAPJS.calculatePositions(idea, dimensionProvider, margin, 0, 0),
 			calculateLayoutInner = function (positions, level) {
 				var subIdeaRank, from, to;
 				level = level || 1;
 				result.nodes[positions.id] = {
 					id: positions.id,
-					x: positions.x,
-					y: positions.y,
+					x: positions.x - root.x - 0.5 * root.width + margin,
+					y: positions.y - root.y - 0.5 * root.height + margin,
 					width: positions.width,
 					height: positions.height,
 					title: positions.title,
@@ -108,7 +109,7 @@ var MAPJS = MAPJS || {};
 					}
 				}
 			};
-		calculateLayoutInner(MAPJS.calculatePositions(idea, dimensionProvider, margin, 0, 0));
+		calculateLayoutInner(root);
 		return result;
 	};
 }());
