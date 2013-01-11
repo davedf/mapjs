@@ -63,12 +63,14 @@ Kinetic.Idea = function (config) {
 			onCommit = function () {
 				updateText(ideaInput.val());
 			};
-		ideaInput = jQuery('<input type="text" class="ideaInput" />')
+		ideaInput = jQuery('<textarea type="text" class="ideaInput" ></textarea>')
 			.css({
 				top: canvasPosition.top + self.attrs.y,
 				left: canvasPosition.left + self.attrs.x,
 				width: self.getWidth(),
-				height: self.getHeight()
+				height: self.getHeight(),
+        padding: '5px 5px 5px 5px',
+        'background-color':'red'
 			})
 			.val(join_lines(currentText))
 			.appendTo('body')
