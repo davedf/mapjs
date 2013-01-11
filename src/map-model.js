@@ -23,7 +23,7 @@ MAPJS.MapModel = function (layoutCalculator) {
 				newNode = newLayout.nodes[nodeId];
 				if (!newNode) {
 					if (nodeId == currentlySelectedIdeaId) {
-						currentlySelectedIdeaId = undefined;
+						self.selectNode(idea.id);
 					}
 					self.dispatchEvent('nodeRemoved', oldNode);
 				}
