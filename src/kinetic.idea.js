@@ -39,6 +39,12 @@ Kinetic.Idea = function (config) {
 	Kinetic.Text.apply(this, [config]);
 	this.classType = 'Idea';
 	this.on('dblclick', self.fire.bind(self, ':nodeEditRequested'));
+	var setStageDraggable = function(isDraggable) {
+		self.getStage().setDraggable(isDraggable);
+	};
+	this.on('mouseover touchstart', setStageDraggable.bind(null, false));
+    this.on('mouseout touchend', setStageDraggable.bind(null, true));
+    
 	this.editNode = function () {
 		//this only works for solid color nodes
 		self.attrs.textFill = self.attrs.fill;
