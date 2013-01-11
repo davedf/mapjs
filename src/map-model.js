@@ -81,6 +81,12 @@ MAPJS.MapModel = function (layoutCalculator) {
 	this.updateTitle = function (title) {
 		idea.updateTitle(currentlySelectedIdeaId, title);
 	};
+	this.editNode = function () {
+		self.dispatchEvent('nodeEditRequested:' + currentlySelectedIdeaId, {});
+	};
+	this.clear = function () {
+		idea.clear();
+	};
 	//Todo - clean up this shit below
 	var currentDroppable,
 		updateCurrentDroppable = function (value) {

@@ -460,4 +460,43 @@ describe ("content aggregate", function(){
       });
     });
   });
+  describe('clear', function () {
+    var wrapped;
+    beforeEach(function () {
+      wrapped=content({
+        title:'My Idea',
+        ideas: {
+          1: {
+            title: 'Child idea'
+          }
+        }
+      });
+    });
+    it('should preserve root node title', function () {
+      wrapped.clear();
+
+      expect(wrapped.title).toBe('My Idea');
+    });
+    it('should remove all the subnodes', function () {
+      wrapped.clear();
+
+      expect(wrapped.ideas).not.toBeDefined();
+    });
+    it('should invoke changed listeners', function () {
+      changedListener = jasmine.createSpy();
+      wrapped.addEventListener('changed', changedListener);
+
+      wrapped.clear();
+
+      expect(changedListener).toHaveBeenCalled();
+    });
+    it('should invoke clear listeners', function () {
+      clearListener = jasmine.createSpy();
+      wrapped.addEventListener('clear', clearListener);
+
+      wrapped.clear();
+
+      expect(clearListener).toHaveBeenCalled();
+    });
+  });
 });

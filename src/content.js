@@ -182,6 +182,11 @@ var content;
       contentAggregate.dispatchEvent('changed',undefined);
       return true;
     }
+    contentAggregate.clear = function () {
+      delete contentAggregate.ideas;
+      contentAggregate.dispatchEvent('clear', undefined);
+      contentAggregate.dispatchEvent('changed', undefined);
+    }
     init(contentAggregate);
     return observable(contentAggregate);
   }

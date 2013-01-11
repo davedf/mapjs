@@ -38,9 +38,11 @@ Kinetic.Idea = function (config) {
 	config.name = 'Idea';
 	Kinetic.Text.apply(this, [config]);
 	this.classType = 'Idea';
-	this.on('dblclick', function () {
+	this.on('dblclick', self.fire.bind(self, ':nodeEditRequested'));
+	this.editNode = function () {
 		//this only works for solid color nodes
 		self.attrs.textFill = self.attrs.fill;
+		self.getLayer().draw();
 		var canvasPosition = jQuery('canvas').offset(),
 			currentText = self.getText(),
 			ideaInput,
@@ -74,7 +76,7 @@ Kinetic.Idea = function (config) {
 			})
 			.blur(onCommit)
 			.focus();
-	});
+	};
 };
 Kinetic.Idea.prototype.setStyle = function (config) {
 	'use strict';

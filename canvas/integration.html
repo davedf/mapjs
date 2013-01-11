@@ -19,6 +19,9 @@
 			outline: none;
 		}
 	</style>
+	<input type="button" onclick="mapModel.removeSubIdea()" value="delete"></input>
+	<input type="button" onclick="mapModel.editNode()" value="edit"></input>
+	<input type="button" onclick="mapModel.clear()" value="clear"></input>
 	<div id="container"></div>
 	<ul>
 		<li>usability: add sibling of the currently active element on enter (not a child), give focus to newly created node</li>
@@ -59,6 +62,7 @@
 					return MAPJS.calculateLayout(idea, dimensionProvider);
 				}),
 				mediator = new MAPJS.KineticMediator(mapModel, stage);
+			window.mapModel = mapModel;
 			mapModel.setIdea(idea);
 		}());
 	</script>

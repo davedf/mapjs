@@ -91,6 +91,15 @@ describe('MapModel', function () {
 
 			expect(nodeSelectionChangedListener).toHaveBeenCalledWith(1, false);
 		});
+		it('should dispatch nodeEditRequested when a request to edit node is made', function () {
+			var nodeEditRequestedListener = jasmine.createSpy();
+			underTest.addEventListener('nodeEditRequested:1', nodeEditRequestedListener);
+			underTest.selectNode(1);
+
+			underTest.editNode();
+
+			expect(nodeEditRequestedListener).toHaveBeenCalledWith({});
+		});
 	});
 	describe('methods delegating to idea', function () {
 		var anIdea, underTest;
@@ -125,6 +134,13 @@ describe('MapModel', function () {
 			underTest.updateTitle('new title');
 
 			expect(anIdea.updateTitle).toHaveBeenCalledWith(111, 'new title');
+		});
+		it('should remove all the nodes from the map except the central one when map is cleared', function () {
+			spyOn(anIdea, 'clear');
+
+			underTest.clear();
+
+			expect(anIdea.clear).toHaveBeenCalled();
 		});
 	});
 });
