@@ -62,7 +62,7 @@ Kinetic.Idea = function (config) {
 			onCommit = function () {
 				updateText(ideaInput.val());
 			};
-		ideaInput = jQuery('<textarea type="text" class="ideaInput" ></textarea>')
+		ideaInput = jQuery('<textarea wrap="soft" class="ideaInput" ></textarea>')
 			.css({
 				top: canvasPosition.top + self.getAbsolutePosition().y,
 				left: canvasPosition.left + self.getAbsolutePosition().x,
