@@ -67,8 +67,8 @@ Kinetic.Idea = function (config) {
 				top: canvasPosition.top + self.getAbsolutePosition().y,
 				left: canvasPosition.left + self.getAbsolutePosition().x,
 				width: self.getWidth(),
-				height: self.getHeight(),
-        resize: 'none'
+				height: self.getHeight()
+
 			})
 			.val(join_lines(currentText))
 			.appendTo('body')
