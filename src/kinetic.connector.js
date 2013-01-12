@@ -1,12 +1,6 @@
 /*global Kinetic*/
 (function () {
 	'use strict';
-	var mindPoint = function (shape) {
-		return {
-			x: shape.attrs.x + 0.5 * shape.getWidth(),
-			y: shape.attrs.y + 0.5 * shape.getHeight()
-		};
-	};
 	Kinetic.Connector = function (config) {
 		this.shapeFrom = config.shapeFrom;
 		this.shapeTo = config.shapeTo;
@@ -16,10 +10,29 @@
 	};
 	Kinetic.Connector.prototype = {
 		drawFunc: function (canvas) {
-			var context = this.getContext(), from = mindPoint(this.shapeFrom), to = mindPoint(this.shapeTo);
+			var context = this.getContext(),
+				tmp,
+				shapeFrom = this.shapeFrom,
+				shapeTo = this.shapeTo,
+				ctrl = 0.75;
+			if (shapeFrom.attrs.x > shapeTo.attrs.x) {
+				tmp = shapeFrom;
+				shapeFrom = shapeTo;
+				shapeTo = tmp;
+			}
 			context.beginPath();
-			context.moveTo(from.x, from.y);
-			context.bezierCurveTo(to.x, from.y, from.x, to.y, to.x, to.y);
+			context.moveTo(
+				shapeFrom.attrs.x + shapeFrom.getWidth(),
+				shapeFrom.attrs.y + 0.5 * shapeFrom.getHeight()
+			);
+			context.bezierCurveTo(
+				ctrl * (shapeFrom.attrs.x + shapeFrom.getWidth()) + (1 - ctrl) * shapeTo.attrs.x,
+				shapeFrom.attrs.y + 0.5 * shapeFrom.getHeight(),
+				(1 - ctrl) * (shapeFrom.attrs.x + shapeFrom.getWidth()) + ctrl * shapeTo.attrs.x,
+				shapeTo.attrs.y + 0.5 * shapeTo.getHeight(),
+				shapeTo.attrs.x,
+				shapeTo.attrs.y + 0.5 * shapeTo.getHeight()
+			);
 			canvas.stroke(this);
 		}
 	};
