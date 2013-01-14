@@ -56,7 +56,6 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 		});
 	});
 	mapModel.addEventListener('nodeSelectionChanged', function (ideaId, isSelected) {
-		console.log('nodeSelectionChanged', ideaId, isSelected);
 		var node = nodeByIdeaId[ideaId];
 		node.setIsSelected(isSelected);
 	});

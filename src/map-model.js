@@ -93,37 +93,24 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 		return currentLayout.nodes[id].x <= currentLayout.nodes[idea.id].x;
 	};
 	this.selectNodeLeft = function () {
-		var node, rank, minimumPositiveRank = Infinity;
+		var node,
+			rank,
+			isRoot = currentlySelectedIdeaId === idea.id,
+			targetRank = isRoot ? -Infinity : Infinity,
+			targetNode;
 		if (isRootOrLeftHalf(currentlySelectedIdeaId)) {
 			node = idea.id === currentlySelectedIdeaId ? idea : idea.findSubIdeaById(currentlySelectedIdeaId);
 			for (rank in node.ideas) {
-				if (currentlySelectedIdeaId === idea.id && rank < 0 || currentlySelectedIdeaId !== idea.id && rank > 0) {
-					if (rank < minimumPositiveRank) {
-						minimumPositiveRank = rank;
-					}
+				rank = parseFloat(rank);
+				if (isRoot && rank < 0 && rank > targetRank || !isRoot && rank > 0 && rank < targetRank) {
+					targetRank = rank;
 				}
 			}
-			self.selectNode(node.ideas[minimumPositiveRank].id);
+			if (targetRank !== Infinity && targetRank !== -Infinity) {
+				self.selectNode(node.ideas[targetRank].id);
+			}
 		} else {
 			self.selectNode(parentNode(idea, currentlySelectedIdeaId).id);
-		}
-	};
-	this.selectNodeUp = function () {
-		var parent = parentNode(idea, currentlySelectedIdeaId), myRank, previousSiblingRank, rank;
-		if (parent) {
-			for (rank in parent.ideas) {
-				if (parent.ideas[rank].id === currentlySelectedIdeaId) {
-					myRank = rank;
-				}
-			}
-			for (rank in parent.ideas) {
-				if (rank < myRank && (!previousSiblingRank || rank > previousSiblingRank)) {
-					previousSiblingRank = rank;
-				}
-			}
-			if (previousSiblingRank) {
-				self.selectNode(parent.ideas[previousSiblingRank].id);
-			}
 		}
 	};
 	this.selectNodeRight = function () {
@@ -131,6 +118,7 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 		if (isRootOrRightHalf(currentlySelectedIdeaId)) {
 			node = idea.id === currentlySelectedIdeaId ? idea : idea.findSubIdeaById(currentlySelectedIdeaId);
 			for (rank in node.ideas) {
+				rank = parseFloat(rank);
 				if (rank > 0 && rank < minimumPositiveRank) {
 					minimumPositiveRank = rank;
 				}
@@ -142,20 +130,46 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 			self.selectNode(parentNode(idea, currentlySelectedIdeaId).id);
 		}
 	};
+	this.selectNodeUp = function () {
+		var parent = parentNode(idea, currentlySelectedIdeaId), myRank, previousSiblingRank, rank;
+		if (parent) {
+			for (rank in parent.ideas) {
+				rank = parseFloat(rank);
+				if (parent.ideas[rank].id === currentlySelectedIdeaId) {
+					myRank = rank;
+					break;
+				}
+			}
+			previousSiblingRank = myRank > 0 ? -Infinity : Infinity;
+			for (rank in parent.ideas) {
+				rank = parseFloat(rank);
+				if (myRank < 0 && rank < 0 && rank > myRank && rank < previousSiblingRank || myRank > 0 && rank > 0 && rank < myRank && rank > previousSiblingRank) {
+					previousSiblingRank = rank;
+				}
+			}
+			if (previousSiblingRank !== Infinity && previousSiblingRank !== -Infinity) {
+				self.selectNode(parent.ideas[previousSiblingRank].id);
+			}
+		}
+	};
 	this.selectNodeDown = function () {
 		var parent = parentNode(idea, currentlySelectedIdeaId), myRank, nextSiblingRank, rank;
 		if (parent) {
 			for (rank in parent.ideas) {
+				rank = parseFloat(rank);
 				if (parent.ideas[rank].id === currentlySelectedIdeaId) {
 					myRank = rank;
+					break;
 				}
 			}
+			nextSiblingRank = myRank > 0 ? Infinity : -Infinity;
 			for (rank in parent.ideas) {
-				if (rank > myRank && (!nextSiblingRank || rank < nextSiblingRank)) {
+				rank = parseFloat(rank);
+				if (myRank < 0 && rank < 0 && rank < myRank && rank > nextSiblingRank || myRank > 0 && rank > 0 && rank > myRank && rank < nextSiblingRank) {
 					nextSiblingRank = rank;
 				}
 			}
-			if (nextSiblingRank) {
+			if (nextSiblingRank !== Infinity && nextSiblingRank !== -Infinity) {
 				self.selectNode(parent.ideas[nextSiblingRank].id);
 			}
 		}
