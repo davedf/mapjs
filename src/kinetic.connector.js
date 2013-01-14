@@ -14,7 +14,7 @@
 				tmp,
 				shapeFrom = this.shapeFrom,
 				shapeTo = this.shapeTo,
-				ctrl = 0.75;
+				ctrl = 0.4;
 			if (shapeFrom.attrs.x > shapeTo.attrs.x) {
 				tmp = shapeFrom;
 				shapeFrom = shapeTo;
