@@ -94,6 +94,7 @@ Kinetic.Idea.prototype.setStyle = function (config) {
 	config.padding = 8;
 	config.fontSize = 10;
 	config.fontFamily = 'Helvetica';
+	config.lineHeight = 1.5;
 	config.fontStyle = 'bold';
 	if (isDroppable) {
 		config.stroke = '#9F4F4F';
