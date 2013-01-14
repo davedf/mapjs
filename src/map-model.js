@@ -144,10 +144,8 @@ MAPJS.MapModel = function (layoutCalculator) {
 				return;
 			}
 		}
-		if (verticallyClosestNode) {
-			if (idea.positionBefore(id, verticallyClosestNode.id)) {
-				return;
-			}
+		if (idea.positionBefore(id, (verticallyClosestNode || { id: null }).id)) {
+			return;
 		}
 		self.dispatchEvent('nodeMoved', nodeBeingDragged, 'failed');
 	};
