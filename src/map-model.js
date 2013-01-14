@@ -130,16 +130,19 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 			self.selectNode(parentNode(idea, currentlySelectedIdeaId).id);
 		}
 	};
+	var currentlySelectedIdeaRank = function (parent) {
+		var rank;
+		for (rank in parent.ideas) {
+			rank = parseFloat(rank);
+			if (parent.ideas[rank].id === currentlySelectedIdeaId) {
+				return rank;
+			}
+		}
+	};
 	this.selectNodeUp = function () {
 		var parent = parentNode(idea, currentlySelectedIdeaId), myRank, previousSiblingRank, rank;
 		if (parent) {
-			for (rank in parent.ideas) {
-				rank = parseFloat(rank);
-				if (parent.ideas[rank].id === currentlySelectedIdeaId) {
-					myRank = rank;
-					break;
-				}
-			}
+			myRank = currentlySelectedIdeaRank(parent);
 			previousSiblingRank = myRank > 0 ? -Infinity : Infinity;
 			for (rank in parent.ideas) {
 				rank = parseFloat(rank);
@@ -155,13 +158,7 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 	this.selectNodeDown = function () {
 		var parent = parentNode(idea, currentlySelectedIdeaId), myRank, nextSiblingRank, rank;
 		if (parent) {
-			for (rank in parent.ideas) {
-				rank = parseFloat(rank);
-				if (parent.ideas[rank].id === currentlySelectedIdeaId) {
-					myRank = rank;
-					break;
-				}
-			}
+			myRank = currentlySelectedIdeaRank(parent);
 			nextSiblingRank = myRank > 0 ? Infinity : -Infinity;
 			for (rank in parent.ideas) {
 				rank = parseFloat(rank);
