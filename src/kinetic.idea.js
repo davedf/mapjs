@@ -37,7 +37,7 @@
 			offset: [4, 4],
 			opacity: 0.4
 		};
-		config.cornerRadius = 6;
+		config.cornerRadius = 10;
 		config.draggable = true;
 		config.name = 'Idea';
 		Kinetic.Text.apply(this, [config]);
