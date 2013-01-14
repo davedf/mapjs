@@ -3,8 +3,8 @@
 	<style>
 		#container {
 			background-color: #F4F0F8;
-			width: 1280;
-			height: 600;
+			width: 100%;
+			height: 100%;
 		}
 		.ideaInput {
 			position: absolute;
@@ -16,7 +16,7 @@
 			font-weight: bold;
 			font-size: 13;
 			text-align: center;
-      resize: none;
+			resize: none;
 		}
 		.ideaInput:focus {
 			outline: none;
@@ -27,6 +27,7 @@
 	<input type="button" onclick="mapModel.clear()" value="clear"></input>
 	<div id="container"></div>
 	<script type="text/javascript" src="../lib/jquery-1.8.3.js"></script>
+	<script type="text/javascript" src="../lib/jquery.ba-resize.min.js"></script>
 	<script type="text/javascript" src="../lib/underscore-1.4.3-min.js"></script>
 	<script type="text/javascript" src="../lib/kinetic-v4.2.0.js"></script>
 	<script type="text/javascript" src="../src/observable.js"></script>
@@ -39,13 +40,12 @@
 	<script type="text/javascript" src="kinetic-mediator.js"></script>
 	<script>
 		(function () {
-			var stage = new Kinetic.Stage({
-				container: 'container',
-				width: $('#container').width(),
-				height: $('#container').height(),
-				draggable: true
-			}),
-				idea = content(test_tree()/*{ title: 'Hello' }*/),
+			var container = jQuery('#container'),
+				stage = new Kinetic.Stage({
+					container: 'container',
+					draggable: true
+				}),
+				idea = content(test_tree()),
 				dimensionProvider = function (title) {
 					var text = new Kinetic.Idea({
 						text: title
@@ -58,10 +58,16 @@
 				mapModel = new MAPJS.MapModel(function layoutCalculator(idea) {
 					return MAPJS.calculateLayout(idea, dimensionProvider);
 				}),
-				mediator = new MAPJS.KineticMediator(mapModel, stage);
-			stage.attrs.x = 0.5 * stage.getWidth();
-			stage.attrs.y = 0.5 * stage.getHeight();
+				mediator = new MAPJS.KineticMediator(mapModel, stage),
+				setStageDimensions = function () {
+					stage.setWidth(container.width());
+					stage.setHeight(container.height());
+					stage.attrs.x = 0.5 * stage.getWidth();
+					stage.attrs.y = 0.5 * stage.getHeight();
+				};
+			setStageDimensions();
 			mapModel.setIdea(idea);
+			container.resize(setStageDimensions);
 			window.mapModel = mapModel;
 		}());
 	</script>

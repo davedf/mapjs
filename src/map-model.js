@@ -62,6 +62,7 @@ MAPJS.MapModel = function (layoutCalculator) {
 		idea = anIdea;
 		idea.addEventListener('changed', onIdeaChanged);
 		onIdeaChanged();
+		self.selectNode(idea.id);
 	};
 	this.selectNode = function (id) {
 		if (id !== currentlySelectedIdeaId) {
@@ -123,7 +124,7 @@ MAPJS.MapModel = function (layoutCalculator) {
 			nodeId,
 			node,
 			rootNode = currentLayout.nodes[idea.id],
-			verticallyClosestNode;
+			verticallyClosestNode = { id: null, y: Infinity };
 		updateCurrentDroppable(undefined);
 		self.dispatchEvent('nodeMoved', nodeBeingDragged);
 		for (nodeId in currentLayout.nodes) {
@@ -144,7 +145,7 @@ MAPJS.MapModel = function (layoutCalculator) {
 				return;
 			}
 		}
-		if (idea.positionBefore(id, (verticallyClosestNode || { id: null }).id)) {
+		if (idea.positionBefore(id, verticallyClosestNode.id)) {
 			return;
 		}
 		self.dispatchEvent('nodeMoved', nodeBeingDragged, 'failed');
