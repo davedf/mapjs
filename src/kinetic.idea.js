@@ -120,6 +120,7 @@ Kinetic.Idea.prototype.setIsSelected = function (isSelected) {
 	'use strict';
 	this.isSelected = isSelected;
 	this.setStyle(this.attrs);
+	this.getLayer().draw();
 };
 Kinetic.Idea.prototype.setIsDroppable = function (isDroppable) {
 	'use strict';

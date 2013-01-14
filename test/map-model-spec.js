@@ -158,4 +158,95 @@ describe('MapModel', function () {
 			expect(anIdea.clear).toHaveBeenCalled();
 		});
 	});
+	describe('keyboard navigation', function () {
+		var anIdea, underTest;
+		beforeEach(function () {
+			anIdea = content({
+				id: 1,
+				title: 'center',
+				ideas: {
+					'-2': {
+						id: 2,
+						title: 'lower left'
+					},
+					'-1': {
+						id: 3,
+						title: 'upper left'
+					},
+					1: {
+						id: 4,
+						title: 'upper right'
+					},
+					2: {
+						id: 5,
+						title: 'lower right'
+					}
+				}
+			});
+			underTest = new MAPJS.MapModel(function () {
+				return {
+					nodes: {
+						1: { x: 0 },
+						2: { x: -10 },
+						3: { x: -10 },
+						4: { x: 10 },
+						5: { x: 10 }
+					}
+				};
+			});
+			underTest.setIdea(anIdea);
+		});
+		it('should select lowest ranking child when selectNodeRight invoked on and currently selected node is right of central node', function () {
+			var nodeSelectionChangedListener = jasmine.createSpy();
+			underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
+
+			underTest.selectNodeRight();
+
+			expect(nodeSelectionChangedListener).toHaveBeenCalledWith(4, true);
+		});
+		it('should select parent node when selectNodeRight invoked on a currently selected node left of central node', function () {
+			underTest.selectNode(3);
+			var nodeSelectionChangedListener = jasmine.createSpy();
+			underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
+
+			underTest.selectNodeRight();
+
+			expect(nodeSelectionChangedListener).toHaveBeenCalledWith(1, true);
+		});
+		it('should select lowest ranking child when selectNodeLeft invoked on and currently selected node is left of central node', function () {
+			var nodeSelectionChangedListener = jasmine.createSpy();
+			underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
+
+			underTest.selectNodeLeft();
+
+			expect(nodeSelectionChangedListener).toHaveBeenCalledWith(2, true);
+		});
+		it('should select parent node when selectNodeLeft invoked on a currently selected node right of central node', function () {
+			underTest.selectNode(5);
+			var nodeSelectionChangedListener = jasmine.createSpy();
+			underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
+
+			underTest.selectNodeLeft();
+
+			expect(nodeSelectionChangedListener).toHaveBeenCalledWith(1, true);
+		});
+		it('should select sibling above when selectNodeUp invoked', function () {
+			underTest.selectNode(5);
+			var nodeSelectionChangedListener = jasmine.createSpy();
+			underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
+
+			underTest.selectNodeUp();
+
+			expect(nodeSelectionChangedListener).toHaveBeenCalledWith(4, true);
+		});
+		it('should select sibling below when selectNodeDown invoked', function () {
+			underTest.selectNode(4);
+			var nodeSelectionChangedListener = jasmine.createSpy();
+			underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
+
+			underTest.selectNodeDown();
+
+			expect(nodeSelectionChangedListener).toHaveBeenCalledWith(5, true);
+		});
+	});
 });

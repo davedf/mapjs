@@ -74,6 +74,86 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 			self.dispatchEvent('nodeSelectionChanged', id, true);
 		}
 	};
+	var parentNode = function (root, id) {
+		var rank, childResult;
+		for (rank in root.ideas) {
+			if (root.ideas[rank].id === id) {
+				return root;
+			}
+			childResult = parentNode(root.ideas[rank], id);
+			if (childResult) {
+				return childResult;
+			}
+		}
+	};
+	var isRootOrRightHalf = function (id) {
+		return currentLayout.nodes[id].x >= currentLayout.nodes[idea.id].x;
+	};
+	var isRootOrLeftHalf = function (id) {
+		return currentLayout.nodes[id].x <= currentLayout.nodes[idea.id].x;
+	};
+	this.selectNodeLeft = function () {
+		if (isRootOrLeftHalf(currentlySelectedIdeaId)) {
+			var node = idea.id === currentlySelectedIdeaId ? idea : idea.findSubIdeaById(currentlySelectedIdeaId), rank;
+			for (rank in node.ideas) {
+				if (currentlySelectedIdeaId === idea.id && rank < 0 || currentlySelectedIdeaId !== idea.id && rank > 0) {
+					self.selectNode(node.ideas[rank].id);
+					return;
+				}
+			}
+		} else {
+			self.selectNode(parentNode(idea, currentlySelectedIdeaId).id);
+		}
+	};
+	this.selectNodeUp = function () {
+		var parent = parentNode(idea, currentlySelectedIdeaId), myRank, previousSiblingRank, rank;
+		if (parent) {
+			for (rank in parent.ideas) {
+				if (parent.ideas[rank].id === currentlySelectedIdeaId) {
+					myRank = rank;
+				}
+			}
+			for (rank in parent.ideas) {
+				if (rank < myRank && (!previousSiblingRank || rank > previousSiblingRank)) {
+					previousSiblingRank = rank;
+				}
+			}
+			if (previousSiblingRank) {
+				self.selectNode(parent.ideas[previousSiblingRank].id);
+			}
+		}
+	};
+	this.selectNodeRight = function () {
+		if (isRootOrRightHalf(currentlySelectedIdeaId)) {
+			var node = idea.id === currentlySelectedIdeaId ? idea : idea.findSubIdeaById(currentlySelectedIdeaId), rank;
+			for (rank in node.ideas) {
+				if (rank > 0) {
+					self.selectNode(node.ideas[rank].id);
+					return;
+				}
+			}
+		} else {
+			self.selectNode(parentNode(idea, currentlySelectedIdeaId).id);
+		}
+	};
+	this.selectNodeDown = function () {
+		var parent = parentNode(idea, currentlySelectedIdeaId), myRank, nextSiblingRank, rank;
+		if (parent) {
+			for (rank in parent.ideas) {
+				if (parent.ideas[rank].id === currentlySelectedIdeaId) {
+					myRank = rank;
+				}
+			}
+			for (rank in parent.ideas) {
+				if (rank > myRank && (!nextSiblingRank || rank < nextSiblingRank)) {
+					nextSiblingRank = rank;
+				}
+			}
+			if (nextSiblingRank) {
+				self.selectNode(parent.ideas[nextSiblingRank].id);
+			}
+		}
+	};
 	this.addSubIdea = function (title) {
 		idea.addSubIdea(currentlySelectedIdeaId, title || titlesToRandomlyChooseFrom[Math.floor(titlesToRandomlyChooseFrom.length * Math.random())]);
 	};
