@@ -128,3 +128,13 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 		});
 	}());
 };
+MAPJS.KineticMediator.dimensionProvider = function (title) {
+	'use strict';
+	var text = new Kinetic.Idea({
+		text: title
+	});
+	return {
+		width: text.getWidth(),
+		height: text.getHeight()
+	};
+};

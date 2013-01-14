@@ -78,9 +78,9 @@ describe('MapModel', function () {
 			var nodeSelectionChangedListener = jasmine.createSpy();
 			underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
 
-			underTest.selectNode(1);
+			underTest.selectNode(2);
 
-			expect(nodeSelectionChangedListener).toHaveBeenCalledWith(1, true);
+			expect(nodeSelectionChangedListener).toHaveBeenCalledWith(2, true);
 		});
 		it('should dispatch nodeSelectionChanged when a different node is selected', function () {
 			var nodeSelectionChangedListener = jasmine.createSpy();
@@ -118,6 +118,21 @@ describe('MapModel', function () {
 			underTest.addSubIdea();
 
 			expect(anIdea.addSubIdea).toHaveBeenCalledWith(123, 'double click to edit');
+		});
+		it('should invoke idea.addSubIdea with randomly selected title when addSubIdea method is invoked', function () {
+			var underTest = new MAPJS.MapModel(
+				function () {
+					return {};
+				},
+				'What a beautiful idea!'.split(' ')
+			);
+			underTest.setIdea(anIdea);
+			spyOn(anIdea, 'addSubIdea');
+			spyOn(Math, 'random').andReturn(0.6);
+
+			underTest.addSubIdea();
+
+			expect(anIdea.addSubIdea).toHaveBeenCalledWith(1, 'beautiful');
 		});
 		it('should invoke idea.removeSubIdea with currently selected idea as parentId when removeSubIdea method is invoked', function () {
 			spyOn(anIdea, 'removeSubIdea');

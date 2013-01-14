@@ -1,7 +1,8 @@
 /*global observable*/
 var MAPJS = MAPJS || {};
-MAPJS.MapModel = function (layoutCalculator) {
+MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 	'use strict';
+	titlesToRandomlyChooseFrom = titlesToRandomlyChooseFrom || ['double click to edit'];
 	var self = this,
 		currentLayout = {
 			nodes: {},
@@ -74,7 +75,7 @@ MAPJS.MapModel = function (layoutCalculator) {
 		}
 	};
 	this.addSubIdea = function (title) {
-		idea.addSubIdea(currentlySelectedIdeaId, title || 'double click to edit');
+		idea.addSubIdea(currentlySelectedIdeaId, title || titlesToRandomlyChooseFrom[Math.floor(titlesToRandomlyChooseFrom.length * Math.random())]);
 	};
 	this.removeSubIdea = function () {
 		idea.removeSubIdea(currentlySelectedIdeaId);

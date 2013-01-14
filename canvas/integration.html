@@ -22,6 +22,7 @@
 			outline: none;
 		}
 	</style>
+	<input type="button" onclick="mapModel.addSubIdea()" value="add"></input>
 	<input type="button" onclick="mapModel.removeSubIdea()" value="delete"></input>
 	<input type="button" onclick="mapModel.editNode()" value="edit"></input>
 	<input type="button" onclick="mapModel.clear()" value="clear"></input>
@@ -46,18 +47,15 @@
 					draggable: true
 				}),
 				idea = content(test_tree()),
-				dimensionProvider = function (title) {
-					var text = new Kinetic.Idea({
-						text: title
-					});
-					return {
-						width: text.getWidth(),
-						height: text.getHeight()
-					};
-				},
-				mapModel = new MAPJS.MapModel(function layoutCalculator(idea) {
-					return MAPJS.calculateLayout(idea, dimensionProvider);
-				}),
+				mapModel = new MAPJS.MapModel(
+					function layoutCalculator(idea) {
+						return MAPJS.calculateLayout(idea, MAPJS.KineticMediator.dimensionProvider);
+					}, [
+						'A brilliant idea...',
+						'A cunning plan...',
+						'We\'ll be famous...'
+					]
+				),
 				mediator = new MAPJS.KineticMediator(mapModel, stage),
 				setStageDimensions = function () {
 					stage.setWidth(container.width());
