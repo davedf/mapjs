@@ -219,7 +219,7 @@ describe('MapModel', function () {
 
 			underTest.selectNodeLeft();
 
-			expect(nodeSelectionChangedListener).toHaveBeenCalledWith(2, true);
+			expect(nodeSelectionChangedListener).toHaveBeenCalledWith(3, true);
 		});
 		it('should select parent node when selectNodeLeft invoked on a currently selected node right of central node', function () {
 			underTest.selectNode(5);

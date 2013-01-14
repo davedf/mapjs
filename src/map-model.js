@@ -93,14 +93,17 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 		return currentLayout.nodes[id].x <= currentLayout.nodes[idea.id].x;
 	};
 	this.selectNodeLeft = function () {
+		var node, rank, minimumPositiveRank = Infinity;
 		if (isRootOrLeftHalf(currentlySelectedIdeaId)) {
-			var node = idea.id === currentlySelectedIdeaId ? idea : idea.findSubIdeaById(currentlySelectedIdeaId), rank;
+			node = idea.id === currentlySelectedIdeaId ? idea : idea.findSubIdeaById(currentlySelectedIdeaId);
 			for (rank in node.ideas) {
 				if (currentlySelectedIdeaId === idea.id && rank < 0 || currentlySelectedIdeaId !== idea.id && rank > 0) {
-					self.selectNode(node.ideas[rank].id);
-					return;
+					if (rank < minimumPositiveRank) {
+						minimumPositiveRank = rank;
+					}
 				}
 			}
+			self.selectNode(node.ideas[minimumPositiveRank].id);
 		} else {
 			self.selectNode(parentNode(idea, currentlySelectedIdeaId).id);
 		}
@@ -124,13 +127,16 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 		}
 	};
 	this.selectNodeRight = function () {
+		var node, rank, minimumPositiveRank = Infinity;
 		if (isRootOrRightHalf(currentlySelectedIdeaId)) {
-			var node = idea.id === currentlySelectedIdeaId ? idea : idea.findSubIdeaById(currentlySelectedIdeaId), rank;
+			node = idea.id === currentlySelectedIdeaId ? idea : idea.findSubIdeaById(currentlySelectedIdeaId);
 			for (rank in node.ideas) {
-				if (rank > 0) {
-					self.selectNode(node.ideas[rank].id);
-					return;
+				if (rank > 0 && rank < minimumPositiveRank) {
+					minimumPositiveRank = rank;
 				}
+			}
+			if (minimumPositiveRank !== Infinity) {
+				self.selectNode(node.ideas[minimumPositiveRank].id);
 			}
 		} else {
 			self.selectNode(parentNode(idea, currentlySelectedIdeaId).id);
