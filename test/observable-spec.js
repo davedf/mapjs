@@ -33,7 +33,7 @@ describe ("Observable", function(){
     obs.addEventListener('TestEvt',listener);
     obs.removeEventListener('TestEvt',listener);
     obs.dispatchEvent('TestEvt','some','args');
-    expect(listener).not.toHaveBeenCalledWith();
+    expect(listener).not.toHaveBeenCalled();
   });
   it("does not dispatch events to subscribers of unrelated events", function(){
     obs.addEventListener('TestEvt',listener);

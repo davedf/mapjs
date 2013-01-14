@@ -1,50 +1,31 @@
 var observable = function (base) {
 	'use strict';
 	var eventListenersByType = {}, eventSinks = [];
-	base.addEventListener = function (type, listener, priority) {
-		if (!listener) {
-			listener = type;
-			type = 'DefaultType';
-		}
-		if (!priority) {
-			priority = 0;
-		}
+	base.addEventListener = function (type, listener) {
 		eventListenersByType[type] = eventListenersByType[type] || [];
-		eventListenersByType[type][priority] = eventListenersByType[type][priority] || [];
-		eventListenersByType[type][priority].push(listener);
+		eventListenersByType[type].push(listener);
 	};
 	base.listeners = function (type) {
-		var listenersByType = eventListenersByType[type || 'DefaultType'] || [], result = [], i;
+		var listenersByType = eventListenersByType[type] || [], result = [], i;
 		for (i = listenersByType.length - 1; i >= 0; i -= 1) {
-			Array.prototype.push.apply(result, listenersByType[i]);
+			result.push(listenersByType[i]);
 		}
 		return result;
 	};
 	base.removeEventListener = function (type, listener) {
-		if (!listener) {
-			listener = type;
-			type = 'DefaultType';
-		}
 		if (eventListenersByType[type]) {
 			eventListenersByType[type] = eventListenersByType[type].filter(
-				function (x) {
-					return x !== listener;
+				function (currentListener) {
+					return currentListener !== listener;
 				}
 			);
 		}
 	};
-	base.addEventSink = function (eventSink) {
-		eventSinks.push(eventSink);
-	};
+	base.addEventSink = eventSinks.push.bind(eventSinks);
 	base.dispatchEvent = function (eventType) {
 		var eventArguments, listeners, i;
-		if (arguments.length === 1) {
-			eventArguments = arguments;
-			eventType = 'DefaultType';
-		} else {
-			eventArguments = Array.prototype.slice.call(arguments, 1);
-		}
-		for (i in eventSinks) {
+		eventArguments = Array.prototype.slice.call(arguments, 1);
+		for (i = 0; i < eventSinks.length; i += 1) {
 			eventSinks[i].apply(base, arguments);
 		}
 		listeners = base.listeners(eventType);
