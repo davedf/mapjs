@@ -111,7 +111,7 @@ Kinetic.Idea.prototype.setStyle = function (config) {
 		config.stroke = isRoot ? '#88F' : '#888';
 		config.fill = {
 			start: { x: 0, y: 0 },
-			end: {x: 20, y: 40 },
+			end: {x: 50, y: 100 },
 			colorStops: isRoot ? [0, '#4FDFFF', 1, '#30C0FF'] : [0, '#FFFFFF', 1, '#E0E0E0']
 		};
 		config.textFill = isRoot ? '#FFFFFF' : '#5F5F5F';
