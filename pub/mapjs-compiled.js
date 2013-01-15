@@ -684,7 +684,7 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 		return str.match(new RegExp(regex, 'g')).join(brk);
 	}
 	function joinLines(string) {
-		return string.replace(/\n/g, ' ');
+		return string.replace(/\s+/g,' ')
 	}
 	function breakWords(string) {
 		return wordWrap(joinLines(string), COLUMN_WORD_WRAP_LIMIT, '\n', false);
@@ -733,7 +733,7 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 				onCommit = function () {
 					updateText(ideaInput.val());
 				};
-			ideaInput = jQuery('<textarea type="text" class="ideaInput"></textarea>')
+			ideaInput = jQuery('<textarea type="text" wrap="soft" class="ideaInput"></textarea>')
 				.css({
 					top: canvasPosition.top + self.getAbsolutePosition().y,
 					left: canvasPosition.left + self.getAbsolutePosition().x,
@@ -808,7 +808,8 @@ Kinetic.Idea.prototype.transitionToAndDontStopCurrentTransitions = function (con
 	transition.start();
 	animation.start();
 };
-Kinetic.Global.extend(Kinetic.Idea, Kinetic.Text);/*global console, document, jQuery, Kinetic*/
+Kinetic.Global.extend(Kinetic.Idea, Kinetic.Text);
+/*global console, document, jQuery, Kinetic*/
 var MAPJS = MAPJS || {};
 MAPJS.KineticMediator = function (mapModel, stage) {
 	'use strict';

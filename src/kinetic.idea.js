@@ -14,7 +14,7 @@
 		return str.match(new RegExp(regex, 'g')).join(brk);
 	}
 	function joinLines(string) {
-		return string.replace(/\n/g, ' ');
+		return string.replace(/\s+/g,' ')
 	}
 	function breakWords(string) {
 		return wordWrap(joinLines(string), COLUMN_WORD_WRAP_LIMIT, '\n', false);
@@ -63,7 +63,7 @@
 				onCommit = function () {
 					updateText(ideaInput.val());
 				};
-			ideaInput = jQuery('<textarea type="text" wrap="off" class="ideaInput"></textarea>')
+			ideaInput = jQuery('<textarea type="text" wrap="soft" class="ideaInput"></textarea>')
 				.css({
 					top: canvasPosition.top + self.getAbsolutePosition().y,
 					left: canvasPosition.left + self.getAbsolutePosition().x,
