@@ -175,10 +175,10 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 		idea.addSubIdea(currentlySelectedIdeaId, title || titlesToRandomlyChooseFrom[Math.floor(titlesToRandomlyChooseFrom.length * Math.random())]);
 	};
 	this.removeSubIdea = function () {
-	   var parent = parentNode(idea, currentlySelectedIdeaId);
-      if (idea.removeSubIdea(currentlySelectedIdeaId)){
-         self.selectNode(parent.id);
-      }
+		var parent = parentNode(idea, currentlySelectedIdeaId);
+		if (idea.removeSubIdea(currentlySelectedIdeaId)) {
+			self.selectNode(parent.id);
+		}
 	};
 	this.updateTitle = function (title) {
 		idea.updateTitle(currentlySelectedIdeaId, title);
