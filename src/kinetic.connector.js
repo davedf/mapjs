@@ -28,7 +28,7 @@
 		   var tolerance = 10;
          var childMid = child.attrs.y + child.getHeight() * 0.5;
          var parentMid = parent.attrs.y + parent.getHeight() * 0.5;
-         if (Math.abs(parentMid-childMid)<Math.min(child.getHeight(),parent.getHeight())/2) {
+         if (Math.abs(parentMid-childMid)<Math.min(child.getHeight(),parent.getHeight())*0.75) {
             return horisontalConnector(parent, child);
          }
          var childHorizontalOffset = parent.attrs.x < child.attrs.x ? 0 : 1;
