@@ -122,7 +122,9 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			37: mapModel.selectNodeLeft.bind(mapModel),
 			38: mapModel.selectNodeUp.bind(mapModel),
 			39: mapModel.selectNodeRight.bind(mapModel),
-			40: mapModel.selectNodeDown.bind(mapModel)
+			40: mapModel.selectNodeDown.bind(mapModel),
+      46: mapModel.removeSubIdea.bind(mapModel), /* DELETE */
+      32: mapModel.editNode.bind(mapModel) /* SPACE BAR */
 		};
 		jQuery(document).keydown(function (evt) {
 			var eventHandler = keyboardEventHandlers[evt.which];
