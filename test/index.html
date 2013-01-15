@@ -39,6 +39,8 @@
 	<input type="button" onclick="mapModel.removeSubIdea()" value="delete"></input>
 	<input type="button" onclick="mapModel.editNode()" value="edit"></input>
 	<input type="button" onclick="mapModel.clear()" value="clear"></input>
+	<input type="button" onclick="mediator.enableInput(false)" value="disable"></input>
+	<input type="button" onclick="mediator.enableInput(true)" value="enable"></input>
 	<div id="container"></div>
 	<script type="text/javascript" src="../lib/jquery-1.8.3.js"></script>
 	<script type="text/javascript" src="../lib/jquery.ba-resize.min.js"></script>
@@ -81,6 +83,7 @@
 			mapModel.setIdea(idea);
 			container.resize(setStageDimensions);
 			window.mapModel = mapModel;
+			window.mediator = mediator;
 		}());
 	</script>
 </body>
