@@ -134,7 +134,7 @@ describe('MapModel', function () {
 
 			expect(anIdea.addSubIdea).toHaveBeenCalledWith(1, 'beautiful');
 		});
-		it('should invoke idea.removeSubIdea with currently selected idea as parentId when removeSubIdea method is invoked', function () {
+		it('should invoke idea.removeSubIdea with currently selected idea as ideaId when removeSubIdea method', function () {
 			spyOn(anIdea, 'removeSubIdea');
 			underTest.selectNode(321);
 
@@ -179,7 +179,8 @@ describe('MapModel', function () {
 					},
 					2: {
 						id: 5,
-						title: 'lower right'
+						title: 'lower right',
+						ideas : {1: {id:6}},
 					}
 				}
 			});
@@ -196,6 +197,13 @@ describe('MapModel', function () {
 			});
 			underTest.setIdea(anIdea);
 		});
+		it ('should select parent when a node is deleted', function(){
+		   var nodeSelectionChangedListener = jasmine.createSpy();
+			underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
+         underTest.selectNode(6);
+			underTest.removeSubIdea();
+			expect(nodeSelectionChangedListener).toHaveBeenCalledWith(5, true);
+		})
 		it('should select lowest ranking child when selectNodeRight invoked on and currently selected node is right of central node', function () {
 			var nodeSelectionChangedListener = jasmine.createSpy();
 			underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
