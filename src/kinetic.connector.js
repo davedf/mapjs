@@ -1,4 +1,5 @@
 /*global Kinetic*/
+/*jslint nomen: true*/
 (function () {
 	'use strict';
 	var horizontalConnector, calculateConnector;

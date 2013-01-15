@@ -18,12 +18,12 @@ describe('MapModel', function () {
 				};
 			layoutBefore = {
 				nodes: {
-					to_be_removed: {
+					1: {
 						x: 10,
 						y: 20,
 						title: 'This node will be removed'
 					},
-					to_be_moved: {
+					2: {
 						x: 50,
 						y: 20,
 						title: 'second'
@@ -32,12 +32,12 @@ describe('MapModel', function () {
 			};
 			layoutAfter = {
 				nodes: {
-					to_be_moved: {
+					2: {
 						x: 49,
 						y: 20,
 						title: 'This node will be moved'
 					},
-					to_be_created: {
+					3: {
 						x: 100,
 						y: 200,
 						title: 'This node will be created'
@@ -54,25 +54,25 @@ describe('MapModel', function () {
 			var nodeCreatedListener = jasmine.createSpy();
 			underTest.addEventListener('nodeCreated', nodeCreatedListener);
 
-			anIdea.dispatchEvent('changed', undefined);
+			anIdea.dispatchEvent('changed');
 
-			expect(nodeCreatedListener).toHaveBeenCalledWith(layoutAfter.nodes.to_be_created);
+			expect(nodeCreatedListener).toHaveBeenCalledWith(layoutAfter.nodes[3]);
 		});
 		it('should dispatch nodeMoved event when a node is moved because idea is changed', function () {
 			var nodeMovedListener = jasmine.createSpy();
 			underTest.addEventListener('nodeMoved', nodeMovedListener);
 
-			anIdea.dispatchEvent('changed', undefined);
+			anIdea.dispatchEvent('changed');
 
-			expect(nodeMovedListener).toHaveBeenCalledWith(layoutAfter.nodes.to_be_moved);
+			expect(nodeMovedListener).toHaveBeenCalledWith(layoutAfter.nodes[2]);
 		});
 		it('should dispatch nodeRemoved event when a node is removed because idea is changed', function () {
 			var nodeRemovedListener = jasmine.createSpy();
 			underTest.addEventListener('nodeRemoved', nodeRemovedListener);
 
-			anIdea.dispatchEvent('changed', undefined);
+			anIdea.dispatchEvent('changed');
 
-			expect(nodeRemovedListener).toHaveBeenCalledWith(layoutBefore.nodes.to_be_removed);
+			expect(nodeRemovedListener).toHaveBeenCalledWith(layoutBefore.nodes[1]);
 		});
 		it('should dispatch nodeSelectionChanged when a different node is selected', function () {
 			var nodeSelectionChangedListener = jasmine.createSpy();
@@ -180,7 +180,11 @@ describe('MapModel', function () {
 					2: {
 						id: 5,
 						title: 'lower right',
-						ideas : {1: {id:6}},
+						ideas : {
+							1: {
+								id: 6
+							}
+						}
 					}
 				}
 			});
@@ -197,13 +201,13 @@ describe('MapModel', function () {
 			});
 			underTest.setIdea(anIdea);
 		});
-		it ('should select parent when a node is deleted', function(){
-		   var nodeSelectionChangedListener = jasmine.createSpy();
+		it('should select parent when a node is deleted', function () {
+			var nodeSelectionChangedListener = jasmine.createSpy();
 			underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
-         underTest.selectNode(6);
+			underTest.selectNode(6);
 			underTest.removeSubIdea();
 			expect(nodeSelectionChangedListener).toHaveBeenCalledWith(5, true);
-		})
+		});
 		it('should select lowest ranking child when selectNodeRight invoked on and currently selected node is right of central node', function () {
 			var nodeSelectionChangedListener = jasmine.createSpy();
 			underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);

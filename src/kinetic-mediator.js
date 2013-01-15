@@ -117,14 +117,14 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 	});
 	(function () {
 		var keyboardEventHandlers = {
-			13: mapModel.addSubIdea.bind(mapModel),
-			8: mapModel.removeSubIdea.bind(mapModel),
-			37: mapModel.selectNodeLeft.bind(mapModel),
-			38: mapModel.selectNodeUp.bind(mapModel),
-			39: mapModel.selectNodeRight.bind(mapModel),
-			40: mapModel.selectNodeDown.bind(mapModel),
-			46: mapModel.removeSubIdea.bind(mapModel), /* DELETE */
-			32: mapModel.editNode.bind(mapModel) /* SPACE BAR */
+			13: mapModel.addSubIdea,
+			8: mapModel.removeSubIdea,
+			37: mapModel.selectNodeLeft,
+			38: mapModel.selectNodeUp,
+			39: mapModel.selectNodeRight,
+			40: mapModel.selectNodeDown,
+			46: mapModel.removeSubIdea, /* DELETE */
+			32: mapModel.editNode /* SPACE BAR */
 		};
 		jQuery(document).keydown(function (evt) {
 			var eventHandler = keyboardEventHandlers[evt.which];

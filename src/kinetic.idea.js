@@ -1,4 +1,5 @@
 /*global console, jQuery, Kinetic*/
+/*jslint nomen: true*/
 (function () {
 	'use strict';
 	/*shamelessly copied from http://james.padolsey.com/javascript/wordwrap-for-javascript */
@@ -14,7 +15,7 @@
 		return str.match(new RegExp(regex, 'g')).join(brk);
 	}
 	function joinLines(string) {
-		return string.replace(/\s+/g,' ')
+		return string.replace(/\s+/g, ' ');
 	}
 	function breakWords(string) {
 		return wordWrap(joinLines(string), COLUMN_WORD_WRAP_LIMIT, '\n', false);
