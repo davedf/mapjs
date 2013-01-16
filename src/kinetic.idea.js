@@ -39,7 +39,7 @@
 			opacity: 0.4
 		};
 		config.cornerRadius = 10;
-		config.draggable = true;
+		config.draggable = config.level > 1;
 		config.name = 'Idea';
 		Kinetic.Text.apply(this, [config]);
 		this.classType = 'Idea';

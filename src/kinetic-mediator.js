@@ -8,11 +8,6 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 		connectorKey = function (fromIdeaId, toIdeaId) {
 			return fromIdeaId + '_' + toIdeaId;
 		};
-   var inputEnabled = true;
-	this.enableInput = function(isEnabled) {
-	   inputEnabled = isEnabled;
-	};
-	
 	stage.add(layer);
 	mapModel.addEventListener('nodeCreated', function (n) {
 		var node = new Kinetic.Idea({
@@ -121,7 +116,6 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 		});
 	});
 	(function () {
-   	
 		var keyboardEventHandlers = {
 			13: mapModel.addSubIdea,
 			8: mapModel.removeSubIdea,
@@ -129,18 +123,19 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			38: mapModel.selectNodeUp,
 			39: mapModel.selectNodeRight,
 			40: mapModel.selectNodeDown,
-			46: mapModel.removeSubIdea, /* DELETE */
-			32: mapModel.editNode /* SPACE BAR */
-		};
-		jQuery(document).keydown(function (evt) {
-		   if (!inputEnabled) {
-		      return;
-		   }
-			var eventHandler = keyboardEventHandlers[evt.which];
-			if (eventHandler) {
-				eventHandler();
-				evt.preventDefault();
-			}
+			46: mapModel.removeSubIdea,
+			32: mapModel.editNode
+		},
+			onKeydown = function (evt) {
+				var eventHandler = keyboardEventHandlers[evt.which];
+				if (eventHandler) {
+					eventHandler();
+					evt.preventDefault();
+				}
+			};
+		jQuery(document).keydown(onKeydown);
+		mapModel.addEventListener('inputEnabledChanged', function (isInputEnabled) {
+			jQuery(document)[isInputEnabled ? 'bind' : 'unbind']('keydown', onKeydown);
 		});
 	}());
 };

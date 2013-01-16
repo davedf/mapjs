@@ -6,6 +6,16 @@ describe('MapModel', function () {
 			underTest = new MAPJS.MapModel(layoutCalculator);
 		expect(underTest).not.toBeUndefined();
 	});
+	it('should dispatch inputEnabledChanged event when input is disabled', function () {
+		var layoutCalculator,
+			underTest = new MAPJS.MapModel(layoutCalculator),
+			inputEnabledChangedListener = jasmine.createSpy();
+		underTest.addEventListener('inputEnabledChanged', inputEnabledChangedListener);
+
+		underTest.setInputEnabled(false);
+
+		expect(inputEnabledChangedListener).toHaveBeenCalledWith(false);
+	});
 	describe('events dispatched by MapModel when idea/layout is changed', function () {
 		var underTest,
 			anIdea,

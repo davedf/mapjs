@@ -10,6 +10,7 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 			connectors: {}
 		},
 		idea,
+		isInputEnabled,
 		currentlySelectedIdeaId,
 		parentNode = function (root, id) {
 			var rank, childResult;
@@ -78,6 +79,12 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 		idea.addEventListener('changed', onIdeaChanged);
 		onIdeaChanged();
 		self.selectNode(idea.id);
+	};
+	this.setInputEnabled = function (value) {
+		if (isInputEnabled !== value) {
+			isInputEnabled = value;
+			self.dispatchEvent('inputEnabledChanged', value);
+		}
 	};
 	this.selectNode = function (id) {
 		if (id !== currentlySelectedIdeaId) {
