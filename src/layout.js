@@ -1,3 +1,4 @@
+/*jslint forin: true*/
 var MAPJS = MAPJS || {};
 (function () {
 	'use strict';
@@ -31,16 +32,15 @@ var MAPJS = MAPJS || {};
 		result.Height = Math.max(result.height, subIdeaHeights[0], subIdeaHeights[1]);
 		return result;
 	};
-	MAPJS.calculatePositions = function calculatePositions(idea, dimensionProvider, margin, x0, y0) {
-		var result = arguments[5] || MAPJS.calculateDimensions(idea, dimensionProvider, margin),
-			isLeftSubtree = arguments[6],
-			ranks,
+	MAPJS.calculatePositions = function calculatePositions(idea, dimensionProvider, margin, x0, y0, result, isLeftSubtree) {
+		var ranks,
 			subIdeaRank,
 			i,
 			subIdeaDimensions,
 			leftOrRight,
 			totalHeights = [0, 0],
 			subIdeaCurrentY0 = [y0, y0];
+		result = result || MAPJS.calculateDimensions(idea, dimensionProvider, margin);
 		x0 += result.WidthLeft;
 		result.x = x0 + margin;
 		result.y = y0 + 0.5 * (result.Height - result.height) + margin;
