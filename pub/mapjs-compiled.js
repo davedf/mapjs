@@ -230,6 +230,7 @@ var content;
     return observable(contentAggregate);
   }
 })();
+/*jslint forin: true*/
 var MAPJS = MAPJS || {};
 (function () {
 	'use strict';
@@ -263,16 +264,15 @@ var MAPJS = MAPJS || {};
 		result.Height = Math.max(result.height, subIdeaHeights[0], subIdeaHeights[1]);
 		return result;
 	};
-	MAPJS.calculatePositions = function calculatePositions(idea, dimensionProvider, margin, x0, y0) {
-		var result = arguments[5] || MAPJS.calculateDimensions(idea, dimensionProvider, margin),
-			isLeftSubtree = arguments[6],
-			ranks,
+	MAPJS.calculatePositions = function calculatePositions(idea, dimensionProvider, margin, x0, y0, result, isLeftSubtree) {
+		var ranks,
 			subIdeaRank,
 			i,
 			subIdeaDimensions,
 			leftOrRight,
 			totalHeights = [0, 0],
 			subIdeaCurrentY0 = [y0, y0];
+		result = result || MAPJS.calculateDimensions(idea, dimensionProvider, margin);
 		x0 += result.WidthLeft;
 		result.x = x0 + margin;
 		result.y = y0 + 0.5 * (result.Height - result.height) + margin;
@@ -346,6 +346,7 @@ var MAPJS = MAPJS || {};
 	};
 }());
 /*global observable*/
+/*jslint forin: true*/
 var MAPJS = MAPJS || {};
 MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 	'use strict';
@@ -356,7 +357,20 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 			connectors: {}
 		},
 		idea,
+		isInputEnabled,
 		currentlySelectedIdeaId,
+		parentNode = function (root, id) {
+			var rank, childResult;
+			for (rank in root.ideas) {
+				if (root.ideas[rank].id === id) {
+					return root;
+				}
+				childResult = parentNode(root.ideas[rank], id);
+				if (childResult) {
+					return childResult;
+				}
+			}
+		},
 		updateCurrentLayout = function (newLayout) {
 			var nodeId, newNode, oldNode, newConnector, oldConnector;
 			for (nodeId in currentLayout.connectors) {
@@ -367,10 +381,11 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 				}
 			}
 			for (nodeId in currentLayout.nodes) {
+				nodeId = parseFloat(nodeId);
 				oldNode = currentLayout.nodes[nodeId];
 				newNode = newLayout.nodes[nodeId];
 				if (!newNode) {
-					if (nodeId == currentlySelectedIdeaId) {
+					if (nodeId === currentlySelectedIdeaId) {
 						self.selectNode(idea.id);
 					}
 					self.dispatchEvent('nodeRemoved', oldNode);
@@ -412,6 +427,12 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 		onIdeaChanged();
 		self.selectNode(idea.id);
 	};
+	this.setInputEnabled = function (value) {
+		if (isInputEnabled !== value) {
+			isInputEnabled = value;
+			self.dispatchEvent('inputEnabledChanged', value);
+		}
+	};
 	this.selectNode = function (id) {
 		if (id !== currentlySelectedIdeaId) {
 			if (currentlySelectedIdeaId) {
@@ -421,111 +442,14 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 			self.dispatchEvent('nodeSelectionChanged', id, true);
 		}
 	};
-	var parentNode = function (root, id) {
-		var rank, childResult;
-		for (rank in root.ideas) {
-			if (root.ideas[rank].id === id) {
-				return root;
-			}
-			childResult = parentNode(root.ideas[rank], id);
-			if (childResult) {
-				return childResult;
-			}
-		}
-	};
-	var isRootOrRightHalf = function (id) {
-		return currentLayout.nodes[id].x >= currentLayout.nodes[idea.id].x;
-	};
-	var isRootOrLeftHalf = function (id) {
-		return currentLayout.nodes[id].x <= currentLayout.nodes[idea.id].x;
-	};
-	this.selectNodeLeft = function () {
-		var node,
-			rank,
-			isRoot = currentlySelectedIdeaId === idea.id,
-			targetRank = isRoot ? -Infinity : Infinity,
-			targetNode;
-		if (isRootOrLeftHalf(currentlySelectedIdeaId)) {
-			node = idea.id === currentlySelectedIdeaId ? idea : idea.findSubIdeaById(currentlySelectedIdeaId);
-			for (rank in node.ideas) {
-				rank = parseFloat(rank);
-				if (isRoot && rank < 0 && rank > targetRank || !isRoot && rank > 0 && rank < targetRank) {
-					targetRank = rank;
-				}
-			}
-			if (targetRank !== Infinity && targetRank !== -Infinity) {
-				self.selectNode(node.ideas[targetRank].id);
-			}
-		} else {
-			self.selectNode(parentNode(idea, currentlySelectedIdeaId).id);
-		}
-	};
-	this.selectNodeRight = function () {
-		var node, rank, minimumPositiveRank = Infinity;
-		if (isRootOrRightHalf(currentlySelectedIdeaId)) {
-			node = idea.id === currentlySelectedIdeaId ? idea : idea.findSubIdeaById(currentlySelectedIdeaId);
-			for (rank in node.ideas) {
-				rank = parseFloat(rank);
-				if (rank > 0 && rank < minimumPositiveRank) {
-					minimumPositiveRank = rank;
-				}
-			}
-			if (minimumPositiveRank !== Infinity) {
-				self.selectNode(node.ideas[minimumPositiveRank].id);
-			}
-		} else {
-			self.selectNode(parentNode(idea, currentlySelectedIdeaId).id);
-		}
-	};
-	var currentlySelectedIdeaRank = function (parent) {
-		var rank;
-		for (rank in parent.ideas) {
-			rank = parseFloat(rank);
-			if (parent.ideas[rank].id === currentlySelectedIdeaId) {
-				return rank;
-			}
-		}
-	};
-	this.selectNodeUp = function () {
-		var parent = parentNode(idea, currentlySelectedIdeaId), myRank, previousSiblingRank, rank;
-		if (parent) {
-			myRank = currentlySelectedIdeaRank(parent);
-			previousSiblingRank = myRank > 0 ? -Infinity : Infinity;
-			for (rank in parent.ideas) {
-				rank = parseFloat(rank);
-				if (myRank < 0 && rank < 0 && rank > myRank && rank < previousSiblingRank || myRank > 0 && rank > 0 && rank < myRank && rank > previousSiblingRank) {
-					previousSiblingRank = rank;
-				}
-			}
-			if (previousSiblingRank !== Infinity && previousSiblingRank !== -Infinity) {
-				self.selectNode(parent.ideas[previousSiblingRank].id);
-			}
-		}
-	};
-	this.selectNodeDown = function () {
-		var parent = parentNode(idea, currentlySelectedIdeaId), myRank, nextSiblingRank, rank;
-		if (parent) {
-			myRank = currentlySelectedIdeaRank(parent);
-			nextSiblingRank = myRank > 0 ? Infinity : -Infinity;
-			for (rank in parent.ideas) {
-				rank = parseFloat(rank);
-				if (myRank < 0 && rank < 0 && rank < myRank && rank > nextSiblingRank || myRank > 0 && rank > 0 && rank > myRank && rank < nextSiblingRank) {
-					nextSiblingRank = rank;
-				}
-			}
-			if (nextSiblingRank !== Infinity && nextSiblingRank !== -Infinity) {
-				self.selectNode(parent.ideas[nextSiblingRank].id);
-			}
-		}
-	};
 	this.addSubIdea = function (title) {
 		idea.addSubIdea(currentlySelectedIdeaId, title || titlesToRandomlyChooseFrom[Math.floor(titlesToRandomlyChooseFrom.length * Math.random())]);
 	};
 	this.removeSubIdea = function () {
-	   var parent = parentNode(idea, currentlySelectedIdeaId);
-      if (idea.removeSubIdea(currentlySelectedIdeaId)){
-         self.selectNode(parent.id);
-      }
+		var parent = parentNode(idea, currentlySelectedIdeaId);
+		if (idea.removeSubIdea(currentlySelectedIdeaId)) {
+			self.selectNode(parent.id);
+		}
 	};
 	this.updateTitle = function (title) {
 		idea.updateTitle(currentlySelectedIdeaId, title);
@@ -536,139 +460,243 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 	this.clear = function () {
 		idea.clear();
 	};
-	//Todo - clean up this shit below
-	var currentDroppable,
-		updateCurrentDroppable = function (value) {
-			if (currentDroppable != value) {
-				if (currentDroppable) {
-					self.dispatchEvent('nodeDroppableChanged', currentDroppable, false);
+	(function () {
+		var isRootOrRightHalf = function (id) {
+				return currentLayout.nodes[id].x >= currentLayout.nodes[idea.id].x;
+			},
+			isRootOrLeftHalf = function (id) {
+				return currentLayout.nodes[id].x <= currentLayout.nodes[idea.id].x;
+			},
+			currentlySelectedIdeaRank = function (parent) {
+				var rank;
+				for (rank in parent.ideas) {
+					rank = parseFloat(rank);
+					if (parent.ideas[rank].id === currentlySelectedIdeaId) {
+						return rank;
+					}
 				}
-				currentDroppable = value;
-				if (currentDroppable) {
-					self.dispatchEvent('nodeDroppableChanged', currentDroppable, true);
+			};
+		self.selectNodeLeft = function () {
+			var node,
+				rank,
+				isRoot = currentlySelectedIdeaId === idea.id,
+				targetRank = isRoot ? -Infinity : Infinity,
+				targetNode;
+			if (isRootOrLeftHalf(currentlySelectedIdeaId)) {
+				node = idea.id === currentlySelectedIdeaId ? idea : idea.findSubIdeaById(currentlySelectedIdeaId);
+				for (rank in node.ideas) {
+					rank = parseFloat(rank);
+					if (isRoot && rank < 0 && rank > targetRank || !isRoot && rank > 0 && rank < targetRank) {
+						targetRank = rank;
+					}
 				}
+				if (targetRank !== Infinity && targetRank !== -Infinity) {
+					self.selectNode(node.ideas[targetRank].id);
+				}
+			} else {
+				self.selectNode(parentNode(idea, currentlySelectedIdeaId).id);
 			}
-		},
-		canDropOnNode = function (id, x, y, node) {
-			return id != node.id
-				&& x >= node.x
-				&& y >= node.y
-				&& x <= node.x + node.width - 2 * 10
-				&& y <= node.y + node.height - 2 * 10;
 		};
-	this.nodeDragMove = function (id, x, y) {
-		var nodeId, node;
-		for (nodeId in currentLayout.nodes) {
-			node = currentLayout.nodes[nodeId];
-			if (canDropOnNode(id, x, y, node)) {
-				updateCurrentDroppable(nodeId);
-				return;
-			}
-		}
-		updateCurrentDroppable(undefined);
-	};
-	this.nodeDragEnd = function (id, x, y) {
-		var nodeBeingDragged = currentLayout.nodes[id],
-			nodeId,
-			node,
-			rootNode = currentLayout.nodes[idea.id],
-			verticallyClosestNode = { id: null, y: Infinity };
-		updateCurrentDroppable(undefined);
-		self.dispatchEvent('nodeMoved', nodeBeingDragged);
-		for (nodeId in currentLayout.nodes) {
-			node = currentLayout.nodes[nodeId];
-			if (canDropOnNode(id, x, y, node)) {
-				if (!idea.changeParent(id, nodeId)) {
-					self.dispatchEvent('nodeMoved', nodeBeingDragged, 'failed');
+		self.selectNodeRight = function () {
+			var node, rank, minimumPositiveRank = Infinity;
+			if (isRootOrRightHalf(currentlySelectedIdeaId)) {
+				node = idea.id === currentlySelectedIdeaId ? idea : idea.findSubIdeaById(currentlySelectedIdeaId);
+				for (rank in node.ideas) {
+					rank = parseFloat(rank);
+					if (rank > 0 && rank < minimumPositiveRank) {
+						minimumPositiveRank = rank;
+					}
 				}
-				return;
-			} else if ((nodeBeingDragged.x === node.x || nodeBeingDragged.x + nodeBeingDragged.width === node.x + node.width) && y < node.y) {
-				if (!verticallyClosestNode || node.y < verticallyClosestNode.y) {
-					verticallyClosestNode = node;
+				if (minimumPositiveRank !== Infinity) {
+					self.selectNode(node.ideas[minimumPositiveRank].id);
+				}
+			} else {
+				self.selectNode(parentNode(idea, currentlySelectedIdeaId).id);
+			}
+		};
+		self.selectNodeUp = function () {
+			var parent = parentNode(idea, currentlySelectedIdeaId), myRank, previousSiblingRank, rank, isPreviousSiblingWithNegativeRank, isPreviousSiblingWithPositiveRank;
+			if (parent) {
+				myRank = currentlySelectedIdeaRank(parent);
+				previousSiblingRank = myRank > 0 ? -Infinity : Infinity;
+				for (rank in parent.ideas) {
+					rank = parseFloat(rank);
+					isPreviousSiblingWithNegativeRank = myRank < 0 && rank < 0 && rank > myRank && rank < previousSiblingRank;
+					isPreviousSiblingWithPositiveRank = myRank > 0 && rank > 0 && rank < myRank && rank > previousSiblingRank;
+					if (isPreviousSiblingWithNegativeRank || isPreviousSiblingWithPositiveRank) {
+						previousSiblingRank = rank;
+					}
+				}
+				if (previousSiblingRank !== Infinity && previousSiblingRank !== -Infinity) {
+					self.selectNode(parent.ideas[previousSiblingRank].id);
 				}
 			}
-		}
-		if (rootNode.x < nodeBeingDragged.x && x < rootNode.x || rootNode.x > nodeBeingDragged.x && rootNode.x < x) {
-			if (idea.flip(id)) {
+		};
+		self.selectNodeDown = function () {
+			var parent = parentNode(idea, currentlySelectedIdeaId), myRank, nextSiblingRank, rank, isNextSiblingWithNegativeRank, isNextSiblingWithPositiveRank;
+			if (parent) {
+				myRank = currentlySelectedIdeaRank(parent);
+				nextSiblingRank = myRank > 0 ? Infinity : -Infinity;
+				for (rank in parent.ideas) {
+					rank = parseFloat(rank);
+					isNextSiblingWithNegativeRank = myRank < 0 && rank < 0 && rank < myRank && rank > nextSiblingRank;
+					isNextSiblingWithPositiveRank = myRank > 0 && rank > 0 && rank > myRank && rank < nextSiblingRank;
+					if (isNextSiblingWithNegativeRank || isNextSiblingWithPositiveRank) {
+						nextSiblingRank = rank;
+					}
+				}
+				if (nextSiblingRank !== Infinity && nextSiblingRank !== -Infinity) {
+					self.selectNode(parent.ideas[nextSiblingRank].id);
+				}
+			}
+		};
+	}());
+	//Todo - clean up this shit below
+	(function () {
+		var currentDroppable,
+			updateCurrentDroppable = function (value) {
+				if (currentDroppable !== value) {
+					if (currentDroppable) {
+						self.dispatchEvent('nodeDroppableChanged', currentDroppable, false);
+					}
+					currentDroppable = value;
+					if (currentDroppable) {
+						self.dispatchEvent('nodeDroppableChanged', currentDroppable, true);
+					}
+				}
+			},
+			canDropOnNode = function (id, x, y, node) {
+				return id !== node.id
+					&& x >= node.x
+					&& y >= node.y
+					&& x <= node.x + node.width - 2 * 10
+					&& y <= node.y + node.height - 2 * 10;
+			},
+			tryFlip = function (rootNode, nodeBeingDragged, nodeDragEndX) {
+				var flipRightToLeft = rootNode.x < nodeBeingDragged.x && nodeDragEndX < rootNode.x,
+					flipLeftToRight = rootNode.x > nodeBeingDragged.x && rootNode.x < nodeDragEndX;
+				if (flipRightToLeft || flipLeftToRight) {
+					return idea.flip(nodeBeingDragged.id);
+				} else {
+					return false;
+				}
+			};
+		self.nodeDragMove = function (id, x, y) {
+			var nodeId, node;
+			for (nodeId in currentLayout.nodes) {
+				nodeId = parseFloat(nodeId);
+				node = currentLayout.nodes[nodeId];
+				if (canDropOnNode(id, x, y, node)) {
+					updateCurrentDroppable(nodeId);
+					return;
+				}
+			}
+			updateCurrentDroppable(undefined);
+		};
+		self.nodeDragEnd = function (id, x, y) {
+			var nodeBeingDragged = currentLayout.nodes[id],
+				nodeId,
+				node,
+				rootNode = currentLayout.nodes[idea.id],
+				verticallyClosestNode = { id: null, y: Infinity };
+			updateCurrentDroppable(undefined);
+			self.dispatchEvent('nodeMoved', nodeBeingDragged);
+			for (nodeId in currentLayout.nodes) {
+				node = currentLayout.nodes[nodeId];
+				if (canDropOnNode(id, x, y, node)) {
+					if (!idea.changeParent(id, nodeId)) {
+						self.dispatchEvent('nodeMoved', nodeBeingDragged, 'failed');
+					}
+					return;
+				} else if ((nodeBeingDragged.x === node.x || nodeBeingDragged.x + nodeBeingDragged.width === node.x + node.width) && y < node.y) {
+					if (!verticallyClosestNode || node.y < verticallyClosestNode.y) {
+						verticallyClosestNode = node;
+					}
+				}
+			}
+			if (tryFlip(rootNode, nodeBeingDragged, x)) {
 				return;
 			}
-		}
-		if (idea.positionBefore(id, verticallyClosestNode.id)) {
-			return;
-		}
-		self.dispatchEvent('nodeMoved', nodeBeingDragged, 'failed');
-	};
+			if (idea.positionBefore(id, verticallyClosestNode.id)) {
+				return;
+			}
+			self.dispatchEvent('nodeMoved', nodeBeingDragged, 'failed');
+		};
+	}());
 };
 /*global Kinetic*/
-(function() {
-   'use strict';
-   Kinetic.Connector = function(config) {
-      this.shapeFrom = config.shapeFrom;
-      this.shapeTo = config.shapeTo;
-      this.shapeType = 'Connector';
-      Kinetic.Shape.call(this, config);
-      this._setDrawFuncs();
-   };
-   var horisontalConnector = function(parent, child) {
-         var childHorizontalOffset = parent.attrs.x < child.attrs.x ? 0.1 : 0.9;
-         var parentHorizontalOffset = 1- childHorizontalOffset;
-         return {
-            from: {
-               x: parent.attrs.x + parentHorizontalOffset * parent.getWidth(),
-               y: parent.attrs.y + 0.5 * parent.getHeight()
-            },
-            to: {
-               x: child.attrs.x + childHorizontalOffset * child.getWidth(),
-               y: child.attrs.y + 0.5 * child.getHeight()
-            },
-            controlPointOffset: 0,
-         }
-       }
-       
-   var calculateConnector = function(parent, child, ctrl) {
-		   var tolerance = 10;
-         var childMid = child.attrs.y + child.getHeight() * 0.5;
-         var parentMid = parent.attrs.y + parent.getHeight() * 0.5;
-         if (Math.abs(parentMid-childMid)<Math.min(child.getHeight(),parent.getHeight())*0.75) {
-            return horisontalConnector(parent, child);
-         }
-         var childHorizontalOffset = parent.attrs.x < child.attrs.x ? 0 : 1;
-         return {
-            from: {
-               x: parent.attrs.x + 0.5 * parent.getWidth() ,
-               y: parent.attrs.y + 0.5 * parent.getHeight()
-            },
-            to: {
-               x: child.attrs.x + childHorizontalOffset * child.getWidth(),
-               y: child.attrs.y + 0.5 * child.getHeight()
-            },
-            controlPointOffset: 0.75
-         }
-
-       }
-       
-   Kinetic.Connector.prototype = {
-      drawFunc: function(canvas) {
-         var context = this.getContext(),
-             tmp, shapeFrom = this.shapeFrom,
-             shapeTo = this.shapeTo,
-             ctrl = 0.2;
-
-
-         var conn = calculateConnector(shapeFrom, shapeTo, ctrl);
-         if (!conn) return;
-         context.beginPath();
-         context.moveTo(conn.from.x, conn.from.y);
-         var offset = conn.controlPointOffset * (conn.from.y - conn.to.y);
-         var maxOffset = Math.min(shapeTo.getHeight(), shapeFrom.getHeight()) * 1.5;
-         offset = Math.max(-1 * maxOffset,Math.min(maxOffset,offset));
-         context.quadraticCurveTo(conn.from.x, conn.to.y - offset, conn.to.x, conn.to.y);
-         canvas.stroke(this);
-      }
-   };
-   Kinetic.Global.extend(Kinetic.Connector, Kinetic.Shape);
+/*jslint nomen: true*/
+(function () {
+	'use strict';
+	var horizontalConnector, calculateConnector;
+	Kinetic.Connector = function (config) {
+		this.shapeFrom = config.shapeFrom;
+		this.shapeTo = config.shapeTo;
+		this.shapeType = 'Connector';
+		Kinetic.Shape.call(this, config);
+		this._setDrawFuncs();
+	};
+	horizontalConnector = function (parent, child) {
+		var childHorizontalOffset = parent.attrs.x < child.attrs.x ? 0.1 : 0.9,
+			parentHorizontalOffset = 1 - childHorizontalOffset;
+		return {
+			from: {
+				x: parent.attrs.x + parentHorizontalOffset * parent.getWidth(),
+				y: parent.attrs.y + 0.5 * parent.getHeight()
+			},
+			to: {
+				x: child.attrs.x + childHorizontalOffset * child.getWidth(),
+				y: child.attrs.y + 0.5 * child.getHeight()
+			},
+			controlPointOffset: 0
+		};
+	};
+	calculateConnector = function (parent, child, ctrl) {
+		var tolerance = 10,
+			childMid = child.attrs.y + child.getHeight() * 0.5,
+			parentMid = parent.attrs.y + parent.getHeight() * 0.5,
+			childHorizontalOffset;
+		if (Math.abs(parentMid - childMid) < Math.min(child.getHeight(), parent.getHeight()) * 0.75) {
+			return horizontalConnector(parent, child);
+		}
+		childHorizontalOffset = parent.attrs.x < child.attrs.x ? 0 : 1;
+		return {
+			from: {
+				x: parent.attrs.x + 0.5 * parent.getWidth(),
+				y: parent.attrs.y + 0.5 * parent.getHeight()
+			},
+			to: {
+				x: child.attrs.x + childHorizontalOffset * child.getWidth(),
+				y: child.attrs.y + 0.5 * child.getHeight()
+			},
+			controlPointOffset: 0.75
+		};
+	};
+	Kinetic.Connector.prototype = {
+		drawFunc: function (canvas) {
+			var context = this.getContext(),
+				shapeFrom = this.shapeFrom,
+				shapeTo = this.shapeTo,
+				ctrl = 0.2,
+				conn = calculateConnector(shapeFrom, shapeTo, ctrl),
+				offset,
+				maxOffset;
+			if (!conn) {
+				return;
+			}
+			context.beginPath();
+			context.moveTo(conn.from.x, conn.from.y);
+			offset = conn.controlPointOffset * (conn.from.y - conn.to.y);
+			maxOffset = Math.min(shapeTo.getHeight(), shapeFrom.getHeight()) * 1.5;
+			offset = Math.max(-maxOffset, Math.min(maxOffset, offset));
+			context.quadraticCurveTo(conn.from.x, conn.to.y - offset, conn.to.x, conn.to.y);
+			canvas.stroke(this);
+		}
+	};
+	Kinetic.Global.extend(Kinetic.Connector, Kinetic.Shape);
 }());
 /*global console, jQuery, Kinetic*/
+/*jslint nomen: true*/
 (function () {
 	'use strict';
 	/*shamelessly copied from http://james.padolsey.com/javascript/wordwrap-for-javascript */
@@ -684,7 +712,7 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 		return str.match(new RegExp(regex, 'g')).join(brk);
 	}
 	function joinLines(string) {
-		return string.replace(/\s+/g,' ')
+		return string.replace(/\s+/g, ' ');
 	}
 	function breakWords(string) {
 		return wordWrap(joinLines(string), COLUMN_WORD_WRAP_LIMIT, '\n', false);
@@ -708,7 +736,7 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 			opacity: 0.4
 		};
 		config.cornerRadius = 10;
-		config.draggable = true;
+		config.draggable = config.level > 1;
 		config.name = 'Idea';
 		Kinetic.Text.apply(this, [config]);
 		this.classType = 'Idea';
@@ -819,11 +847,6 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 		connectorKey = function (fromIdeaId, toIdeaId) {
 			return fromIdeaId + '_' + toIdeaId;
 		};
-   var inputEnabled = true;
-	this.enableInput = function(isEnabled) {
-	   inputEnabled = isEnabled;
-	};
-	
 	stage.add(layer);
 	mapModel.addEventListener('nodeCreated', function (n) {
 		var node = new Kinetic.Idea({
@@ -932,26 +955,26 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 		});
 	});
 	(function () {
-   	
 		var keyboardEventHandlers = {
-			13: mapModel.addSubIdea.bind(mapModel),
-			8: mapModel.removeSubIdea.bind(mapModel),
-			37: mapModel.selectNodeLeft.bind(mapModel),
-			38: mapModel.selectNodeUp.bind(mapModel),
-			39: mapModel.selectNodeRight.bind(mapModel),
-			40: mapModel.selectNodeDown.bind(mapModel),
-      46: mapModel.removeSubIdea.bind(mapModel), /* DELETE */
-      32: mapModel.editNode.bind(mapModel) /* SPACE BAR */
-		};
-		jQuery(document).keydown(function (evt) {
-		   if (!inputEnabled) {
-		      return;
-		   }
-			var eventHandler = keyboardEventHandlers[evt.which];
-			if (eventHandler) {
-				eventHandler();
-				evt.preventDefault();
-			}
+			13: mapModel.addSubIdea,
+			8: mapModel.removeSubIdea,
+			37: mapModel.selectNodeLeft,
+			38: mapModel.selectNodeUp,
+			39: mapModel.selectNodeRight,
+			40: mapModel.selectNodeDown,
+			46: mapModel.removeSubIdea,
+			32: mapModel.editNode
+		},
+			onKeydown = function (evt) {
+				var eventHandler = keyboardEventHandlers[evt.which];
+				if (eventHandler) {
+					eventHandler();
+					evt.preventDefault();
+				}
+			};
+		jQuery(document).keydown(onKeydown);
+		mapModel.addEventListener('inputEnabledChanged', function (isInputEnabled) {
+			jQuery(document)[isInputEnabled ? 'bind' : 'unbind']('keydown', onKeydown);
 		});
 	}());
 };
