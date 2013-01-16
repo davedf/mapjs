@@ -291,6 +291,12 @@ describe ("content aggregate", function(){
       });
     });
     describe ("positionBefore", function(){
+      it ('ignores different sign ranks when ordering', function(){
+        var idea=content({id:1, ideas:{'-0.25':{id:24}, '-10.25':{id:32}, '0.0625':{id:5}, '0.03125':{id:6}, '1.0625':{id:7}}})
+        spyOn(idea,'dispatchEvent');
+        expect(idea.positionBefore(24,32)).toBeFalsy();
+        expect(idea.dispatchEvent).not.toHaveBeenCalled();
+      });
       it ('reorders immediate children by changing the rank of an idea to be immediately before the provided idea', function(){
         var idea=content({id:1, ideas: { 5: { id: 2}, 10: { id:3}, 15 : {id:4}}});
         var result=idea.positionBefore(4,3);

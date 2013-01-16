@@ -156,17 +156,9 @@ var content;
       if (positionBeforeIdeaId) {
         var after_rank = parentIdea.findChildRankById(positionBeforeIdeaId);
         if (!after_rank) return false;
-        var ranks_before = _(
-          _(
-            _(_(parentIdea.ideas).keys())
-            .map(parseFloat)
-          ).sortBy(function (k) {
-            return Math.abs(k);
-          })
-        ).reject(function (k) {
-          return Math.abs(k) >= Math.abs(after_rank);
-        });
-        var before_rank = ranks_before.length > 0 ? _.max(ranks_before) : 0;
+        var sibling_ranks=_(_.map(_.keys(parentIdea.ideas), parseFloat)).reject(function(k){return k*current_rank<0});
+        var siblings_between=_.reject(_.sortBy(sibling_ranks,Math.abs),function(k){ return Math.abs(k)>=Math.abs(after_rank) });
+        var before_rank = siblings_between.length > 0 ? _.max(siblings_between) : 0;
         if (before_rank == current_rank)
           return false;
         new_rank = before_rank + (after_rank - before_rank) / 2;
