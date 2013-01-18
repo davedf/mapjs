@@ -17,8 +17,8 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			text: n.title,
 			opacity: 0
 		});
-		/* cannot use click because click if fired on dragend */
-		node.on('mousedown tap', mapModel.selectNode.bind(mapModel, n.id));
+		/* in kinetic 4.3 cannot use click because click if fired on dragend */
+		node.on('click tap', mapModel.selectNode.bind(mapModel, n.id));
 		node.on('dragstart', function () {
 			node.moveToTop();
 			node.attrs.shadow.offset = {
