@@ -57,11 +57,11 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 		});
 	});
 	mapModel.addEventListener('nodeSelectionChanged', function (ideaId, isSelected) {
-		var node = nodeByIdeaId[ideaId];
-		var finalStagePosition = {
-			x: stage.attrs.x,
-			y: stage.attrs.y
-		}
+		var node = nodeByIdeaId[ideaId],
+			finalStagePosition = {
+				x: stage.attrs.x,
+				y: stage.attrs.y
+			};
 		if (node.getAbsolutePosition().x + node.getWidth() > stage.getWidth()) {
 			finalStagePosition.x = stage.getWidth() - node.attrs.x - node.getWidth();
 		} else if (node.getAbsolutePosition().x < 0) {
