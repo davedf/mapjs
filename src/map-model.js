@@ -76,7 +76,7 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 			if (command === 'addSubIdea') {
 				newIdeaId = args[2];
 				self.selectNode(newIdeaId);
-				self.editNode();
+				self.editNode(true);
 			}
 		};
 	observable(this);
@@ -120,8 +120,8 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 	this.updateTitle = function (ideaId, title) {
 		idea.updateTitle(ideaId, title);
 	};
-	this.editNode = function () {
-		self.dispatchEvent('nodeEditRequested:' + currentlySelectedIdeaId, {});
+	this.editNode = function (shouldSelectAll) {
+		self.dispatchEvent('nodeEditRequested:' + currentlySelectedIdeaId, shouldSelectAll);
 	};
 	this.clear = function () {
 		idea.clear();

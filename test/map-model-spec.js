@@ -106,9 +106,9 @@ describe('MapModel', function () {
 			underTest.addEventListener('nodeEditRequested:1', nodeEditRequestedListener);
 			underTest.selectNode(1);
 
-			underTest.editNode();
+			underTest.editNode(true);
 
-			expect(nodeEditRequestedListener).toHaveBeenCalledWith({});
+			expect(nodeEditRequestedListener).toHaveBeenCalledWith(true);
 		});
 	});
 	describe('methods delegating to idea', function () {

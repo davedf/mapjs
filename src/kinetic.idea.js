@@ -46,7 +46,7 @@
 		this.on('dblclick', self.fire.bind(self, ':nodeEditRequested'));
 		this.on('mouseover touchstart', setStageDraggable.bind(null, false));
 		this.on('mouseout touchend', setStageDraggable.bind(null, true));
-		this.editNode = function () {
+		this.editNode = function (shouldSelectAll) {
 			//this only works for solid color nodes
 			self.attrs.textFill = self.attrs.fill;
 			self.getLayer().draw();
@@ -83,6 +83,9 @@
 				})
 				.blur(onCommit)
 				.focus();
+			if (shouldSelectAll) {
+				ideaInput.select();
+			}
 		};
 	};
 }());
