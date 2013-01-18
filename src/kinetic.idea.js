@@ -39,13 +39,15 @@
 			opacity: 0.4
 		};
 		config.cornerRadius = 10;
-		config.draggable = config.level > 1;
+		config.draggable = true;
 		config.name = 'Idea';
 		Kinetic.Text.apply(this, [config]);
 		this.classType = 'Idea';
 		this.on('dblclick', self.fire.bind(self, ':nodeEditRequested'));
-		this.on('mouseover touchstart', setStageDraggable.bind(null, false));
-		this.on('mouseout touchend', setStageDraggable.bind(null, true));
+		if (config.level > 1) {
+			this.on('mouseover touchstart', setStageDraggable.bind(null, false));
+			this.on('mouseout touchend', setStageDraggable.bind(null, true));
+		}
 		this.editNode = function (shouldSelectAll) {
 			//this only works for solid color nodes
 			self.attrs.textFill = self.attrs.fill;
