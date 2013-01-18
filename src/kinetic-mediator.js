@@ -58,6 +58,26 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 	});
 	mapModel.addEventListener('nodeSelectionChanged', function (ideaId, isSelected) {
 		var node = nodeByIdeaId[ideaId];
+		var finalStagePosition = {
+			x: stage.attrs.x,
+			y: stage.attrs.y
+		}
+		if (node.getAbsolutePosition().x + node.getWidth() > stage.getWidth()) {
+			finalStagePosition.x = stage.getWidth() - node.attrs.x - node.getWidth();
+		} else if (node.getAbsolutePosition().x < 0) {
+			finalStagePosition.x = -node.attrs.x;
+		}
+		if (node.getAbsolutePosition().y + node.getHeight() > stage.getHeight()) {
+			finalStagePosition.y = stage.getHeight() - node.attrs.y - node.getHeight();
+		} else if (node.getAbsolutePosition().y < 0) {
+			finalStagePosition.y = -node.attrs.y;
+		}
+		stage.transitionTo({
+			x: finalStagePosition.x,
+			y: finalStagePosition.y,
+			duration: 0.4,
+			easing: 'ease-in-out'
+		});
 		node.setIsSelected(isSelected);
 	});
 	mapModel.addEventListener('nodeDroppableChanged', function (ideaId, isDroppable) {

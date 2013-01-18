@@ -77,11 +77,11 @@
 				setStageDimensions = function () {
 					stage.setWidth(container.width());
 					stage.setHeight(container.height());
-					stage.attrs.x = 0.5 * stage.getWidth();
-					stage.attrs.y = 0.5 * stage.getHeight();
 					stage.draw();
 				};
 			setStageDimensions();
+			stage.attrs.x = 0.5 * stage.getWidth();
+			stage.attrs.y = 0.5 * stage.getHeight();
 			mapModel.setIdea(idea);
 			$(window).resize(setStageDimensions);
 			window.mapModel = mapModel;

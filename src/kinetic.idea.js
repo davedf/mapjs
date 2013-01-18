@@ -90,6 +90,12 @@
 			if (shouldSelectAll) {
 				ideaInput.select();
 			}
+			self.getStage().on('xChange yChange', function () {
+				ideaInput.css({
+					top: canvasPosition.top + self.getAbsolutePosition().y,
+					left: canvasPosition.left + self.getAbsolutePosition().x
+				});
+			});
 		};
 	};
 }());
