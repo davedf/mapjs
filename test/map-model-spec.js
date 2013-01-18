@@ -161,13 +161,13 @@ describe('MapModel', function () {
 
 			expect(anIdea.removeSubIdea).toHaveBeenCalledWith(321);
 		});
-		it('should invoke idea.updateTitle with currently selected idea as ideaId when updateTitle method is invoked', function () {
+		it('should invoke idea.updateTitle with specified ideaId when updateTitle method is invoked', function () {
 			spyOn(anIdea, 'updateTitle');
 			underTest.selectNode(111);
 
-			underTest.updateTitle('new title');
+			underTest.updateTitle(112, 'new title');
 
-			expect(anIdea.updateTitle).toHaveBeenCalledWith(111, 'new title');
+			expect(anIdea.updateTitle).toHaveBeenCalledWith(112, 'new title');
 		});
 		it('should remove all the nodes from the map except the central one when map is cleared', function () {
 			spyOn(anIdea, 'clear');

@@ -45,7 +45,7 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			);
 		});
 		node.on(':textChanged', function (event) {
-			mapModel.updateTitle(event.text);
+			mapModel.updateTitle(n.id, event.text);
 		});
 		node.on(':nodeEditRequested', mapModel.editNode);
 		mapModel.addEventListener('nodeEditRequested:' + n.id, node.editNode);

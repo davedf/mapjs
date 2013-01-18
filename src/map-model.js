@@ -117,8 +117,8 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 			self.selectNode(parent.id);
 		}
 	};
-	this.updateTitle = function (title) {
-		idea.updateTitle(currentlySelectedIdeaId, title);
+	this.updateTitle = function (ideaId, title) {
+		idea.updateTitle(ideaId, title);
 	};
 	this.editNode = function () {
 		self.dispatchEvent('nodeEditRequested:' + currentlySelectedIdeaId, {});
