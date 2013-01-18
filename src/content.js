@@ -113,7 +113,7 @@ var content;
       var newIdea=init({title:ideaTitle,id:(newId||(contentAggregate.maxId()+1))});
       appendSubIdea(parent,newIdea);
       contentAggregate.dispatchEvent('addSubIdea',parentId,ideaTitle,newIdea.id);
-      contentAggregate.dispatchEvent('changed',undefined);
+      contentAggregate.dispatchEvent('changed','addSubIdea',[parentId,ideaTitle,newIdea.id]);
       return true;
     }
     contentAggregate.removeSubIdea = function (subIdeaId){

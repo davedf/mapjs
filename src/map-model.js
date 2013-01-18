@@ -12,6 +12,9 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 		idea,
 		isInputEnabled,
 		currentlySelectedIdeaId,
+		getRandomTitle = function () {
+			return titlesToRandomlyChooseFrom[Math.floor(titlesToRandomlyChooseFrom.length * Math.random())];
+		},
 		parentNode = function (root, id) {
 			var rank, childResult;
 			for (rank in root.ideas) {
@@ -67,8 +70,14 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 			}
 			currentLayout = newLayout;
 		},
-		onIdeaChanged = function () {
+		onIdeaChanged = function (command, args) {
+			var newIdeaId;
 			updateCurrentLayout(layoutCalculator(idea));
+			if (command === 'addSubIdea') {
+				newIdeaId = args[2];
+				self.selectNode(newIdeaId);
+				self.editNode();
+			}
 		};
 	observable(this);
 	this.setIdea = function (anIdea) {
@@ -96,7 +105,11 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 		}
 	};
 	this.addSubIdea = function (title) {
-		idea.addSubIdea(currentlySelectedIdeaId, title || titlesToRandomlyChooseFrom[Math.floor(titlesToRandomlyChooseFrom.length * Math.random())]);
+		idea.addSubIdea(currentlySelectedIdeaId, title || getRandomTitle());
+	};
+	this.addSiblingIdea = function () {
+		var parent = parentNode(idea, currentlySelectedIdeaId) || idea;
+		idea.addSubIdea(parent.id, getRandomTitle());
 	};
 	this.removeSubIdea = function () {
 		var parent = parentNode(idea, currentlySelectedIdeaId);

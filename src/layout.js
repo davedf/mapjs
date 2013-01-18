@@ -61,9 +61,8 @@ var MAPJS = MAPJS || {};
 					return secondRank - firstRank;
 				} else if (firstRank < 0 && secondRank < 0) {
 					return firstRank - secondRank;
-				} else {
-					return secondRank - firstRank;
 				}
+				return secondRank - firstRank;
 			});
 			for (i = ranks.length - 1; i >= 0; i -= 1) {
 				subIdeaRank = ranks[i];
