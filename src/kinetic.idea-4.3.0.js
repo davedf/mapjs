@@ -26,52 +26,27 @@
 			self = this,
 			setStageDraggable = function (isDraggable) {
 				self.getStage().setDraggable(isDraggable);
-			};
-		config.text = breakWords(config.text);
+			},
+			text,
+			border,
+			border2;
 		this.level = config.level;
 		this.isSelected = false;
-		this.setStyle(config);
-		config.align = 'center';
-		config.shadow = {
-			color: 'black',
-			blur: 10,
-			offset: [4, 4],
-			opacity: 0.4
-		};
-		config.cornerRadius = 10;
 		config.draggable = config.level > 1;
+		config.dragOnTop = false;// would be nice to not do this and somehow move connector too to into the drag layer
 		config.name = 'Idea';
 		Kinetic.Container.apply(this, [config]);
-
-		var text = new Kinetic.Text({
-			x: 5,
-			y: 5,
-			text: config.text,
-			fontSize: 13,
-			fontFamily: 'Helvetica',
-			fontStyle: 'bold',
-			fill: 'grey',
-			align: 'center'
-		});
-		this.setText = text.setText.bind(text);
-		var isRoot = false;
-		var r = new Kinetic.Rect({
-			width: text.getWidth() + 10,
-			height: text.getHeight() + 10,
-			stroke: '#888',
-			strokeWidth: 2,
-			cornerRadius: 10,
-			fillLinearGradientStartPoint: [0, 0],
-			fillLinearGradientEndPoint: [50, 100],
-			fillLinearGradientColorStops: isRoot ? [0, '#4FDFFF', 1, '#30C0FF'] : [0, '#FFFFFF', 1, '#E0E0E0']
-		});
-		this.add(r);
+		text = new Kinetic.Text();
+		this.text = text;
+		this.setText = this.setStyle;
+		border = new Kinetic.Rect();
+		border2 = new Kinetic.Rect();/* workaround until https://github.com/ericdrowell/KineticJS/issues/232 is fixed*/
+		this.border = border;
+		this.border2 = border2;
+		this.add(border);
+		this.add(border2);
 		this.add(text);
-		this.setWidth(r.getWidth());
-		this.setHeight(r.getHeight());
-
-
-
+		this.setText(breakWords(config.text));
 		this.classType = 'Idea';
 		this.on('dblclick', self.fire.bind(self, ':nodeEditRequested'));
 		this.on('mouseover touchstart', setStageDraggable.bind(null, false));
@@ -83,7 +58,7 @@
 				currentText = text.getText(),
 				ideaInput,
 				updateText = function (newText) {
-					self.setStyle(self.attrs);
+					text.setVisible(true);
 					self.getStage().draw();
 					self.fire(':textChanged', {
 						text: breakWords(newText || currentText)
@@ -115,57 +90,65 @@
 		};
 	};
 }());
-Kinetic.Idea.prototype.setStyle = function (config) {
+Kinetic.Idea.prototype.setStyle = function (text) {
 	'use strict';
-	var isDroppable = this.isDroppable,
+	var padding = 10,
+		isDroppable = this.isDroppable,
 		isSelected = this.isSelected,
 		isRoot = this.level === 1;
-	config.strokeWidth = 1;
-	config.padding = 8;
-	config.fontSize = 10;
-	config.fontFamily = 'Helvetica';
-	config.lineHeight = 1.5;
-	config.fontStyle = 'bold';
-	if (isDroppable) {
-		config.stroke = '#9F4F4F';
-		config.fill = {
-			start: { x: 0, y: 0 },
-			end: {x: 0, y: 20 },
-			colorStops: [0, '#EF6F6F', 1, '#CF4F4F']
-		};
-		config.textFill = '#FFFFFF';
-	} else if (isSelected) {
-		config.fill = '#5FBF5F';
-		config.textFill = '#FFFFFF';
-	} else {
-		config.stroke = isRoot ? '#88F' : '#888';
-		config.fill = {
-			start: { x: 0, y: 0 },
-			end: {x: 50, y: 100 },
-			colorStops: isRoot ? [0, '#4FDFFF', 1, '#30C0FF'] : [0, '#FFFFFF', 1, '#E0E0E0']
-		};
-		config.textFill = isRoot ? '#FFFFFF' : '#5F5F5F';
+	this.text.attrs.x = padding;
+	this.text.attrs.y = padding;
+	this.text.attrs.fontSize = 13;
+	this.text.attrs.fontFamily = 'Helvetica';
+	this.text.attrs.fontStyle = 'bold';
+	this.text.attrs.align = 'center';
+	this.text.attrs.lineHeight = 1.2;
+	if (text) {
+		this.text.setText(text);
 	}
+	this.border2.attrs.stroke = '#888';
+	this.border2.attrs.strokeWidth = 2;
+	this.border2.attrs.cornerRadius = this.border.attrs.cornerRadius = 10;
+	this.border.attrs.shadowColor = 'black';
+	this.border.attrs.shadowBlur = 10;
+	this.border.attrs.shadowOffset = { x: 10, y: 10 };
+	this.border.attrs.shadowOpacity = 0.5;
+	if (isDroppable) {
+		this.border2.attrs.stroke = '#9F4F4F';
+		this.border.attrs.fillLinearGradientStartPoint = { x: 0, y: 0 };
+		this.border.attrs.fillLinearGradientEndPoint = { x: 50, y: 100 };
+		this.border.attrs.fillLinearGradientColorStops = [0, '#EF6F6F', 1, '#CF4F4F'];
+		this.text.attrs.fill = '#FFFFFF';
+	} else if (isSelected) {
+		this.border.attrs.fillLinearGradientStartPoint = { x: 0, y: 0 };
+		this.border.attrs.fillLinearGradientEndPoint = { x: 50, y: 100 };
+		this.border.attrs.fillLinearGradientColorStops = [0, '#6FCF6F', 1, '#5FBF5F'];
+		this.text.attrs.fill = '#FFFFFF';
+	} else {
+		this.border2.attrs.stroke = isRoot ? '#88F' : '#888';
+		this.border.attrs.fillLinearGradientStartPoint = { x: 0, y: 0 };
+		this.border.attrs.fillLinearGradientEndPoint = { x: 50, y: 100 };
+		this.border.attrs.fillLinearGradientColorStops = isRoot ? [0, '#4FCFEF', 1, '#30B0EF'] : [0, '#FFFFFF', 1, '#E0E0E0'];
+		this.text.attrs.fill = isRoot ? '#FFFFFF' : '#5F5F5F';
+	}
+	this.setWidth(this.border2.attrs.width = this.border.attrs.width = this.text.getWidth() + 2 * padding);
+	this.setHeight(this.border2.attrs.height = this.border.attrs.height = this.text.getHeight() + 2 * padding);
 };
 Kinetic.Idea.prototype.setIsSelected = function (isSelected) {
 	'use strict';
 	this.isSelected = isSelected;
-	this.setStyle(this.attrs);
+	this.setStyle();
 	this.getLayer().draw();
 };
 Kinetic.Idea.prototype.setIsDroppable = function (isDroppable) {
 	'use strict';
 	this.isDroppable = isDroppable;
-	this.setStyle(this.attrs);
+	this.setStyle();
+	this.getLayer().draw();
 };
 Kinetic.Idea.prototype.transitionToAndDontStopCurrentTransitions = function (config) {
 	'use strict';
-	var transition = new Kinetic.Transition(this, config),
-		animation = new Kinetic.Animation();
-	animation.func = transition._onEnterFrame.bind(transition);
-	animation.node = this.getLayer();
-	transition.onFinished = animation.stop.bind(animation);
-	transition.start();
-	animation.start();
+	//this is here for 'backward' compatibility, so I don't have to change mediator that works correctly with kinetic.idea 4.2.0
+	this.transitionTo(config);
 };
 Kinetic.Global.extend(Kinetic.Idea, Kinetic.Container);

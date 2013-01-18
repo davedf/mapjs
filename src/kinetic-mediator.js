@@ -17,7 +17,8 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			text: n.title,
 			opacity: 0
 		});
-		node.on('click tap', mapModel.selectNode.bind(mapModel, n.id));
+		/* cannot use click because click if fired on dragend */
+		node.on('mousedown tap', mapModel.selectNode.bind(mapModel, n.id));
 		node.on('dragstart', function () {
 			node.moveToTop();
 			node.attrs.shadow.offset = {
@@ -117,8 +118,9 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 	});
 	(function () {
 		var keyboardEventHandlers = {
-			13: mapModel.addSubIdea,
+			13: mapModel.addSiblingIdea,
 			8: mapModel.removeSubIdea,
+			9: mapModel.addSubIdea,
 			37: mapModel.selectNodeLeft,
 			38: mapModel.selectNodeUp,
 			39: mapModel.selectNodeRight,

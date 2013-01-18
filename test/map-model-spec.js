@@ -114,7 +114,16 @@ describe('MapModel', function () {
 	describe('methods delegating to idea', function () {
 		var anIdea, underTest;
 		beforeEach(function () {
-			anIdea = content({});
+			anIdea = content({
+				id: 1,
+				title: 'root',
+				ideas: {
+					10: {
+						id: 2,
+						title: 'child'
+					}
+				}
+			});
 			underTest = new MAPJS.MapModel(function () {
 				return {
 				};
@@ -166,6 +175,22 @@ describe('MapModel', function () {
 			underTest.clear();
 
 			expect(anIdea.clear).toHaveBeenCalled();
+		});
+		it('should invoke idea.addSubIdea with a parent of a currently selected node when addSiblingIdea is invoked', function () {
+			underTest.selectNode(2);
+			spyOn(anIdea, 'addSubIdea');
+
+			underTest.addSiblingIdea();
+
+			expect(anIdea.addSubIdea).toHaveBeenCalledWith(1, 'double click to edit');
+		});
+		it('should invoke idea.addSubIdea with a root node if root is currently selected node when addSiblingIdea is invoked (because root has no parent)', function () {
+			underTest.selectNode(1);
+			spyOn(anIdea, 'addSubIdea');
+
+			underTest.addSiblingIdea();
+
+			expect(anIdea.addSubIdea).toHaveBeenCalledWith(1, 'double click to edit');
 		});
 	});
 	describe('keyboard navigation', function () {
