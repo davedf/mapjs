@@ -1,0 +1,1 @@
+script: phantomjs test-lib/run_jasmine_test.coffee test/SpecRunner.html 
