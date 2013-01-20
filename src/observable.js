@@ -21,7 +21,9 @@ var observable = function (base) {
 			);
 		}
 	};
-	base.addEventSink = eventSinks.push.bind(eventSinks);
+	base.addEventSink = function(eventSink) {
+    eventSinks.push(eventSink);
+  }
 	base.dispatchEvent = function (eventType) {
 		var eventArguments, listeners, i;
 		eventArguments = Array.prototype.slice.call(arguments, 1);
