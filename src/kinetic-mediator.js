@@ -102,7 +102,7 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			x: n.x,
 			y: n.y,
 			duration: 0.4,
-			easing: (reason === 'failed' ? 'bounce-ease-out' : 'ease-in-out')
+			easing: reason === 'failed' ? 'bounce-ease-out' : 'ease-in-out'
 		});
 	});
 	mapModel.addEventListener('nodeTitleChanged', function (n) {
