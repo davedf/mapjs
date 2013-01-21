@@ -4,7 +4,12 @@ describe('mapToolbarWidget', function () {
 	var mapModel, element;
 	beforeEach(function () {
 		mapModel = new MAPJS.MapModel();
-		element = jQuery('.mapToolbarWidget');
+		element = jQuery('<div>\
+				<input type="button" class="scaleUp" value="+"></input>\
+				<input type="button" class="scaleDown" value="-"></input>\
+			</div>'
+		);
+		element.appendTo('body');
 	});
 	it('should be used as a jquery plugin', function () {
 		var result;
