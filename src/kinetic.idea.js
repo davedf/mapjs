@@ -65,13 +65,13 @@
 				},
 				onCommit = function () {
 					updateText(ideaInput.val());
-				};
+				}, scale = self.getStage().getScale().x || 1;
 			ideaInput = jQuery('<textarea type="text" wrap="soft" class="ideaInput"></textarea>')
 				.css({
 					top: canvasPosition.top + self.getAbsolutePosition().y,
 					left: canvasPosition.left + self.getAbsolutePosition().x,
-					width: self.getWidth(),
-					height: self.getHeight()
+					width: self.getWidth() * scale,
+					height: self.getHeight() * scale
 				})
 				.val(joinLines(currentText))
 				.appendTo('body')
