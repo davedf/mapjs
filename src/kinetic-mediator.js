@@ -139,10 +139,14 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 		});
 	});
 	mapModel.addEventListener('mapScaleChanged', function (isScaleUp) {
-		var scale = stage.getScale();
-		scale.y = scale.x = (scale.x || 1) * (isScaleUp ? 1.25 : 0.8);
-		stage.setScale(scale);
-		stage.draw();
+		var scale = (stage.getScale().x || 1) * (isScaleUp ? 1.25 : 0.8);
+		stage.transitionTo({
+			scale: {
+				x: scale,
+				y: scale
+			},
+			duration: 0.1
+		});
 	});
 	(function () {
 		var keyboardEventHandlers = {
