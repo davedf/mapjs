@@ -203,15 +203,6 @@ describe('MapModel', function () {
 
 			expect(mapScaleChangedListener).toHaveBeenCalledWith(true);
 		});
-		it('should dispatch analytic event when scaleUp method is invoked', function () {
-			var underTest = new MAPJS.MapModel(),
-				analyticListener = jasmine.createSpy();
-			underTest.addEventListener('analytic', analyticListener);
-
-			underTest.scaleUp('toolbar');
-
-			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'scaleUp', 'toolbar');
-		});
 		it('should dispatch mapScaleChanged event when scaleDown method is invoked', function () {
 			var underTest = new MAPJS.MapModel(),
 				mapScaleChangedListener = jasmine.createSpy();
@@ -220,15 +211,6 @@ describe('MapModel', function () {
 			underTest.scaleDown('toolbar');
 
 			expect(mapScaleChangedListener).toHaveBeenCalledWith(false);
-		});
-		it('should dispatch analytic event when scaleUp method is invoked', function () {
-			var underTest = new MAPJS.MapModel(),
-				analyticListener = jasmine.createSpy();
-			underTest.addEventListener('analytic', analyticListener);
-
-			underTest.scaleDown('toolbar');
-
-			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'scaleDown', 'toolbar');
 		});
 	});
 	describe('keyboard navigation', function () {
@@ -332,6 +314,26 @@ describe('MapModel', function () {
 			underTest.selectNodeDown();
 
 			expect(nodeSelectionChangedListener).toHaveBeenCalledWith(5, true);
+		});
+	});
+	describe('analytic events', function () {
+		it('should dispatch analytic event when scaleUp method is invoked', function () {
+			var underTest = new MAPJS.MapModel(),
+				analyticListener = jasmine.createSpy();
+			underTest.addEventListener('analytic', analyticListener);
+
+			underTest.scaleUp('toolbar');
+
+			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'scaleUp', 'toolbar');
+		});
+		it('should dispatch analytic event when scaleUp method is invoked', function () {
+			var underTest = new MAPJS.MapModel(),
+				analyticListener = jasmine.createSpy();
+			underTest.addEventListener('analytic', analyticListener);
+
+			underTest.scaleDown('toolbar');
+
+			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'scaleDown', 'toolbar');
 		});
 	});
 });
