@@ -48,7 +48,16 @@ describe ("content aggregate", function(){
         expect(idea.findSubIdeaById(33)).toBeFalsy();
       });
     });
-
+    describe ("find", function(){
+      it ('returns an array of ideas that match a predicate, sorted by depth. It only returns ID and title', function(){
+        var aggregate=content({id:5,title:'I0',ideas:{9:{id:1, title:'I1', ideas: { '-5': { id: 2, title:'I2'}, '-10': { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}}}})
+        expect(aggregate.find(function(idea){ return idea.id<3 })).toEqual([{id:1,title:'I1'},{id:2,title:'I2'}]);
+      });
+      it ('returns an empty array if nothing matches the predicate', function(){
+        var aggregate=content({id:5,title:'I0',ideas:{9:{id:1, title:'I1', ideas: { '-5': { id: 2, title:'I2'}, '-10': { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}}}})
+        expect(aggregate.find(function(idea){ return idea.id>103 })).toEqual([]);
+      });
+    });
   });
   describe ("command processing",function(){
     describe ("updateTitle", function(){

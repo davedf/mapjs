@@ -25,6 +25,13 @@ var content;
           },
           undefined);
       };
+      contentIdea.find = function(predicate){
+        var current= predicate(contentIdea) ? [_.pick(contentIdea,'id','title')] : [];
+        if (_.size(contentIdea.ideas)==0)
+          return current;
+        else
+          return _.reduce(contentIdea.ideas,function(result,idea){ return _.union(result,idea.find(predicate)) },current);
+      };
       return contentIdea;
     };
     contentAggregate.maxId = function maxId(idea) {
