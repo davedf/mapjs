@@ -62,14 +62,34 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 				x: stage.attrs.x,
 				y: stage.attrs.y
 			},
+			scale = stage.getScale().x || 1,
 			offset = 100;
-		if (node.getAbsolutePosition().x + node.getWidth() + offset > stage.getWidth()) {
-			finalStagePosition.x = stage.getWidth() - node.attrs.x - node.getWidth() - offset;
+		console.log(
+			'nodeSelectionChanged',
+			ideaId,
+			'nap',
+			node.getAbsolutePosition().x,
+			node.getAbsolutePosition().y,
+			'node width height',
+			node.getWidth(),
+			node.getHeight(),
+			'stage width height',
+			stage.getWidth(),
+			stage.getHeight(),
+			'node x y',
+			node.attrs.x,
+			node.attrs.y,
+			'stage x y',
+			stage.attrs.x,
+			stage.attrs.y
+		);
+		if (node.getAbsolutePosition().x + node.getWidth() * scale + offset > stage.getWidth()) {
+			finalStagePosition.x = stage.getWidth() - node.attrs.x - node.getWidth() * scale - offset;
 		} else if (node.getAbsolutePosition().x < offset) {
 			finalStagePosition.x = -node.attrs.x + offset;
 		}
-		if (node.getAbsolutePosition().y + node.getHeight() + offset > stage.getHeight()) {
-			finalStagePosition.y = stage.getHeight() - node.attrs.y - node.getHeight() - offset;
+		if (node.getAbsolutePosition().y + node.getHeight() * scale + offset > stage.getHeight()) {
+			finalStagePosition.y = stage.getHeight() - node.attrs.y - node.getHeight() * scale - offset;
 		} else if (node.getAbsolutePosition().y < offset) {
 			finalStagePosition.y = -node.attrs.y + offset;
 		}
@@ -136,6 +156,12 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			duration: 0.1,
 			callback: connector.remove.bind(connector)
 		});
+	});
+	mapModel.addEventListener('mapScaleChanged', function (isScaleUp) {
+		var scale = stage.getScale();
+		scale.y = scale.x = (scale.x || 1) * (isScaleUp ? 1.25 : 0.8);
+		stage.setScale(scale);
+		stage.draw();
 	});
 	(function () {
 		var keyboardEventHandlers = {

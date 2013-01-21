@@ -7,24 +7,28 @@
 
 	<script type="text/javascript" src="../test-lib/jasmine-1.2.0/jasmine.js"></script>
 	<script type="text/javascript" src="../test-lib/jasmine-1.2.0/jasmine-html.js"></script>
-  <script type="text/javascript" src="../test-lib/console-runner.js"></script>
+	<script type="text/javascript" src="../test-lib/console-runner.js"></script>
 
 	<script type="text/javascript" src="../lib/jquery-1.9.0.js"></script>
 	<script type="text/javascript" src="../lib/underscore-1.4.3-min.js"></script>
+
 	<script type="text/javascript" src="../src/observable.js"></script>
 	<script type="text/javascript" src="../src/content.js"></script>
 	<script type="text/javascript" src="../src/layout.js"></script>
 	<script type="text/javascript" src="../src/map-model.js"></script>
+	<script type="text/javascript" src="../src/map-toolbar-widget.js"></script>
 
 	<script type="text/javascript" src="observable-spec.js"></script>
 	<script type="text/javascript" src="content-spec.js"></script>
-
-
 	<script type="text/javascript" src="layout-spec.js"></script>
 	<script type="text/javascript" src="map-model-spec.js"></script>
+	<script type="text/javascript" src="map-toolbar-widget-spec.js"></script>
 </head>
 <body>
-
+	<div class='mapToolbarWidget'>
+		<input type='button' class='scaleDown' value='-'></input>
+		<input type='button' class='scaleUp' value='+'></input>
+	</div>
 <script type="text/javascript">
   var console_reporter = new jasmine.ConsoleReporter(),
   htmlReporter = new jasmine.HtmlReporter();

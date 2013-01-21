@@ -5,6 +5,7 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 	'use strict';
 	titlesToRandomlyChooseFrom = titlesToRandomlyChooseFrom || ['double click to edit'];
 	var self = this,
+		analytic,
 		currentLayout = {
 			nodes: {},
 			connectors: {}
@@ -80,6 +81,7 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 			}
 		};
 	observable(this);
+	analytic = self.dispatchEvent.bind(self, 'analytic', 'mapModel');
 	this.setIdea = function (anIdea) {
 		if (idea) {
 			idea.removeEventListener('changed', onIdeaChanged);
@@ -125,6 +127,14 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 	};
 	this.clear = function () {
 		idea.clear();
+	};
+	this.scaleUp = function (source) {
+		self.dispatchEvent('mapScaleChanged', true);
+		analytic('scaleUp', source);
+	};
+	this.scaleDown = function (source) {
+		self.dispatchEvent('mapScaleChanged', false);
+		analytic('scaleDown', source);
 	};
 	(function () {
 		var isRootOrRightHalf = function (id) {
