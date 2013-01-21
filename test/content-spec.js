@@ -300,6 +300,11 @@ describe ("content aggregate", function(){
       });
     });
     describe ("positionBefore", function(){
+      it ('prevents a node to be reordered into itself, if is it already in the right position (production bugcheck)', function(){
+        idea=content({id:1,ideas:{"1":{id:2},"2":{id:4},"3":{id:6},"4":{id:8},"-1":{id:3},"-2":{id:5},"-3":{id:7},"-4":{id:9}}});
+        expect(idea.positionBefore(5,7)).toBeFalsy();
+        expect(_.size(idea.ideas)).toBe(8);
+      });
       it ('ignores different sign ranks when ordering', function(){
         var idea=content({id:1, ideas:{'-0.25':{id:24}, '-10.25':{id:32}, '0.0625':{id:5}, '0.03125':{id:6}, '1.0625':{id:7}}})
         spyOn(idea,'dispatchEvent');
