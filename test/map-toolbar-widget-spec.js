@@ -7,6 +7,9 @@ describe('mapToolbarWidget', function () {
 		element = jQuery('<div>\
 				<input type="button" class="scaleUp" value="+"></input>\
 				<input type="button" class="scaleDown" value="-"></input>\
+				<input type="button" class="addSubIdea" value="++"></input>\
+				<input type="button" class="editNode" value="edit"></input>\
+				<input type="button" class="removeSubIdea" value="remove"></input>\
 			</div>'
 		);
 		element.appendTo('body');
@@ -34,4 +37,29 @@ describe('mapToolbarWidget', function () {
 
 		expect(mapModel.scaleDown).toHaveBeenCalledWith('toolbar');
 	});
+	it('should invoke addSubIdea on map model when button is clicked', function () {
+		spyOn(mapModel, 'addSubIdea');
+		element.mapToolbarWidget(mapModel);
+
+		element.find('.addSubIdea').click();
+
+		expect(mapModel.addSubIdea).toHaveBeenCalledWith('toolbar');
+	});
+	it('should invoke editNode on map model when button is clicked', function () {
+		spyOn(mapModel, 'editNode');
+		element.mapToolbarWidget(mapModel);
+
+		element.find('.editNode').click();
+
+		expect(mapModel.editNode).toHaveBeenCalledWith('toolbar');
+	});
+	it('should invoke removeSubIdea on map model when button is clicked', function () {
+		spyOn(mapModel, 'removeSubIdea');
+		element.mapToolbarWidget(mapModel);
+
+		element.find('.removeSubIdea').click();
+
+		expect(mapModel.removeSubIdea).toHaveBeenCalledWith('toolbar');
+	});
+
 });

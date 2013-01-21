@@ -3,12 +3,14 @@ jQuery.fn.mapToolbarWidget = function (mapModel) {
 	'use strict';
 	this.each(function () {
 		var element = jQuery(this);
-		element.find('.scaleUp').click(function () {
-			mapModel.scaleUp('toolbar');
+		['scaleUp', 'scaleDown', 'addSubIdea', 'editNode', 'removeSubIdea'].forEach(function (methodName) {
+			element.find('.' + methodName).click(function () {
+				if (mapModel[methodName]) {
+					mapModel[methodName]('toolbar');
+				}
+			});
 		});
-		element.find('.scaleDown').click(function () {
-			mapModel.scaleDown('toolbar');
-		});
+
 	});
 	return this;
 };

@@ -77,7 +77,7 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 			if (command === 'addSubIdea') {
 				newIdeaId = args[2];
 				self.selectNode(newIdeaId);
-				self.editNode(true);
+				self.editNode('internal', true);
 			}
 		};
 	observable(this);
@@ -106,14 +106,17 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 			self.dispatchEvent('nodeSelectionChanged', id, true);
 		}
 	};
-	this.addSubIdea = function (title) {
-		idea.addSubIdea(currentlySelectedIdeaId, title || getRandomTitle());
+	this.addSubIdea = function (source) {
+		analytic('addSubIdea', source);
+		idea.addSubIdea(currentlySelectedIdeaId, getRandomTitle());
 	};
-	this.addSiblingIdea = function () {
+	this.addSiblingIdea = function (source) {
+		analytic('addSiblingIdea', source);
 		var parent = parentNode(idea, currentlySelectedIdeaId) || idea;
 		idea.addSubIdea(parent.id, getRandomTitle());
 	};
-	this.removeSubIdea = function () {
+	this.removeSubIdea = function (source) {
+		analytic('removeSubIdea', source);		
 		var parent = parentNode(idea, currentlySelectedIdeaId);
 		if (idea.removeSubIdea(currentlySelectedIdeaId)) {
 			self.selectNode(parent.id);
@@ -122,8 +125,9 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 	this.updateTitle = function (ideaId, title) {
 		idea.updateTitle(ideaId, title);
 	};
-	this.editNode = function (shouldSelectAll) {
-		self.dispatchEvent('nodeEditRequested:' + currentlySelectedIdeaId, shouldSelectAll);
+	this.editNode = function (source, shouldSelectAll) {
+		analytic('editNode', source);
+		self.dispatchEvent('nodeEditRequested:' + currentlySelectedIdeaId, shouldSelectAll );
 	};
 	this.clear = function () {
 		idea.clear();
@@ -152,12 +156,13 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 					}
 				}
 			};
-		self.selectNodeLeft = function () {
+		self.selectNodeLeft = function (source) {
 			var node,
 				rank,
 				isRoot = currentlySelectedIdeaId === idea.id,
 				targetRank = isRoot ? -Infinity : Infinity,
 				targetNode;
+			analytic('selectNodeLeft', source);
 			if (isRootOrLeftHalf(currentlySelectedIdeaId)) {
 				node = idea.id === currentlySelectedIdeaId ? idea : idea.findSubIdeaById(currentlySelectedIdeaId);
 				for (rank in node.ideas) {
@@ -173,8 +178,9 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 				self.selectNode(parentNode(idea, currentlySelectedIdeaId).id);
 			}
 		};
-		self.selectNodeRight = function () {
+		self.selectNodeRight = function (source) {
 			var node, rank, minimumPositiveRank = Infinity;
+			analytic('selectNodeRight', source);
 			if (isRootOrRightHalf(currentlySelectedIdeaId)) {
 				node = idea.id === currentlySelectedIdeaId ? idea : idea.findSubIdeaById(currentlySelectedIdeaId);
 				for (rank in node.ideas) {
@@ -190,8 +196,9 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 				self.selectNode(parentNode(idea, currentlySelectedIdeaId).id);
 			}
 		};
-		self.selectNodeUp = function () {
+		self.selectNodeUp = function (source) {
 			var parent = parentNode(idea, currentlySelectedIdeaId), myRank, previousSiblingRank, rank, isPreviousSiblingWithNegativeRank, isPreviousSiblingWithPositiveRank;
+			analytic('selectNodeUp', source);
 			if (parent) {
 				myRank = currentlySelectedIdeaRank(parent);
 				previousSiblingRank = myRank > 0 ? -Infinity : Infinity;
@@ -208,8 +215,9 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 				}
 			}
 		};
-		self.selectNodeDown = function () {
+		self.selectNodeDown = function (source) {
 			var parent = parentNode(idea, currentlySelectedIdeaId), myRank, nextSiblingRank, rank, isNextSiblingWithNegativeRank, isNextSiblingWithPositiveRank;
+			analytic('selectNodeDown', source);
 			if (parent) {
 				myRank = currentlySelectedIdeaRank(parent);
 				nextSiblingRank = myRank > 0 ? Infinity : -Infinity;

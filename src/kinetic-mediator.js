@@ -47,7 +47,7 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 		node.on(':textChanged', function (event) {
 			mapModel.updateTitle(n.id, event.text);
 		});
-		node.on(':nodeEditRequested', mapModel.editNode.bind(mapModel, false));
+		node.on(':nodeEditRequested', mapModel.editNode.bind(mapModel, 'mouse', false));
 		mapModel.addEventListener('nodeEditRequested:' + n.id, node.editNode);
 		nodeByIdeaId[n.id] = node;
 		layer.add(node);
@@ -150,15 +150,15 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 	});
 	(function () {
 		var keyboardEventHandlers = {
-			13: mapModel.addSiblingIdea,
-			8: mapModel.removeSubIdea,
-			9: mapModel.addSubIdea,
-			37: mapModel.selectNodeLeft,
-			38: mapModel.selectNodeUp,
-			39: mapModel.selectNodeRight,
-			40: mapModel.selectNodeDown,
-			46: mapModel.removeSubIdea,
-			32: mapModel.editNode
+			13: mapModel.addSiblingIdea.bind(mapModel, 'keyboard'),
+			8: mapModel.removeSubIdea.bind(mapModel, 'keyboard'),
+			9: mapModel.addSubIdea.bind(mapModel, 'keyboard'),
+			37: mapModel.selectNodeLeft.bind(mapModel, 'keyboard'),
+			38: mapModel.selectNodeUp.bind(mapModel, 'keyboard'),
+			39: mapModel.selectNodeRight.bind(mapModel, 'keyboard'),
+			40: mapModel.selectNodeDown.bind(mapModel, 'keyboard'),
+			46: mapModel.removeSubIdea.bind(mapModel, 'keyboard'),
+			32: mapModel.editNode.bind(mapModel, 'keyboard')
 		},
 			onKeydown = function (evt) {
 				var eventHandler = keyboardEventHandlers[evt.which];

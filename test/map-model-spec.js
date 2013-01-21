@@ -106,7 +106,7 @@ describe('MapModel', function () {
 			underTest.addEventListener('nodeEditRequested:1', nodeEditRequestedListener);
 			underTest.selectNode(1);
 
-			underTest.editNode(true);
+			underTest.editNode('toolbar', true);
 
 			expect(nodeEditRequestedListener).toHaveBeenCalledWith(true);
 		});
@@ -157,7 +157,7 @@ describe('MapModel', function () {
 			spyOn(anIdea, 'removeSubIdea');
 			underTest.selectNode(321);
 
-			underTest.removeSubIdea();
+			underTest.removeSubIdea('toolbar');
 
 			expect(anIdea.removeSubIdea).toHaveBeenCalledWith(321);
 		});
@@ -260,7 +260,7 @@ describe('MapModel', function () {
 			var nodeSelectionChangedListener = jasmine.createSpy();
 			underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
 			underTest.selectNode(6);
-			underTest.removeSubIdea();
+			underTest.removeSubIdea('toolbar');
 			expect(nodeSelectionChangedListener).toHaveBeenCalledWith(5, true);
 		});
 		it('should select lowest ranking child when selectNodeRight invoked on and currently selected node is right of central node', function () {
@@ -317,23 +317,87 @@ describe('MapModel', function () {
 		});
 	});
 	describe('analytic events', function () {
-		it('should dispatch analytic event when scaleUp method is invoked', function () {
-			var underTest = new MAPJS.MapModel(),
-				analyticListener = jasmine.createSpy();
+		var underTest, analyticListener;
+		beforeEach(function () {
+			underTest = new MAPJS.MapModel(function () {
+				return {
+					nodes: {
+						1: { x: 0 },
+						2: { x: -10 },
+						3: { x: -10 },
+						4: { x: 10 },
+						5: { x: 10 }
+					}
+				};
+			});
+			var anIdea = content({
+				id: 1,
+				title: 'center',
+				ideas: {
+					'-2': {
+						id: 2,
+						title: 'lower left'
+					},
+					'-1': {
+						id: 3,
+						title: 'upper left'
+					},
+					1: {
+						id: 4,
+						title: 'upper right'
+					},
+					2: {
+						id: 5,
+						title: 'lower right',
+						ideas : {
+							1: {
+								id: 6
+							}
+						}
+					}
+				}
+			});
+
+			underTest.setIdea(anIdea);
+			analyticListener = jasmine.createSpy();
 			underTest.addEventListener('analytic', analyticListener);
-
+		});
+		it('should dispatch analytic event when scaleUp method is invoked', function () {
 			underTest.scaleUp('toolbar');
-
 			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'scaleUp', 'toolbar');
 		});
 		it('should dispatch analytic event when scaleUp method is invoked', function () {
-			var underTest = new MAPJS.MapModel(),
-				analyticListener = jasmine.createSpy();
-			underTest.addEventListener('analytic', analyticListener);
-
 			underTest.scaleDown('toolbar');
 
 			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'scaleDown', 'toolbar');
 		});
+		it('should dispatch analytic event when addSubIdea method is invoked', function () {
+			underTest.addSubIdea('toolbar');
+
+			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'addSubIdea', 'toolbar');
+		});
+		it('should dispatch analytic event when editNode method is invoked', function () {
+			underTest.editNode('toolbar', true);
+
+			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'editNode', 'toolbar');
+		});
+		it('should dispatch analytic event when removeSubIdea method is invoked', function () {
+			underTest.removeSubIdea('toolbar');
+
+			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'removeSubIdea', 'toolbar');
+		});
+		it('should dispatch analytic event when addSiblingIdea method is invoked', function () {
+			underTest.addSiblingIdea('toolbar');
+
+			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'addSiblingIdea', 'toolbar');
+		});
+		it('should dispatch analytic event when selectNode[Left,Right,Up,Down] method is invoked', function () {
+			['Left', 'Right', 'Up', 'Down'].forEach(function (direction) {
+				underTest['selectNode' + direction]('toolbar');
+
+				expect(analyticListener).toHaveBeenCalledWith('mapModel', 'selectNode' + direction, 'toolbar');
+			});
+		});
+
 	});
 });
