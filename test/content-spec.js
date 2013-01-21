@@ -48,7 +48,16 @@ describe ("content aggregate", function(){
         expect(idea.findSubIdeaById(33)).toBeFalsy();
       });
     });
-
+    describe ("find", function(){
+      it ('returns an array of ideas that match a predicate, sorted by depth. It only returns ID and title', function(){
+        var aggregate=content({id:5,title:'I0',ideas:{9:{id:1, title:'I1', ideas: { '-5': { id: 2, title:'I2'}, '-10': { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}}}})
+        expect(aggregate.find(function(idea){ return idea.id<3 })).toEqual([{id:1,title:'I1'},{id:2,title:'I2'}]);
+      });
+      it ('returns an empty array if nothing matches the predicate', function(){
+        var aggregate=content({id:5,title:'I0',ideas:{9:{id:1, title:'I1', ideas: { '-5': { id: 2, title:'I2'}, '-10': { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}}}})
+        expect(aggregate.find(function(idea){ return idea.id>103 })).toEqual([]);
+      });
+    });
   });
   describe ("command processing",function(){
     describe ("updateTitle", function(){
@@ -291,6 +300,11 @@ describe ("content aggregate", function(){
       });
     });
     describe ("positionBefore", function(){
+      it ('prevents a node to be reordered into itself, if is it already in the right position (production bugcheck)', function(){
+        idea=content({id:1,ideas:{"1":{id:2},"2":{id:4},"3":{id:6},"4":{id:8},"-1":{id:3},"-2":{id:5},"-3":{id:7},"-4":{id:9}}});
+        expect(idea.positionBefore(5,7)).toBeFalsy();
+        expect(_.size(idea.ideas)).toBe(8);
+      });
       it ('ignores different sign ranks when ordering', function(){
         var idea=content({id:1, ideas:{'-0.25':{id:24}, '-10.25':{id:32}, '0.0625':{id:5}, '0.03125':{id:6}, '1.0625':{id:7}}})
         spyOn(idea,'dispatchEvent');

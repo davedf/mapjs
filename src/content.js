@@ -25,6 +25,13 @@ var content;
           },
           undefined);
       };
+      contentIdea.find = function(predicate){
+        var current= predicate(contentIdea) ? [_.pick(contentIdea,'id','title')] : [];
+        if (_.size(contentIdea.ideas)==0)
+          return current;
+        else
+          return _.reduce(contentIdea.ideas,function(result,idea){ return _.union(result,idea.find(predicate)) },current);
+      };
       return contentIdea;
     };
     contentAggregate.maxId = function maxId(idea) {
@@ -157,8 +164,8 @@ var content;
         var after_rank = parentIdea.findChildRankById(positionBeforeIdeaId);
         if (!after_rank) return false;
         var sibling_ranks=_(_.map(_.keys(parentIdea.ideas), parseFloat)).reject(function(k){return k*current_rank<0});
-        var siblings_between=_.reject(_.sortBy(sibling_ranks,Math.abs),function(k){ return Math.abs(k)>=Math.abs(after_rank) });
-        var before_rank = siblings_between.length > 0 ? _.max(siblings_between) : 0;
+        var candidate_siblings=_.reject(_.sortBy(sibling_ranks,Math.abs),function(k){ return Math.abs(k)>=Math.abs(after_rank) });
+        var before_rank = candidate_siblings.length > 0 ? _.max(candidate_siblings) : 0;
         if (before_rank == current_rank)
           return false;
         new_rank = before_rank + (after_rank - before_rank) / 2;
@@ -168,6 +175,7 @@ var content;
           return false;
         new_rank = max_rank + 10 * (current_rank < 0 ? -1 : 1);
       }
+      if (new_rank==current_rank) return false;
       parentIdea.ideas[new_rank] = parentIdea.ideas[current_rank];
       delete parentIdea.ideas[current_rank];
       contentAggregate.dispatchEvent('positionBefore',ideaId,positionBeforeIdeaId);
