@@ -58,12 +58,19 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 	});
 	mapModel.addEventListener('nodeSelectionChanged', function (ideaId, isSelected) {
 		var node = nodeByIdeaId[ideaId],
+		stagePosition = {
+			x: stage.attrs.x,
+			y: stage.attrs.y
+		},
+
 			finalStagePosition = {
 				x: stage.attrs.x,
 				y: stage.attrs.y
 			},
 			scale = stage.getScale().x || 1,
-			offset = 100;
+			offset = 20;
+			console.log ('-->finalStagePosition',finalStagePosition.x,finalStagePosition.y)
+  		
 		console.log(
 			'nodeSelectionChanged',
 			ideaId,
@@ -83,16 +90,24 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			stage.attrs.x,
 			stage.attrs.y
 		);
+		var movex = 0;
 		if (node.getAbsolutePosition().x + node.getWidth() * scale + offset > stage.getWidth()) {
-			finalStagePosition.x = stage.getWidth() - node.attrs.x - node.getWidth() * scale - offset;
+		  var movex = stage.getWidth() - (node.getAbsolutePosition().x + node.getWidth() * scale + offset);		  
+			finalStagePosition.x = stagePosition.x + movex;
 		} else if (node.getAbsolutePosition().x < offset) {
-			finalStagePosition.x = -node.attrs.x + offset;
+		  var movex  = offset - node.getAbsolutePosition().x;
+		  finalStagePosition.x = stagePosition.x + movex;
 		}
+		finalStagePosition.x = stagePosition.x + movex;
 		if (node.getAbsolutePosition().y + node.getHeight() * scale + offset > stage.getHeight()) {
-			finalStagePosition.y = stage.getHeight() - node.attrs.y - node.getHeight() * scale - offset;
+		  var movey = stage.getHeight() - (node.getAbsolutePosition().y + node.getHeight() * scale + offset);
+			finalStagePosition.y = stagePosition.y + movey;
 		} else if (node.getAbsolutePosition().y < offset) {
-			finalStagePosition.y = -node.attrs.y + offset;
+		  var movey = offset - node.getAbsolutePosition().y;
+			finalStagePosition.y = stagePosition.y + movey;
 		}
+		console.log ('<--finalStagePosition',finalStagePosition.x,finalStagePosition.y)
+		
 		stage.transitionTo({
 			x: finalStagePosition.x,
 			y: finalStagePosition.y,
