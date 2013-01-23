@@ -116,7 +116,7 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 		idea.addSubIdea(parent.id, getRandomTitle());
 	};
 	this.removeSubIdea = function (source) {
-		analytic('removeSubIdea', source);		
+		analytic('removeSubIdea', source);
 		var parent = parentNode(idea, currentlySelectedIdeaId);
 		if (idea.removeSubIdea(currentlySelectedIdeaId)) {
 			self.selectNode(parent.id);
@@ -128,9 +128,6 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 	this.editNode = function (source, shouldSelectAll) {
 		analytic('editNode', source);
 		self.dispatchEvent('nodeEditRequested:' + currentlySelectedIdeaId, shouldSelectAll );
-	};
-	this.clear = function () {
-		idea.clear();
 	};
 	this.scaleUp = function (source) {
 		self.dispatchEvent('mapScaleChanged', true);

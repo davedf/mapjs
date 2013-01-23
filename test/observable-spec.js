@@ -40,11 +40,4 @@ describe ("Observable", function(){
 		obs.dispatchEvent('UnrelatedEvt','some','args');
 		expect(listener).not.toHaveBeenCalled();
 	});
-	it('dispatches all events with arguments to the event sink', function(){
-		obs.addEventSink(listener);
-		obs.dispatchEvent('TestEvt','some','args');
-		obs.dispatchEvent('UnrelatedEvt','other','params','and','nothing');
-		expect(listener).toHaveBeenCalledWith('TestEvt','some','args');
-		expect(listener).toHaveBeenCalledWith('UnrelatedEvt','other','params','and','nothing');
-	});
 });

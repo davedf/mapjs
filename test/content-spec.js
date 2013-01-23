@@ -90,9 +90,9 @@ describe ("content aggregate", function(){
         it ("fires an event matching the method call when the title changes", function(){
           var listener=jasmine.createSpy('title_listener');
           var wrapped=content({title:'My Idea', id:2, ideas: { 1: {id:1, title:'Old title'}}});
-          wrapped.addEventListener('updateTitle', listener);
+          wrapped.addEventListener('changed', listener);
           wrapped.updateTitle(1, 'New Title');
-          expect(listener).toHaveBeenCalledWith(1,'New Title');
+          expect(listener).toHaveBeenCalledWith('updateTitle', [1,'New Title']);
         });
     });
     describe ("addSubIdea", function(){
@@ -153,10 +153,10 @@ describe ("content aggregate", function(){
         });
         it ('fires an event matching the method call when a new idea is added', function(){
             var idea=content({id:71,title:'My Idea'});
-            var addedListener=jasmine.createSpy('addSubIdea');
-            idea.addEventListener('addSubIdea', addedListener);
+            var addedListener=jasmine.createSpy();
+            idea.addEventListener('changed', addedListener);
             idea.addSubIdea(71,'New Title',88);
-            expect(addedListener).toHaveBeenCalledWith(71,'New Title',88);
+            expect(addedListener).toHaveBeenCalledWith('addSubIdea', [71,'New Title',88]);
         });
         it ('takes negative rank items as absolute while calculating new rank ID (bug resurrection test)', function(){
           var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 6: { id:3, title:'I3'}, '-16' : {id:4, title:'I4'}}});
@@ -220,9 +220,9 @@ describe ("content aggregate", function(){
       });
       it ("fires an event matching the method call when a parent is changed", function(){
         var listener=jasmine.createSpy('changeParent');
-        idea.addEventListener('changeParent',listener);
+        idea.addEventListener('changed',listener);
         var result=idea.changeParent(4,5);
-        expect(listener).toHaveBeenCalledWith(4,5);
+        expect(listener).toHaveBeenCalledWith('changeParent', [4,5]);
       });
       it ("fails if asked to make a idea it's own parent", function(){
         expect(idea.changeParent(2,2)).toBeFalsy();
@@ -256,9 +256,9 @@ describe ("content aggregate", function(){
         it ('fires an event matching the method call if successful', function(){
           var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 10: { id:3, title:'I3'}, 15 : {id:4, title:'I4'}}});
           var addedListener=jasmine.createSpy('Idea_Added');
-          idea.addEventListener('removeSubIdea', addedListener);
+          idea.addEventListener('changed', addedListener);
           idea.removeSubIdea(3);
-          expect(addedListener).toHaveBeenCalledWith(3);
+          expect(addedListener).toHaveBeenCalledWith('removeSubIdea',[3]);
         });
     });
     describe ("flip", function(){
@@ -296,7 +296,7 @@ describe ("content aggregate", function(){
         var idea=content({id:1, ideas: { '-5': { id: 2}, 10: { id:3}, 15 : {id:4}}});
         spyOn(idea,'dispatchEvent');
         idea.flip(2);
-        expect(idea.dispatchEvent).toHaveBeenCalledWith('flip',2);
+        expect(idea.dispatchEvent).toHaveBeenCalledWith('changed','flip',[2]);
       });
     });
     describe ("positionBefore", function(){
@@ -474,49 +474,10 @@ describe ("content aggregate", function(){
       it ('fires an event matching the method call if it succeeds', function(){
         var idea=content({id:0,title:'I0',ideas:{9:{id:1, title:'I1', ideas: { '-5': { id: 2, title:'I2'}, '-10': { id:3, title:'I3'}, '-15' : {id:4, title:'I4'}}}}});
         childRankSpy=jasmine.createSpy('ChildRankListener');
-        idea.addEventListener('positionBefore', childRankSpy);
+        idea.addEventListener('changed', childRankSpy);
         var result=idea.positionBefore(4,2);
-        expect(childRankSpy).toHaveBeenCalledWith(4,2);
+        expect(childRankSpy).toHaveBeenCalledWith('positionBefore',[4,2]);
       });
-    });
-  });
-  describe('clear', function () {
-    var wrapped;
-    beforeEach(function () {
-      wrapped=content({
-        title:'My Idea',
-        ideas: {
-          1: {
-            title: 'Child idea'
-          }
-        }
-      });
-    });
-    it('should preserve root node title', function () {
-      wrapped.clear();
-
-      expect(wrapped.title).toBe('My Idea');
-    });
-    it('should remove all the subnodes', function () {
-      wrapped.clear();
-
-      expect(wrapped.ideas).not.toBeDefined();
-    });
-    it('should invoke changed listeners', function () {
-      changedListener = jasmine.createSpy();
-      wrapped.addEventListener('changed', changedListener);
-
-      wrapped.clear();
-
-      expect(changedListener).toHaveBeenCalled();
-    });
-    it('should invoke clear listeners', function () {
-      clearListener = jasmine.createSpy();
-      wrapped.addEventListener('clear', clearListener);
-
-      wrapped.clear();
-
-      expect(clearListener).toHaveBeenCalled();
     });
   });
 });

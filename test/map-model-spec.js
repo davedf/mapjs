@@ -169,13 +169,6 @@ describe('MapModel', function () {
 
 			expect(anIdea.updateTitle).toHaveBeenCalledWith(112, 'new title');
 		});
-		it('should remove all the nodes from the map except the central one when map is cleared', function () {
-			spyOn(anIdea, 'clear');
-
-			underTest.clear();
-
-			expect(anIdea.clear).toHaveBeenCalled();
-		});
 		it('should invoke idea.addSubIdea with a parent of a currently selected node when addSiblingIdea is invoked', function () {
 			underTest.selectNode(2);
 			spyOn(anIdea, 'addSubIdea');

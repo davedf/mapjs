@@ -100,16 +100,14 @@ var content;
       new_rank = max_rank - 10 * sign(current_rank);
       contentAggregate.ideas[new_rank] = contentAggregate.ideas[current_rank];
       delete contentAggregate.ideas[current_rank];
-      contentAggregate.dispatchEvent('flip',ideaId);
-      contentAggregate.dispatchEvent('changed',undefined);
+      contentAggregate.dispatchEvent('changed','flip', [ideaId]);
       return true;
     }
     contentAggregate.updateTitle = function (ideaId, title) {
       var idea=findIdeaById(ideaId);
       if (!idea) return false;
       idea.title=title;
-      contentAggregate.dispatchEvent('updateTitle', ideaId,title);
-      contentAggregate.dispatchEvent('changed',undefined);
+      contentAggregate.dispatchEvent('changed','updateTitle', [ideaId,title]);
       return true;
     };
     contentAggregate.addSubIdea = function(parentId,ideaTitle){
@@ -119,15 +117,13 @@ var content;
       if (!parent) return false;
       var newIdea=init({title:ideaTitle,id:(newId||(contentAggregate.maxId()+1))});
       appendSubIdea(parent,newIdea);
-      contentAggregate.dispatchEvent('addSubIdea',parentId,ideaTitle,newIdea.id);
       contentAggregate.dispatchEvent('changed','addSubIdea',[parentId,ideaTitle,newIdea.id]);
       return true;
     }
     contentAggregate.removeSubIdea = function (subIdeaId){
       var result = traverseAndRemoveIdea(contentAggregate,subIdeaId);
       if (result) {
-        contentAggregate.dispatchEvent('removeSubIdea',subIdeaId);
-        contentAggregate.dispatchEvent('changed',undefined);
+        contentAggregate.dispatchEvent('changed','removeSubIdea',[subIdeaId]);
       }
       return result;
     }
@@ -142,8 +138,7 @@ var content;
       traverseAndRemoveIdea(contentAggregate,ideaId);
       if (!idea) return false;
       appendSubIdea(parent,idea);
-      contentAggregate.dispatchEvent('changeParent',ideaId,newParentId);
-      contentAggregate.dispatchEvent('changed',undefined);
+      contentAggregate.dispatchEvent('changed','changeParent',[ideaId,newParentId]);
       return true;
     }
     contentAggregate.positionBefore = function (ideaId, positionBeforeIdeaId) {
@@ -178,14 +173,8 @@ var content;
       if (new_rank==current_rank) return false;
       parentIdea.ideas[new_rank] = parentIdea.ideas[current_rank];
       delete parentIdea.ideas[current_rank];
-      contentAggregate.dispatchEvent('positionBefore',ideaId,positionBeforeIdeaId);
-      contentAggregate.dispatchEvent('changed',undefined);
+      contentAggregate.dispatchEvent('changed','positionBefore',[ideaId,positionBeforeIdeaId]);
       return true;
-    }
-    contentAggregate.clear = function () {
-      delete contentAggregate.ideas;
-      contentAggregate.dispatchEvent('clear', undefined);
-      contentAggregate.dispatchEvent('changed', undefined);
     }
     init(contentAggregate);
     return observable(contentAggregate);
