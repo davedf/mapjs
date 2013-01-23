@@ -9,7 +9,9 @@ all the distractions and providing powerful editing shortcuts.
 This git project is the JavaScript visualisation portion of MindMup. It provides a canvas for users to create and edit
 mind maps in a browser. You can see an example of this live on http://www.mindmup.com.
 
-This project is relatively stand alone and you can use it to create a nice mind map visualisation separate from the mindmup server.
+This project is relatively stand alone and you can use it to create a nice mind map visualisation separate from the 
+[MindMup Server](http://github.com/mindmup/mindmup).
+
 
 Dependencies
 ------------
