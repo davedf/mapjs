@@ -1,6 +1,6 @@
 var observable = function (base) {
 	'use strict';
-	var eventListenersByType = {}, eventSinks = [];
+	var eventListenersByType = {};
 	base.addEventListener = function (type, listener) {
 		eventListenersByType[type] = eventListenersByType[type] || [];
 		eventListenersByType[type].push(listener);
@@ -21,15 +21,9 @@ var observable = function (base) {
 			);
 		}
 	};
-	base.addEventSink = function(eventSink) {
-    eventSinks.push(eventSink);
-  }
 	base.dispatchEvent = function (eventType) {
 		var eventArguments, listeners, i;
 		eventArguments = Array.prototype.slice.call(arguments, 1);
-		for (i = 0; i < eventSinks.length; i += 1) {
-			eventSinks[i].apply(base, arguments);
-		}
 		listeners = base.listeners(eventType);
 		for (i = 0; i < listeners.length; i += 1) {
 			if (listeners[i].apply(base, eventArguments) === false) {
