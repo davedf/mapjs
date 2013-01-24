@@ -1,7 +1,8 @@
 /*global jQuery*/
+/*jslint es5: true*/
 jQuery.fn.mapToolbarWidget = function (mapModel) {
 	'use strict';
-	this.each(function () {
+	return this.each(function () {
 		var element = jQuery(this);
 		['scaleUp', 'scaleDown', 'addSubIdea', 'editNode', 'removeSubIdea'].forEach(function (methodName) {
 			element.find('.' + methodName).click(function () {
@@ -10,7 +11,5 @@ jQuery.fn.mapToolbarWidget = function (mapModel) {
 				}
 			});
 		});
-
 	});
-	return this;
 };
