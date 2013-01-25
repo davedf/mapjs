@@ -183,3 +183,6 @@ MAPJS.KineticMediator.dimensionProvider = function (title) {
 		height: text.getHeight()
 	};
 };
+MAPJS.KineticMediator.layoutCalculator = function (idea) {
+	return MAPJS.calculateLayout(idea, MAPJS.KineticMediator.dimensionProvider);
+};
