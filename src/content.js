@@ -49,14 +49,14 @@ var content;
 
 
     /*** private utility methods ***/
-    maxKey=function(kv_map,sign){
+    var maxKey=function(kv_map,sign){
       sign=sign||1;
       if (_.size(kv_map)==0) return 0;
       var current_keys=_.keys(kv_map);
       current_keys.push(0); /* ensure at least 0 is there for negative ranks */
       return _.max(_.map(current_keys,parseFloat),function(x){return x*sign});
     }
-    nextChildRank=function(parentIdea){
+    var nextChildRank=function(parentIdea){
       var childRankSign=1;
       if (parentIdea.id==contentAggregate.id){
         counts= _.countBy(parentIdea.ideas, function(v,k){ return k<0; });
@@ -65,15 +65,15 @@ var content;
       var new_rank=maxKey(parentIdea.ideas,childRankSign)+childRankSign;
       return new_rank;
     }
-    appendSubIdea=function(parentIdea,subIdea){
+    var appendSubIdea=function(parentIdea,subIdea){
       if (!parentIdea.ideas) parentIdea.ideas={}
 
       parentIdea.ideas[nextChildRank(parentIdea)]=subIdea;
     }
-    findIdeaById = function (ideaId){
+    var findIdeaById = function (ideaId){
       return contentAggregate.id==ideaId?contentAggregate:contentAggregate.findSubIdeaById(ideaId);
     }
-    traverseAndRemoveIdea = function (parentIdea,subIdeaId) {
+    var traverseAndRemoveIdea = function (parentIdea,subIdeaId) {
       var childRank=parentIdea.findChildRankById(subIdeaId);
       if (childRank){
         var deleted= parentIdea.ideas[childRank];
@@ -89,7 +89,7 @@ var content;
       );
     }
     /* intentionally not returning 0 case, to help with split sorting into 2 groups */
-    sign=function(number){
+    var sign=function(number){
       return number<0?-1:1;
     }
     /**** aggregate command processing methods ****/
