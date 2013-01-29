@@ -77,7 +77,7 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 			if (command === 'addSubIdea') {
 				newIdeaId = args[2];
 				self.selectNode(newIdeaId);
-				self.editNode('internal', true);
+				self.editNode(false, true);
 			}
 		};
 	observable(this);
@@ -126,7 +126,7 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 		idea.updateTitle(ideaId, title);
 	};
 	this.editNode = function (source, shouldSelectAll) {
-		analytic('editNode', source);
+		if (source) analytic('editNode', source);
 		self.dispatchEvent('nodeEditRequested:' + currentlySelectedIdeaId, shouldSelectAll );
 	};
 	this.scaleUp = function (source) {
