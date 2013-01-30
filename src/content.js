@@ -88,8 +88,8 @@ var content;
         false
       );
     }
-    var findParent = function (subIdeaId, parentIdea) {
-      parentIdea=parentIdea || contentAggregate;
+    contentAggregate.findParent = function (subIdeaId) {
+      var parentIdea=arguments[1] || contentAggregate;
       var childRank=parentIdea.findChildRankById(subIdeaId);
       if (childRank){
         return parentIdea;
@@ -97,7 +97,7 @@ var content;
       return _.reduce(
         parentIdea.ideas,
         function (result, child) {
-          return result || findParent(subIdeaId, child);
+          return result || contentAggregate.findParent(subIdeaId, child);
         },
         false
       );
@@ -145,7 +145,7 @@ var content;
     contentAggregate.insertIntermediate= function (inFrontOfIdeaId, title, newIdeaId){
       if (newIdeaId && findIdeaById(newIdeaId)) return false;
       if (contentAggregate.id==inFrontOfIdeaId) return false;
-      var parentIdea=findParent(inFrontOfIdeaId); 
+      var parentIdea=contentAggregate.findParent(inFrontOfIdeaId); 
       if (!parentIdea) return false;
       var childRank=parentIdea.findChildRankById(inFrontOfIdeaId);
       if (!childRank) return false;

@@ -34,6 +34,19 @@ describe ("content aggregate", function(){
         expect( idea.findChildRankById('xxx')).toBeFalsy();
       });
     });
+    describe ("findParent", function(){
+      var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2', ideas:{8:{id:8}}}, 10: { id:3, title:'I3'}, 15 : {id:4, title:'I4'}}});
+      it ('returns the parent idea by child id', function(){
+        expect( idea.findParent(2)).toBe(idea);
+        expect( idea.findParent(8)).toPartiallyMatch({id:2});
+      });
+      it ('returns false if no such child exists', function(){
+        expect( idea.findParent('xxx')).toBeFalsy();
+      });
+      it ('returns false if no parent', function(){
+        expect( idea.findParent(1)).toBeFalsy();
+      });
+    });
     describe ("findSubIdeaById", function(){
       it ("returns the idea reference for a direct child matching the ID", function(){
         var idea=content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 10: { id:3, title:'I3'}, 15 : {id:4, title:'I4'}}});
