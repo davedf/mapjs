@@ -10,6 +10,7 @@ describe('mapToolbarWidget', function () {
 				<input type="button" class="addSubIdea" value="++"></input>\
 				<input type="button" class="editNode" value="edit"></input>\
 				<input type="button" class="removeSubIdea" value="remove"></input>\
+				<input type="button" class="insertIntermediate" value="insert parent"></input>\
 			</div>'
 		);
 		element.appendTo('body');
@@ -62,4 +63,12 @@ describe('mapToolbarWidget', function () {
 		expect(mapModel.removeSubIdea).toHaveBeenCalledWith('toolbar');
 	});
 
+	it('should invoke insertIntermediate on map model when button is clicked', function () {
+		spyOn(mapModel, 'insertIntermediate');
+		element.mapToolbarWidget(mapModel);
+
+		element.find('.insertIntermediate').click();
+
+		expect(mapModel.insertIntermediate).toHaveBeenCalledWith('toolbar');
+	});
 });

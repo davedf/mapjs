@@ -1,9 +1,10 @@
 /*global observable*/
 /*jslint forin: true*/
 var MAPJS = MAPJS || {};
-MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
+MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom, intermediaryTitlesToRandomlyChooseFrom) {
 	'use strict';
 	titlesToRandomlyChooseFrom = titlesToRandomlyChooseFrom || ['double click to edit'];
+	intermediaryTitlesToRandomlyChooseFrom = intermediaryTitlesToRandomlyChooseFrom || titlesToRandomlyChooseFrom;
 	var self = this,
 		analytic,
 		currentLayout = {
@@ -13,8 +14,9 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 		idea,
 		isInputEnabled,
 		currentlySelectedIdeaId,
-		getRandomTitle = function () {
-			return titlesToRandomlyChooseFrom[Math.floor(titlesToRandomlyChooseFrom.length * Math.random())];
+		getRandomTitle = function (type) {
+      var titles=(type=='intermediate')?intermediaryTitlesToRandomlyChooseFrom: titlesToRandomlyChooseFrom;
+			return titles[Math.floor(titles.length * Math.random())];
 		},
 		parentNode = function (root, id) {
       return root.findParent(id);
@@ -70,6 +72,11 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 				self.selectNode(newIdeaId);
 				self.editNode(false, true);
 			}
+			if (command === 'insertIntermediate') {
+				newIdeaId = args[2];
+				self.selectNode(newIdeaId);
+				self.editNode(false, true);
+			}
 		};
 	observable(this);
 	analytic = self.dispatchEvent.bind(self, 'analytic', 'mapModel');
@@ -101,6 +108,11 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 		analytic('addSubIdea', source);
 		idea.addSubIdea(currentlySelectedIdeaId, getRandomTitle());
 	};
+  this.insertIntermediate= function( source ){
+    if (currentlySelectedIdeaId==idea.id) return false;
+    idea.insertIntermediate(currentlySelectedIdeaId, getRandomTitle('intermediate'));
+    analytic('insertIntermediate',source);
+  }
 	this.addSiblingIdea = function (source) {
 		analytic('addSiblingIdea', source);
 		var parent = parentNode(idea, currentlySelectedIdeaId) || idea;

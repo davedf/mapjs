@@ -110,6 +110,15 @@ describe('MapModel', function () {
 
 			expect(nodeEditRequestedListener).toHaveBeenCalledWith(true);
 		});
+		it('should dispatch nodeEditRequested when an intermediary is created', function () {
+      anIdea=content({id:1, ideas:{7:{id:2}}});
+      underTest.setIdea(anIdea);
+			var nodeEditRequestedListener = jasmine.createSpy(), newId;
+			underTest.addEventListener('nodeEditRequested:3', nodeEditRequestedListener);
+			underTest.selectNode(2);
+			underTest.insertIntermediate('toolbar', true);
+			expect(nodeEditRequestedListener).toHaveBeenCalledWith(true);
+		});
 	});
 	describe('methods delegating to idea', function () {
 		var anIdea, underTest;
@@ -185,6 +194,42 @@ describe('MapModel', function () {
 
 			expect(anIdea.addSubIdea).toHaveBeenCalledWith(1, 'double click to edit');
 		});
+    describe ("insertIntermediate", function(){
+      it('should invoke idea.insertIntermediate with the id of the selected node and a random title', function(){
+        var underTest = new MAPJS.MapModel(
+          function () {
+            return {};
+          },
+          'What a beautiful idea!'.split(' ')
+          );
+        underTest.setIdea(anIdea);
+        spyOn(Math, 'random').andReturn(0.6);
+        underTest.selectNode(2);
+        spyOn(anIdea,'insertIntermediate');
+        underTest.insertIntermediate();
+        expect(anIdea.insertIntermediate).toHaveBeenCalledWith(2,'beautiful');
+      });
+      it('should invoke idea.insertIntermediate a random title from the intermediary array if specified', function(){
+        var underTest = new MAPJS.MapModel(
+          function () {
+            return {};
+          },
+          'What a beautiful idea!'.split(' '),
+          'What a stupid idea!'.split(' ')
+          );
+        underTest.setIdea(anIdea);
+        spyOn(Math, 'random').andReturn(0.6);
+        underTest.selectNode(2);
+        spyOn(anIdea,'insertIntermediate');
+        underTest.insertIntermediate();
+        expect(anIdea.insertIntermediate).toHaveBeenCalledWith(2,'stupid');
+      });
+      it('should not invoke idea.insertIntermediate when nothing is selected and a random title', function(){
+        spyOn(anIdea,'insertIntermediate');
+        underTest.insertIntermediate();
+        expect(anIdea.insertIntermediate).not.toHaveBeenCalled();
+      });
+    });
 	});
 	describe('map scaling', function () {
 		it('should dispatch mapScaleChanged event when scaleUp method is invoked', function () {
@@ -206,7 +251,7 @@ describe('MapModel', function () {
 			expect(mapScaleChangedListener).toHaveBeenCalledWith(false);
 		});
 	});
-	describe('keyboard navigation', function () {
+	describe('Selection' , function () {
 		var anIdea, underTest;
 		beforeEach(function () {
 			anIdea = content({
@@ -249,6 +294,16 @@ describe('MapModel', function () {
 			});
 			underTest.setIdea(anIdea);
 		});
+    it('should select the intermediate when it is inserted', function(){
+			var nodeSelectionChangedListener = jasmine.createSpy(), newId;
+      anIdea.addEventListener('changed', function (evt,args){
+          if (evt=='insertIntermediate') newId=args[2];
+      });
+			underTest.selectNode(6);
+			underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
+			underTest.insertIntermediate();
+			expect(nodeSelectionChangedListener).toHaveBeenCalledWith(newId, true);
+    });
 		it('should select parent when a node is deleted', function () {
 			var nodeSelectionChangedListener = jasmine.createSpy();
 			underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
@@ -381,13 +436,20 @@ describe('MapModel', function () {
 		});
 		it('should dispatch analytic event when addSiblingIdea method is invoked', function () {
 			underTest.addSiblingIdea('toolbar');
-
 			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'addSiblingIdea', 'toolbar');
+		});
+		it('should dispatch analytic event when insertIntermediate method is invoked, unless there is nothing selected', function () {
+			underTest.selectNode(6);
+      underTest.insertIntermediate('toolbar');
+			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'insertIntermediate', 'toolbar');
+		});
+		it('should not dispatch analytic event when insertIntermediate method is invoked and nothing selected', function () {
+      underTest.insertIntermediate('toolbar');
+			expect(analyticListener).not.toHaveBeenCalledWith();
 		});
 		it('should dispatch analytic event when selectNode[Left,Right,Up,Down] method is invoked', function () {
 			['Left', 'Right', 'Up', 'Down'].forEach(function (direction) {
 				underTest['selectNode' + direction]('toolbar');
-
 				expect(analyticListener).toHaveBeenCalledWith('mapModel', 'selectNode' + direction, 'toolbar');
 			});
 		});
