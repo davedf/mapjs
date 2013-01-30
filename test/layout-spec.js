@@ -135,13 +135,6 @@ describe('layout', function () {
 			});
 		});
 	});
-	beforeEach(function () {
-		this.addMatchers({
-			toPartiallyMatch: function (expected) {
-				return this.env.equals_(_.pick(this.actual, _.keys(expected)), expected);
-			}
-		});
-	});
 	it('should assign root node level 1', function () {
 		var contentAggregate = content({ id: 7 }),
 			result = MAPJS.calculateLayout(contentAggregate, dimensionProvider);
@@ -291,12 +284,5 @@ describe('layout', function () {
 		result = MAPJS.calculateLayout(contentAggregate, dimensionProvider);
 		expect(result.nodes[11].y).toBe(-5);
 	});
-	it('should compare objects partially using the partiallyMatches matcher', function () {
-		expect({ x: 1, y: 2, z: 3 }).toPartiallyMatch({ x: 1, y: 2 });
-		expect({ x: 1, y: 2 }).not.toPartiallyMatch({ x: 1, y: 2, t: 3 });
-		expect({ x: 1, y: 2, z: 3 }).not.toPartiallyMatch({ x: 1, y: 2, t: 3 });
-		expect({ x: 1, y: 2, z: 3 }).not.toPartiallyMatch({ x: 2, y: 2 });
-		expect({ x: 1, y: 2, z: 3 }).not.toPartiallyMatch({ x: 1, y: 3 });
-		expect({ x: 1, y: 2, z: 3 }).not.toPartiallyMatch({ x: 1, t: 2 });
-	});
+
 });
