@@ -17,16 +17,7 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom) {
 			return titlesToRandomlyChooseFrom[Math.floor(titlesToRandomlyChooseFrom.length * Math.random())];
 		},
 		parentNode = function (root, id) {
-			var rank, childResult;
-			for (rank in root.ideas) {
-				if (root.ideas[rank].id === id) {
-					return root;
-				}
-				childResult = parentNode(root.ideas[rank], id);
-				if (childResult) {
-					return childResult;
-				}
-			}
+      return root.findParent(id);
 		},
 		updateCurrentLayout = function (newLayout) {
 			var nodeId, newNode, oldNode, newConnector, oldConnector;
