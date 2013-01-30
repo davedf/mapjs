@@ -159,9 +159,11 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			40: mapModel.selectNodeDown.bind(mapModel, 'keyboard'),
 			46: mapModel.removeSubIdea.bind(mapModel, 'keyboard'),
 			32: mapModel.editNode.bind(mapModel, 'keyboard')
-		},
+		}, shiftKeyboardEventHandlers= {
+      9: mapModel.insertIntermediate.bind(mapModel,'keyboard')
+    },
 			onKeydown = function (evt) {
-				var eventHandler = keyboardEventHandlers[evt.which];
+				var eventHandler = (evt.shiftKey ? shiftKeyboardEventHandlers: keyboardEventHandlers)[evt.which];
 				if (eventHandler) {
 					eventHandler();
 					evt.preventDefault();
