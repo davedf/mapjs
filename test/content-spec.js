@@ -13,6 +13,10 @@ describe ("content aggregate", function(){
       var wrapped=content({id:55, title:'My Idea', ideas: { 1: {title:'My First Subidea'}}});
       expect (wrapped.ideas[1].id).toBe(56);
     });
+    it ("preserves any meta data stored in JSON while wrapping", function(){
+      var wrapped=content({id:55, title:'My Idea', ideas: { 1: {title:'My First Subidea', meta:{new_attr:'new_val'}}}});
+      expect (wrapped.ideas[1].meta.new_attr).toBe('new_val');
+    });
     describe ("maxID", function(){
       it ("calculates the maximum assigned ID already in the idea hierarchy", function(){
         var ideas=content({id:22, title:'My Idea', ideas: { 1: {id:23, title:'My First Subidea'}, '-1':{id:54,title:'Max'}}});
@@ -94,6 +98,48 @@ describe ("content aggregate", function(){
           wrapped.updateTitle(1, 'New Title');
           expect(listener).toHaveBeenCalledWith('updateTitle', [1,'New Title']);
         });
+    });
+    describe ("insertIntermediate", function(){
+      var listener, idea;
+      beforeEach(function(){
+          idea=content({id:1, ideas: { 77: {id:2, title:'Moved'}}});
+          listener=jasmine.createSpy('insert_listener');
+          idea.addEventListener('changed', listener);
+      });
+      it('adds an idea between the argument idea and its parent, keeping the same rank for the new node and reassigning rank of 1 to the argument', function(){
+          var result=idea.insertIntermediate(2,'Steve',33);
+          expect(result).toBeTruthy();
+          expect(idea.ideas[77]).toPartiallyMatch({id:33, title:'Steve'});
+          expect(_.size(idea.ideas)).toBe(1);
+          expect(_.size(idea.ideas[77].ideas)).toBe(1);
+          expect(idea.ideas[77].ideas[1]).toPartiallyMatch({id:2, title:'Moved'});
+      });
+      it('assigns an ID automatically if not provided', function(){
+          var result=idea.insertIntermediate(2,'Steve');
+          expect(result).toBeTruthy();
+          expect(idea.ideas[77].id).not.toBeNull();
+      });
+      it('fires an event matching the method call when the operation succeeds', function(){
+          var result=idea.insertIntermediate(2,'Steve',33);
+          expect(listener).toHaveBeenCalledWith('insertIntermediate', [2,'Steve',33]);
+      });
+      it('fires the generated ID in the event if the ID was not supplied', function(){
+          var result=idea.insertIntermediate(2,'Steve');
+          var newId=idea.ideas[77].id;
+          expect(listener).toHaveBeenCalledWith('insertIntermediate', [2,'Steve',newId]);
+      });
+      it('fails if argument idea does not exist', function(){
+          expect(idea.insertIntermediate(22,'Steve',33)).toBeFalsy();
+          expect(listener).not.toHaveBeenCalled();
+      });
+      it('fails if idea has no parent', function(){
+          expect(idea.insertIntermediate(1,'Steve',33)).toBeFalsy();
+          expect(listener).not.toHaveBeenCalled();
+      });
+      it('fails if new ID is supplied but already exists', function(){
+          expect(idea.insertIntermediate(2,'Steve',2)).toBeFalsy();
+          expect(listener).not.toHaveBeenCalled();
+      });
     });
     describe ("addSubIdea", function(){
         it ('adds a sub-idea to the idea in the argument', function(){

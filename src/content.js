@@ -88,6 +88,21 @@ var content;
         false
       );
     }
+    var findParent = function (subIdeaId, parentIdea) {
+      parentIdea=parentIdea || contentAggregate;
+      var childRank=parentIdea.findChildRankById(subIdeaId);
+      if (childRank){
+        return parentIdea;
+      }
+      return _.reduce(
+        parentIdea.ideas,
+        function (result, child) {
+          return result || findParent(subIdeaId, child);
+        },
+        false
+      );
+    }
+
     /* intentionally not returning 0 case, to help with split sorting into 2 groups */
     var sign=function(number){
       return number<0?-1:1;
@@ -115,9 +130,9 @@ var content;
       if (newId && findIdeaById(newId)) return false;
       var parent=findIdeaById(parentId);
       if (!parent) return false;
-      var newIdea=init({title:ideaTitle,id:(newId||(contentAggregate.maxId()+1))});
-      appendSubIdea(parent,newIdea);
-      contentAggregate.dispatchEvent('changed','addSubIdea',[parentId,ideaTitle,newIdea.id]);
+      var idea= init({title:ideaTitle,id:newId});
+      appendSubIdea(parent,idea);
+      contentAggregate.dispatchEvent('changed','addSubIdea',[parentId,ideaTitle,idea.id]);
       return true;
     }
     contentAggregate.removeSubIdea = function (subIdeaId){
@@ -126,6 +141,20 @@ var content;
         contentAggregate.dispatchEvent('changed','removeSubIdea',[subIdeaId]);
       }
       return result;
+    }
+    contentAggregate.insertIntermediate= function (inFrontOfIdeaId, title, newIdeaId){
+      if (newIdeaId && findIdeaById(newIdeaId)) return false;
+      if (contentAggregate.id==inFrontOfIdeaId) return false;
+      var parentIdea=findParent(inFrontOfIdeaId); 
+      if (!parentIdea) return false;
+      var childRank=parentIdea.findChildRankById(inFrontOfIdeaId);
+      if (!childRank) return false;
+      var oldIdea=parentIdea.ideas[childRank];
+      var newIdea= init({title:title,id:newIdeaId});
+      parentIdea.ideas[childRank]=newIdea;
+      newIdea.ideas={1:oldIdea}
+      contentAggregate.dispatchEvent('changed','insertIntermediate',[inFrontOfIdeaId, title,  newIdea.id]);
+      return true;
     }
     contentAggregate.changeParent = function (ideaId, newParentId){
       if (ideaId==newParentId) return false;
