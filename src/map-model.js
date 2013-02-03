@@ -14,12 +14,8 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom, interme
 		idea,
 		isInputEnabled,
 		currentlySelectedIdeaId,
-		getRandomTitle = function (type) {
-      var titles=(type=='intermediate')?intermediaryTitlesToRandomlyChooseFrom: titlesToRandomlyChooseFrom;
+		getRandomTitle = function (titles) {
 			return titles[Math.floor(titles.length * Math.random())];
-		},
-		parentNode = function (root, id) {
-      return root.findParent(id);
 		},
 		updateCurrentLayout = function (newLayout) {
 			var nodeId, newNode, oldNode, newConnector, oldConnector;
@@ -106,21 +102,21 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom, interme
 	};
 	this.addSubIdea = function (source) {
 		analytic('addSubIdea', source);
-		idea.addSubIdea(currentlySelectedIdeaId, getRandomTitle());
+		idea.addSubIdea(currentlySelectedIdeaId, getRandomTitle(titlesToRandomlyChooseFrom));
 	};
   this.insertIntermediate= function( source ){
     if (currentlySelectedIdeaId==idea.id) return false;
-    idea.insertIntermediate(currentlySelectedIdeaId, getRandomTitle('intermediate'));
+    idea.insertIntermediate(currentlySelectedIdeaId, getRandomTitle(intermediaryTitlesToRandomlyChooseFrom));
     analytic('insertIntermediate',source);
   }
 	this.addSiblingIdea = function (source) {
 		analytic('addSiblingIdea', source);
-		var parent = parentNode(idea, currentlySelectedIdeaId) || idea;
-		idea.addSubIdea(parent.id, getRandomTitle());
+		var parent = idea.findParent(currentlySelectedIdeaId) || idea;
+		idea.addSubIdea(parent.id, getRandomTitle(titlesToRandomlyChooseFrom));
 	};
 	this.removeSubIdea = function (source) {
 		analytic('removeSubIdea', source);
-		var parent = parentNode(idea, currentlySelectedIdeaId);
+		var parent = idea.findParent(currentlySelectedIdeaId);
 		if (idea.removeSubIdea(currentlySelectedIdeaId)) {
 			self.selectNode(parent.id);
 		}
@@ -175,7 +171,7 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom, interme
 					self.selectNode(node.ideas[targetRank].id);
 				}
 			} else {
-				self.selectNode(parentNode(idea, currentlySelectedIdeaId).id);
+				self.selectNode(idea.findParent(currentlySelectedIdeaId).id);
 			}
 		};
 		self.selectNodeRight = function (source) {
@@ -193,11 +189,11 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom, interme
 					self.selectNode(node.ideas[minimumPositiveRank].id);
 				}
 			} else {
-				self.selectNode(parentNode(idea, currentlySelectedIdeaId).id);
+				self.selectNode(idea.findParent(currentlySelectedIdeaId).id);
 			}
 		};
 		self.selectNodeUp = function (source) {
-			var parent = parentNode(idea, currentlySelectedIdeaId), myRank, previousSiblingRank, rank, isPreviousSiblingWithNegativeRank, isPreviousSiblingWithPositiveRank;
+			var parent = idea.findParent(currentlySelectedIdeaId), myRank, previousSiblingRank, rank, isPreviousSiblingWithNegativeRank, isPreviousSiblingWithPositiveRank;
 			analytic('selectNodeUp', source);
 			if (parent) {
 				myRank = currentlySelectedIdeaRank(parent);
@@ -216,7 +212,7 @@ MAPJS.MapModel = function (layoutCalculator, titlesToRandomlyChooseFrom, interme
 			}
 		};
 		self.selectNodeDown = function (source) {
-			var parent = parentNode(idea, currentlySelectedIdeaId), myRank, nextSiblingRank, rank, isNextSiblingWithNegativeRank, isNextSiblingWithPositiveRank;
+			var parent = idea.findParent(currentlySelectedIdeaId), myRank, nextSiblingRank, rank, isNextSiblingWithNegativeRank, isNextSiblingWithPositiveRank;
 			analytic('selectNodeDown', source);
 			if (parent) {
 				myRank = currentlySelectedIdeaRank(parent);
