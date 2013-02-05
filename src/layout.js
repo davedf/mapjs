@@ -1,4 +1,5 @@
 /*jslint forin: true*/
+/*global _*/
 var MAPJS = MAPJS || {};
 (function () {
 	'use strict';
@@ -109,6 +110,16 @@ var MAPJS = MAPJS || {};
 				}
 			};
 		calculateLayoutInner(root);
+		return result;
+	};
+	MAPJS.calculateFrame = function (nodes, margin) {
+		margin = margin || 0;
+		var result = {
+			top: _.min(nodes, function (node) {return node.y; }).y - margin,
+			left: _.min(nodes, function (node) {return node.x; }).x - margin,
+		};
+		result.width = margin + _.max(_.map(nodes, function (node) { return node.x + node.width; })) - result.left;
+		result.height = margin + _.max(_.map(nodes, function (node) { return node.y + node.height; })) - result.top;
 		return result;
 	};
 }());

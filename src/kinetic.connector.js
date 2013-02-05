@@ -48,7 +48,7 @@
 	};
 	Kinetic.Connector.prototype = {
 		drawFunc: function (canvas) {
-			var context = this.getContext(),
+			var context = canvas.getContext(),
 				shapeFrom = this.shapeFrom,
 				shapeTo = this.shapeTo,
 				conn = calculateConnector(shapeFrom, shapeTo),

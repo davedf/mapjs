@@ -286,3 +286,11 @@ describe('layout', function () {
 	});
 
 });
+describe('MAPJS.frame', function () {
+	'use strict';
+	it('should set origin.y to be the minimum y', function () {
+		var nodes = [{x: -10, y: 5, width: 10, height: 55}, {x: 1, y: -12, width: 15, height: 30}],
+			result = MAPJS.calculateFrame(nodes, 5);
+		expect(result).toPartiallyMatch({top: -17, left: -15, width: 36, height: 82});
+	});
+});

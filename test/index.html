@@ -1,65 +1,67 @@
 <html>
-<body>
-	<style>
-		#container {
-			background-color: #FFFFFF;
-			background-size: 22px 22px;
-			background-image:
+	<body>
+		<style>
+			#container {
+				background-color: #FFFFFF;
+				background-size: 22px 22px;
+				background-image:
 				-webkit-repeating-linear-gradient(45deg, rgba(127, 191, 255, .4), rgba(127, 191, 255, .4) 1px, transparent 2px, transparent 15px),
 				-webkit-repeating-linear-gradient(-45deg, rgba(255, 182, 193, .4), rgba(255, 182, 193, .4) 1px, transparent 2px, transparent 15px);
-			background-image:
+				background-image:
 				-moz-repeating-linear-gradient(45deg, rgba(0, 191, 255, .5), rgba(0, 191, 255, .5) 1px, transparent 2px, transparent 15px),
 				-moz-repeating-linear-gradient(-45deg, rgba(255, 182, 193, .5), rgba(255, 182, 193, .5) 1px, transparent 2px, transparent 15px);
-			background-image:
+				background-image:
 				-o-repeating-linear-gradient(45deg, rgba(0, 191, 255, .5), rgba(0, 191, 255, .5) 1px, transparent 2px, transparent 15px),
 				-o-repeating-linear-gradient(-45deg, rgba(255, 182, 193, .5), rgba(255, 182, 193, .5) 1px, transparent 2px, transparent 15px);
-			background-image:
+				background-image:
 				repeating-linear-gradient(45deg, rgba(127, 191, 255, .5), rgba(127, 191, 255, .5) 1px, transparent 2px, transparent 15px),
 				repeating-linear-gradient(-45deg, rgba(255, 182, 193, .5), rgba(255, 182, 193, .5) 1px, transparent 2px, transparent 15px);
-			width: 100%;
-			height: 100%;
-		}
-		.ideaInput {
-			position: absolute;
-			border: none;
-			z-index: 999;
-			background-color: transparent;
-			color: #F8F8F8;
-			font-family: "Helvetica";
-			font-weight: bold;
-			font-size: 13;
-			text-align: center;
-			resize: none;
-		}
-		.ideaInput:focus {
-			outline: none;
-		}
-	</style>
-	<input type="button" class="scaleUp" value="+"></input>
-	<input type="button" class="scaleDown" value="-"></input>
-	<input type="button" class="addSubIdea" value="add"></input>
-	<input type="button" class="editNode" value="edit"></input>
-	<input type="button" class="removeSubIdea" value="delete"></input>
-	<input type="button" class="insertIntermediate" value="insert parent"></input>
-	<input type="button" onclick="mapModel.setInputEnabled(false)" value="disable"></input>
-	<input type="button" onclick="mapModel.setInputEnabled(true)" value="enable"></input>
-	<div id="container"></div>
-	<script type="text/javascript" src="../lib/jquery-1.9.0.js"></script>
-	<script type="text/javascript" src="../lib/underscore-1.4.3-min.js"></script>
-	<script type="text/javascript" src="../lib/kinetic-v4.2.0-custom-min.js"></script>
-	<script type="text/javascript" src="../src/kinetic.idea.js"></script>
-	<script type="text/javascript" src="../src/kinetic.connector.js"></script>
-	<script type="text/javascript" src="../src/observable.js"></script>
-	<script type="text/javascript" src="../src/content.js"></script>
-	<script type="text/javascript" src="../src/layout.js"></script>
-	<script type="text/javascript" src="../src/map-model.js"></script>
-	<script type="text/javascript" src="../src/kinetic-mediator.js"></script>
-	<script type="text/javascript" src="../src/map-toolbar-widget.js"></script>
-	<script type="text/javascript" src="testtree.js"></script>
-	<script>
-		(function () {
-			window.onerror = alert;
-			var container = jQuery('#container'),
+				width: 100%;
+				height: 100%;
+			}
+			.ideaInput {
+				position: absolute;
+				border: none;
+				z-index: 999;
+				background-color: transparent;
+				color: #F8F8F8;
+				font-family: "Helvetica";
+				font-weight: bold;
+				font-size: 13;
+				text-align: center;
+				resize: none;
+			}
+			.ideaInput:focus {
+				outline: none;
+			}
+		</style>
+		<input type="button" class="scaleUp" value="+"></input>
+		<input type="button" class="scaleDown" value="-"></input>
+		<input type="button" class="addSubIdea" value="add"></input>
+		<input type="button" class="editNode" value="edit"></input>
+		<input type="button" class="removeSubIdea" value="delete"></input>
+		<input type="button" class="insertIntermediate" value="insert parent"></input>
+		<input type="button" onclick="mapModel.setInputEnabled(false)" value="disable"></input>
+		<input type="button" onclick="mapModel.setInputEnabled(true)" value="enable"></input>
+		<input type="button" data-mm-action="export-image" value="Export To Image"/> 
+		<div id="container"></div>
+		<script type="text/javascript" src="../lib/jquery-1.9.0.js"></script>
+		<script type="text/javascript" src="../lib/underscore-1.4.3-min.js"></script>
+		<script type="text/javascript" src="http://d3lp1msu2r81bx.cloudfront.net/kjs/js/lib/kinetic-v4.2.0.js"></script>
+		<script type="text/javascript" src="../src/kinetic.idea.js"></script>
+		<script type="text/javascript" src="../src/kinetic.connector.js"></script>
+		<script type="text/javascript" src="../src/observable.js"></script>
+		<script type="text/javascript" src="../src/content.js"></script>
+		<script type="text/javascript" src="../src/layout.js"></script>
+		<script type="text/javascript" src="../src/map-model.js"></script>
+		<script type="text/javascript" src="../src/kinetic-mediator.js"></script>
+		<script type="text/javascript" src="../src/map-toolbar-widget.js"></script>
+		<script type="text/javascript" src="../src/image-export-widget.js"></script>
+		<script type="text/javascript" src="testtree.js"></script>
+		<script>
+			(function () {
+				window.onerror = alert;
+				var container = jQuery('#container'),
 				stage = new Kinetic.Stage({
 					container: 'container',
 					draggable: true
@@ -72,15 +74,18 @@
 					stage.setHeight(container.height());
 					stage.draw();
 				};
-			setStageDimensions();
-			stage.attrs.x = 0.5 * stage.getWidth();
-			stage.attrs.y = 0.5 * stage.getHeight();
-			mapModel.setIdea(idea);
-			$(window).resize(setStageDimensions);
-			jQuery('body').mapToolbarWidget(mapModel);
-			window.mapModel = mapModel;
-			mapModel.addEventListener('analytic', console.log.bind(console));
-		}());
-	</script>
-</body>
-</html>
+				setStageDimensions();
+				stage.attrs.x = 0.5 * stage.getWidth();
+				stage.attrs.y = 0.5 * stage.getHeight();
+				mapModel.setIdea(idea);
+				$(window).resize(setStageDimensions);
+				jQuery('body').mapToolbarWidget(mapModel);
+				window.mapModel = mapModel;
+				mapModel.addEventListener('analytic', console.log.bind(console));
+					$("[data-mm-action='export-image']").imageExportWidget(idea,function(url){
+						$("<img/>").attr('src',url).appendTo('body');	
+					});
+				}());
+			</script>
+		</body>
+	</html>
