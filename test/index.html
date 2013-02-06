@@ -56,7 +56,7 @@
 		<script type="text/javascript" src="../src/map-model.js"></script>
 		<script type="text/javascript" src="../src/kinetic-mediator.js"></script>
 		<script type="text/javascript" src="../src/map-toolbar-widget.js"></script>
-		<script type="text/javascript" src="../src/image-export-widget.js"></script>
+		<script type="text/javascript" src="../src/png-exporter.js"></script>
 		<script type="text/javascript" src="testtree.js"></script>
 		<script>
 			(function () {
@@ -67,7 +67,8 @@
 					draggable: true
 				}),
 				idea = content(test_tree()),
-				mapModel = new MAPJS.MapModel(MAPJS.KineticMediator.layoutCalculator, ['A brilliant idea...', 'A cunning plan...', 'We\'ll be famous...']),
+				mapRepository = observable({});
+				mapModel = new MAPJS.MapModel(mapRepository, MAPJS.KineticMediator.layoutCalculator, ['A brilliant idea...', 'A cunning plan...', 'We\'ll be famous...']),
 				mediator = new MAPJS.KineticMediator(mapModel, stage),
 				setStageDimensions = function () {
 					stage.setWidth(container.width());
@@ -77,15 +78,17 @@
 				setStageDimensions();
 				stage.attrs.x = 0.5 * stage.getWidth();
 				stage.attrs.y = 0.5 * stage.getHeight();
-				mapModel.setIdea(idea);
 				$(window).resize(setStageDimensions);
 				jQuery('body').mapToolbarWidget(mapModel);
 				window.mapModel = mapModel;
+				var pngExporter = new MAPJS.PNGExporter(mapRepository);
+				$("[data-mm-action='export-image']").click(pngExporter.exportMap);
+				pngExporter.addEventListener('mapExported', function (url) {
+					$("<img/>").attr('src',url).appendTo('body');	
+				});
 				mapModel.addEventListener('analytic', console.log.bind(console));
-					$("[data-mm-action='export-image']").imageExportWidget(idea,function(url){
-						$("<img/>").attr('src',url).appendTo('body');	
-					});
-				}());
-			</script>
-		</body>
-	</html>
+				mapRepository.dispatchEvent('mapLoaded',idea);
+			}());
+		</script>
+	</body>
+</html>
