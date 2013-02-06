@@ -65,7 +65,8 @@
 				},
 				onCommit = function () {
 					updateText(ideaInput.val());
-				}, scale = self.getStage().getScale().x || 1;
+				},
+				scale = self.getStage().getScale().x || 1;
 			ideaInput = jQuery('<textarea type="text" wrap="soft" class="ideaInput"></textarea>')
 				.css({
 					top: canvasPosition.top + self.getAbsolutePosition().y,
@@ -89,6 +90,8 @@
 				.focus();
 			if (shouldSelectAll) {
 				ideaInput.select();
+			} else if (ideaInput[0].setSelectionRange) {
+				ideaInput[0].setSelectionRange(currentText.length, currentText.length);
 			}
 			self.getStage().on('xChange yChange', function () {
 				ideaInput.css({
