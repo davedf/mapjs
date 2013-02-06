@@ -3,12 +3,12 @@ describe('MapModel', function () {
 	'use strict';
 	it('should be able to instantiate MapModel', function () {
 		var layoutCalculator,
-			underTest = new MAPJS.MapModel(layoutCalculator);
+			underTest = new MAPJS.MapModel(observable({}), layoutCalculator);
 		expect(underTest).not.toBeUndefined();
 	});
 	it('should dispatch inputEnabledChanged event when input is disabled', function () {
 		var layoutCalculator,
-			underTest = new MAPJS.MapModel(layoutCalculator),
+			underTest = new MAPJS.MapModel(observable({}), layoutCalculator),
 			inputEnabledChangedListener = jasmine.createSpy();
 		underTest.addEventListener('inputEnabledChanged', inputEnabledChangedListener);
 
@@ -54,7 +54,7 @@ describe('MapModel', function () {
 					}
 				}
 			};
-			underTest = new MAPJS.MapModel(layoutCalculator);
+			underTest = new MAPJS.MapModel(observable({}), layoutCalculator);
 			layoutCalculatorLayout = layoutBefore;
 			anIdea = content({});
 			underTest.setIdea(anIdea);
@@ -133,7 +133,7 @@ describe('MapModel', function () {
 					}
 				}
 			});
-			underTest = new MAPJS.MapModel(function () {
+			underTest = new MAPJS.MapModel(observable({}), function () {
 				return {
 				};
 			});
@@ -149,6 +149,7 @@ describe('MapModel', function () {
 		});
 		it('should invoke idea.addSubIdea with randomly selected title when addSubIdea method is invoked', function () {
 			var underTest = new MAPJS.MapModel(
+				observable({}),
 				function () {
 					return {};
 				},
@@ -197,6 +198,7 @@ describe('MapModel', function () {
     describe ("insertIntermediate", function(){
       it('should invoke idea.insertIntermediate with the id of the selected node and a random title', function(){
         var underTest = new MAPJS.MapModel(
+          observable({}),
           function () {
             return {};
           },
@@ -211,6 +213,7 @@ describe('MapModel', function () {
       });
       it('should invoke idea.insertIntermediate a random title from the intermediary array if specified', function(){
         var underTest = new MAPJS.MapModel(
+          observable({}),
           function () {
             return {};
           },
@@ -233,7 +236,7 @@ describe('MapModel', function () {
 	});
 	describe('map scaling', function () {
 		it('should dispatch mapScaleChanged event when scaleUp method is invoked', function () {
-			var underTest = new MAPJS.MapModel(),
+			var underTest = new MAPJS.MapModel(observable({})),
 				mapScaleChangedListener = jasmine.createSpy();
 			underTest.addEventListener('mapScaleChanged', mapScaleChangedListener);
 
@@ -242,7 +245,7 @@ describe('MapModel', function () {
 			expect(mapScaleChangedListener).toHaveBeenCalledWith(true);
 		});
 		it('should dispatch mapScaleChanged event when scaleDown method is invoked', function () {
-			var underTest = new MAPJS.MapModel(),
+			var underTest = new MAPJS.MapModel(observable({})),
 				mapScaleChangedListener = jasmine.createSpy();
 			underTest.addEventListener('mapScaleChanged', mapScaleChangedListener);
 
@@ -281,7 +284,7 @@ describe('MapModel', function () {
 					}
 				}
 			});
-			underTest = new MAPJS.MapModel(function () {
+			underTest = new MAPJS.MapModel(observable({}), function () {
 				return {
 					nodes: {
 						1: { x: 0 },
@@ -367,7 +370,7 @@ describe('MapModel', function () {
 	describe('analytic events', function () {
 		var underTest, analyticListener;
 		beforeEach(function () {
-			underTest = new MAPJS.MapModel(function () {
+			underTest = new MAPJS.MapModel(observable({}), function () {
 				return {
 					nodes: {
 						1: { x: 0 },

@@ -3,7 +3,7 @@ describe('mapToolbarWidget', function () {
 	'use strict';
 	var mapModel, element;
 	beforeEach(function () {
-		mapModel = new MAPJS.MapModel();
+		mapModel = new MAPJS.MapModel(observable({}));
 		element = jQuery('<div>\
 				<input type="button" class="scaleUp" value="+"></input>\
 				<input type="button" class="scaleDown" value="-"></input>\
