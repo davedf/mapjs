@@ -1,4 +1,5 @@
-/*global beforeEach, describe, expect, it, jQuery, spyOn, MAPJS*/
+/*global beforeEach, describe, expect, it, jQuery, observable, spyOn, MAPJS*/
+/*jslint es5: true*/
 describe('mapToolbarWidget', function () {
 	'use strict';
 	var mapModel, element;
@@ -11,7 +12,7 @@ describe('mapToolbarWidget', function () {
 				<input type="button" class="editNode" value="edit"></input>\
 				<input type="button" class="removeSubIdea" value="remove"></input>\
 				<input type="button" class="insertIntermediate" value="insert parent"></input>\
-			</div>'
+				</div>'
 		);
 		element.appendTo('body');
 	});

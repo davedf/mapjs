@@ -105,11 +105,13 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 		analytic('addSubIdea', source);
 		idea.addSubIdea(currentlySelectedIdeaId, getRandomTitle(titlesToRandomlyChooseFrom));
 	};
-  this.insertIntermediate= function( source ){
-    if (currentlySelectedIdeaId==idea.id) return false;
-    idea.insertIntermediate(currentlySelectedIdeaId, getRandomTitle(intermediaryTitlesToRandomlyChooseFrom));
-    analytic('insertIntermediate',source);
-  }
+	this.insertIntermediate = function (source) {
+		if (currentlySelectedIdeaId === idea.id) {
+			return false;
+		}
+		idea.insertIntermediate(currentlySelectedIdeaId, getRandomTitle(intermediaryTitlesToRandomlyChooseFrom));
+		analytic('insertIntermediate', source);
+	};
 	this.addSiblingIdea = function (source) {
 		analytic('addSiblingIdea', source);
 		var parent = idea.findParent(currentlySelectedIdeaId) || idea;
@@ -126,8 +128,10 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 		idea.updateTitle(ideaId, title);
 	};
 	this.editNode = function (source, shouldSelectAll) {
-		if (source) analytic('editNode', source);
-		self.dispatchEvent('nodeEditRequested:' + currentlySelectedIdeaId, shouldSelectAll );
+		if (source) {
+			analytic('editNode', source);
+		}
+		self.dispatchEvent('nodeEditRequested:' + currentlySelectedIdeaId, shouldSelectAll);
 	};
 	this.scaleUp = function (source) {
 		self.dispatchEvent('mapScaleChanged', true);
@@ -164,7 +168,7 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 				node = idea.id === currentlySelectedIdeaId ? idea : idea.findSubIdeaById(currentlySelectedIdeaId);
 				for (rank in node.ideas) {
 					rank = parseFloat(rank);
-					if (isRoot && rank < 0 && rank > targetRank || !isRoot && rank > 0 && rank < targetRank) {
+					if ((isRoot && rank < 0 && rank > targetRank) || (!isRoot && rank > 0 && rank < targetRank)) {
 						targetRank = rank;
 					}
 				}
@@ -258,9 +262,8 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 					flipLeftToRight = rootNode.x > nodeBeingDragged.x && rootNode.x < nodeDragEndX;
 				if (flipRightToLeft || flipLeftToRight) {
 					return idea.flip(nodeBeingDragged.id);
-				} else {
-					return false;
 				}
+				return false;
 			};
 		self.nodeDragMove = function (id, x, y) {
 			var nodeId, node;
@@ -289,7 +292,8 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 						self.dispatchEvent('nodeMoved', nodeBeingDragged, 'failed');
 					}
 					return;
-				} else if ((nodeBeingDragged.x === node.x || nodeBeingDragged.x + nodeBeingDragged.width === node.x + node.width) && y < node.y) {
+				}
+				if ((nodeBeingDragged.x === node.x || nodeBeingDragged.x + nodeBeingDragged.width === node.x + node.width) && y < node.y) {
 					if (!verticallyClosestNode || node.y < verticallyClosestNode.y) {
 						verticallyClosestNode = node;
 					}
