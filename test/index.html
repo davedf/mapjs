@@ -68,7 +68,7 @@
 				}),
 				idea = content(test_tree()),
 				mapRepository = observable({});
-				mapModel = new MAPJS.MapModel(mapRepository, MAPJS.KineticMediator.layoutCalculator, ['A brilliant idea...', 'A cunning plan...', 'We\'ll be famous...']),
+				mapModel = new MAPJS.MapModel(mapRepository, MAPJS.KineticMediator.layoutCalculator, ['A brilliant idea...', 'A cunning plan...', 'We\'ll be famous...'], ['hoo har']),
 				mediator = new MAPJS.KineticMediator(mapModel, stage),
 				setStageDimensions = function () {
 					stage.setWidth(container.width());

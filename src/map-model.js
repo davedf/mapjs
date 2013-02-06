@@ -131,7 +131,13 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 		if (source) {
 			analytic('editNode', source);
 		}
+		var title = (idea.findSubIdeaById(currentlySelectedIdeaId) || idea).title;
+		if (intermediaryTitlesToRandomlyChooseFrom.indexOf(title) !== -1 ||
+				 titlesToRandomlyChooseFrom.indexOf(title) !== -1) {
+			shouldSelectAll = true;
+		}
 		self.dispatchEvent('nodeEditRequested:' + currentlySelectedIdeaId, shouldSelectAll);
+
 	};
 	this.scaleUp = function (source) {
 		self.dispatchEvent('mapScaleChanged', true);
