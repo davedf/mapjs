@@ -246,6 +246,14 @@ describe('MapModel', function () {
 
 			expect(anIdea.removeSubIdea).toHaveBeenCalledWith(321);
 		});
+		it('should not invoke idea.updateStyle with selected IdeaId when collapse method is invoked', function () {
+			spyOn(anIdea, 'updateStyle');
+			underTest.selectNode(2);
+
+			underTest.collapse('source', true);
+
+			expect(anIdea.updateStyle).not.toHaveBeenCalledWith(2, 'collapsed', true);
+		});
 		it('should invoke idea.updateStyle with selected IdeaId when collapse method is invoked', function () {
 			spyOn(anIdea, 'updateStyle');
 			underTest.selectNode(321);

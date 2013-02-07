@@ -119,7 +119,10 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 	};
 	this.collapse = function (source, doCollapse) {
 		analytic('collapse:' + doCollapse, source);
-		idea.updateStyle(currentlySelectedIdeaId, 'collapsed', doCollapse);
+		var node = currentlySelectedIdea();
+		if (node.ideas && _.size(node.ideas) > 0) {
+			idea.updateStyle(currentlySelectedIdeaId, 'collapsed', doCollapse);
+		}
 	};
 	this.addSubIdea = function (source) {
 		analytic('addSubIdea', source);
