@@ -79,6 +79,12 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 		},
 		currentlySelectedIdea = function () {
 			return (idea.findSubIdeaById(currentlySelectedIdeaId) || idea);
+		},
+		ensureNodeIsExpanded = function (source, nodeId) {
+			var node = idea.findSubIdeaById(nodeId) || idea;
+			if (node.getStyle('collapsed')) {
+				idea.updateStyle(nodeId, 'collapsed', false);
+			}
 		};
 	observable(this);
 	analytic = self.dispatchEvent.bind(self, 'analytic', 'mapModel');
@@ -117,6 +123,7 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 	};
 	this.addSubIdea = function (source) {
 		analytic('addSubIdea', source);
+		ensureNodeIsExpanded(source, currentlySelectedIdeaId);
 		idea.addSubIdea(currentlySelectedIdeaId, getRandomTitle(titlesToRandomlyChooseFrom));
 	};
 	this.insertIntermediate = function (source) {
@@ -186,9 +193,7 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 			analytic('selectNodeLeft', source);
 			if (isRootOrLeftHalf(currentlySelectedIdeaId)) {
 				node = idea.id === currentlySelectedIdeaId ? idea : idea.findSubIdeaById(currentlySelectedIdeaId);
-				if (node.getStyle('collapsed')) {
-					this.collapse(source, false);
-				}
+				ensureNodeIsExpanded(source, node.id);
 				for (rank in node.ideas) {
 					rank = parseFloat(rank);
 					if ((isRoot && rank < 0 && rank > targetRank) || (!isRoot && rank > 0 && rank < targetRank)) {
@@ -207,9 +212,7 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 			analytic('selectNodeRight', source);
 			if (isRootOrRightHalf(currentlySelectedIdeaId)) {
 				node = idea.id === currentlySelectedIdeaId ? idea : idea.findSubIdeaById(currentlySelectedIdeaId);
-				if (node.getStyle('collapsed')) {
-					this.collapse(source, false);
-				}
+				ensureNodeIsExpanded(source, node.id);
 				for (rank in node.ideas) {
 					rank = parseFloat(rank);
 					if (rank > 0 && rank < minimumPositiveRank) {

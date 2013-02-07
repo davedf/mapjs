@@ -212,6 +212,16 @@ describe('MapModel', function () {
 
 			expect(anIdea.addSubIdea).toHaveBeenCalledWith(123, 'double click to edit');
 		});
+		it('should expand the node when addSubIdea is called', function () {
+			underTest.selectNode(1);
+			var nodeSelectionChangedListener = jasmine.createSpy();
+			underTest.collapse('source', true);
+			spyOn(anIdea, 'updateStyle');
+			underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
+			underTest.addSubIdea();
+
+			expect(anIdea.updateStyle).toHaveBeenCalledWith(1, 'collapsed', false);
+		});
 		it('should invoke idea.addSubIdea with randomly selected title when addSubIdea method is invoked', function () {
 			var underTest = new MAPJS.MapModel(
 				observable({}),
