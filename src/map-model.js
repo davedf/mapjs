@@ -1,4 +1,4 @@
-/*global observable*/
+/*global _, observable*/
 /*jslint forin: true*/
 var MAPJS = MAPJS || {};
 MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChooseFrom, intermediaryTitlesToRandomlyChooseFrom) {
@@ -153,6 +153,12 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 			},
 			isRootOrLeftHalf = function (id) {
 				return currentLayout.nodes[id].x <= currentLayout.nodes[idea.id].x;
+			},
+			nodesWithIDs = function () {
+				return _.map(currentLayout.nodes,
+					function (n, nodeId) {
+						return _.extend({ id: parseInt(nodeId, 10)}, n);
+					});
 			};
 		self.selectNodeLeft = function (source) {
 			var node,
@@ -194,18 +200,45 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 				self.selectNode(idea.findParent(currentlySelectedIdeaId).id);
 			}
 		};
+
 		self.selectNodeUp = function (source) {
-			var previousSibling = idea.previousSiblingId(currentlySelectedIdeaId);
+			var previousSibling = idea.previousSiblingId(currentlySelectedIdeaId),
+				nodesAbove,
+				closestNode,
+				currentNode = currentLayout.nodes[currentlySelectedIdeaId];
 			analytic('selectNodeUp', source);
 			if (previousSibling) {
 				self.selectNode(previousSibling);
+			} else {
+				if (!currentNode) return;
+				nodesAbove = _.reject(nodesWithIDs(), function (node) { return node.y >= currentNode.y; });
+				if (_.size(nodesAbove) === 0) {
+					return;
+				}
+				closestNode = _.min(nodesAbove, function (node) {
+					return Math.pow(node.x - currentNode.x, 2) + Math.pow(node.y - currentNode.y, 2);
+				});
+				self.selectNode(closestNode.id);
 			}
 		};
 		self.selectNodeDown = function (source) {
-			var nextSibling = idea.nextSiblingId(currentlySelectedIdeaId);
+			var nextSibling = idea.nextSiblingId(currentlySelectedIdeaId),
+				nodesBelow,
+				closestNode,
+				currentNode = currentLayout.nodes[currentlySelectedIdeaId];
 			analytic('selectNodeDown', source);
 			if (nextSibling) {
 				self.selectNode(nextSibling);
+			} else {
+				if (!currentNode) return;
+				nodesBelow = _.reject(nodesWithIDs(), function (node) { return node.y <= currentNode.y; });
+				if (_.size(nodesBelow) === 0) {
+					return;
+				}
+				closestNode = _.min(nodesBelow, function (node) {
+					return Math.pow(node.x - currentNode.x, 2) + Math.pow(node.y - currentNode.y, 2);
+				});
+				self.selectNode(closestNode.id);
 			}
 
 		};

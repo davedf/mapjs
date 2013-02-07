@@ -318,15 +318,16 @@ describe('MapModel', function () {
 					},
 					1: {
 						id: 4,
-						title: 'upper right'
+						title: 'upper right',
+						ideas: {
+							1: { id: 7, title: 'cousin above' }
+						}
 					},
 					2: {
 						id: 5,
 						title: 'lower right',
 						ideas : {
-							1: {
-								id: 6
-							}
+							1: { id: 6, title: 'cousin below' }
 						}
 					}
 				}
@@ -334,11 +335,13 @@ describe('MapModel', function () {
 			underTest = new MAPJS.MapModel(observable({}), function () {
 				return {
 					nodes: {
-						1: { x: 0 },
-						2: { x: -10 },
-						3: { x: -10 },
-						4: { x: 10 },
-						5: { x: 10 }
+						1: { x: 0, y: 10 },
+						2: { x: -10, y: 10},
+						3: { x: -10, y: -10 },
+						4: { x: 10, y: 10 },
+						5: { x: 10, y: 30 },
+					    6: { x:	50, y: 10 },
+					    7: { x:	50, y: -10 }
 					}
 				};
 			});
@@ -397,23 +400,41 @@ describe('MapModel', function () {
 
 			expect(nodeSelectionChangedListener).toHaveBeenCalledWith(1, true);
 		});
-		it('should select sibling above when selectNodeUp invoked', function () {
-			underTest.selectNode(5);
-			var nodeSelectionChangedListener = jasmine.createSpy();
-			underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
+		describe("selectNodeUp", function () {
+			it('should select sibling above', function () {
+				underTest.selectNode(5);
+				var nodeSelectionChangedListener = jasmine.createSpy();
+				underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
 
-			underTest.selectNodeUp();
+				underTest.selectNodeUp();
 
-			expect(nodeSelectionChangedListener).toHaveBeenCalledWith(4, true);
+				expect(nodeSelectionChangedListener).toHaveBeenCalledWith(4, true);
+			});
+			it('should select closest node above if no sibling', function () {
+				underTest.selectNode(6);
+				var nodeSelectionChangedListener = jasmine.createSpy();
+				underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
+				underTest.selectNodeUp();
+				expect(nodeSelectionChangedListener).toHaveBeenCalledWith(7, true);
+			});
 		});
-		it('should select sibling below when selectNodeDown invoked', function () {
-			underTest.selectNode(4);
-			var nodeSelectionChangedListener = jasmine.createSpy();
-			underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
+		describe("selectNodeDown", function () {
+			it('should select sibling below when selectNodeDown invoked', function () {
+				underTest.selectNode(4);
+				var nodeSelectionChangedListener = jasmine.createSpy();
+				underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
 
-			underTest.selectNodeDown();
+				underTest.selectNodeDown();
 
-			expect(nodeSelectionChangedListener).toHaveBeenCalledWith(5, true);
+				expect(nodeSelectionChangedListener).toHaveBeenCalledWith(5, true);
+			});
+			it('should select closest node below if no sibling', function () {
+				underTest.selectNode(7);
+				var nodeSelectionChangedListener = jasmine.createSpy();
+				underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
+				underTest.selectNodeDown();
+				expect(nodeSelectionChangedListener).toHaveBeenCalledWith(6, true);
+			});
 		});
 	});
 	describe('analytic events', function () {
