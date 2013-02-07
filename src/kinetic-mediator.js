@@ -170,7 +170,6 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			9: mapModel.insertIntermediate.bind(mapModel, 'keyboard')
 		},
 			onKeydown = function (evt) {
-				console.log('key', evt);
 				var eventHandler = (evt.shiftKey ? shiftKeyboardEventHandlers : keyboardEventHandlers)[evt.which];
 				if (eventHandler) {
 					eventHandler();
