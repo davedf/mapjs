@@ -1,4 +1,4 @@
-/*global observable*/
+/*global _, observable*/
 /*jslint forin: true*/
 var MAPJS = MAPJS || {};
 MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChooseFrom, intermediaryTitlesToRandomlyChooseFrom) {
@@ -48,6 +48,9 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 					}
 					if (newNode.title !== oldNode.title) {
 						self.dispatchEvent('nodeTitleChanged', newNode);
+					}
+					if (!_.isEqual(newNode.style || {}, oldNode.style || {})) {
+						self.dispatchEvent('nodeStyleChanged', newNode);
 					}
 				}
 			}
@@ -103,6 +106,10 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 			currentlySelectedIdeaId = id;
 			self.dispatchEvent('nodeSelectionChanged', id, true);
 		}
+	};
+	this.toggleCollapse = function (source) {
+		var isCollapsed = currentlySelectedIdea().getStyle('collapsed');
+		this.collapse(source, !isCollapsed);
 	};
 	this.collapse = function (source, doCollapse) {
 		analytic('collapse:' + doCollapse, source);

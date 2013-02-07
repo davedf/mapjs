@@ -37,6 +37,12 @@ describe('MapModel', function () {
 						x: 50,
 						y: 20,
 						title: 'second'
+					},
+					9: {
+						x: 100,
+						y: 100,
+						title: 'style change',
+						style: {prop: 'old val'}
 					}
 				}
 			};
@@ -51,6 +57,12 @@ describe('MapModel', function () {
 						x: 100,
 						y: 200,
 						title: 'This node will be created'
+					},
+					9: {
+						x: 100,
+						y: 100,
+						title: 'style change',
+						style: {prop: 'new val'}
 					}
 				}
 			};
@@ -149,6 +161,12 @@ describe('MapModel', function () {
 			underTest.editNode('toolbar', false);
 
 			expect(nodeEditRequestedListener).toHaveBeenCalledWith(true);
+		});
+		it('should dispatch nodeStyleChanged the style changes is created', function () {
+			var nodeStyleChangedListener = jasmine.createSpy();
+			underTest.addEventListener('nodeStyleChanged', nodeStyleChangedListener);
+			anIdea.dispatchEvent('changed');
+			expect(nodeStyleChangedListener).toHaveBeenCalledWith(layoutAfter.nodes[9]);
 		});
 		it('should dispatch nodeEditRequested when an intermediary is created', function () {
 			anIdea = content({

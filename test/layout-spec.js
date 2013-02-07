@@ -72,14 +72,12 @@ describe('layout', function () {
 					}
 				}),
 				result = MAPJS.calculateDimensions(contentAggregate, dimensionProvider, 10);
-			expect(result).toEqual({
+			expect(result).toPartiallyMatch({
 				id: 7,
-				title: '1',
-				width: 60,
-				height: 40,
 				Width: 60,
 				Height: 40,
 				WidthLeft: 0,
+				style: {collapsed: true}
 			});
 		});
 		it('', function () {
@@ -306,6 +304,16 @@ describe('layout', function () {
 			result;
 		result = MAPJS.calculateLayout(contentAggregate, dimensionProvider);
 		expect(result.nodes[11].y).toBe(-5);
+	});
+	it('should copy style to nodes', function () {
+		var contentAggregate = content({
+			title: '123',
+			style: { collapsed: true }
+		}),
+			result = MAPJS.calculateLayout(contentAggregate, dimensionProvider);
+		expect(result.nodes[1]).toPartiallyMatch({
+			style: {collapsed: true}
+		});
 	});
 
 });
