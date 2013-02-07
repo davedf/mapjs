@@ -1,109 +1,135 @@
+/*jslint forin: true*/
+/*global _*/
 var content;
-
-(function() {
+(function () {
     'use strict';
-    content = function(contentAggregate) {
-        var init = function(contentIdea) {
-                if (contentIdea.ideas) _.each(contentIdea.ideas, function(value, key) {
-                    contentIdea.ideas[key] = init(value);
-                });
+    content = function (contentAggregate) {
+        var init = function (contentIdea) {
+                if (contentIdea.ideas) {
+					_.each(contentIdea.ideas, function (value, key) {
+						contentIdea.ideas[key] = init(value);
+					});
+				}
                 contentIdea.id = contentIdea.id || (contentAggregate.maxId() + 1);
-                contentIdea.containsDirectChild = contentIdea.findChildRankById = function(childIdeaId) {
-                    return parseFloat(_.reduce(
-                    contentIdea.ideas, function(res, value, key) {
-                        return value.id == childIdeaId ? key : res;
-                    }, undefined));
+                contentIdea.containsDirectChild = contentIdea.findChildRankById = function (childIdeaId) {
+					return parseFloat(
+						_.reduce(
+							contentIdea.ideas,
+							function (res, value, key) {
+								return value.id === childIdeaId ? key : res;
+							},
+							undefined
+						)
+					);
                 };
-                contentIdea.findSubIdeaById = function(childIdeaId) {
-                    var myChild = _.find(contentIdea.ideas, function(idea) {
-                        return idea.id == childIdeaId;
-                    })
-                    return myChild || _.reduce(contentIdea.ideas, function(result, idea) {
+                contentIdea.findSubIdeaById = function (childIdeaId) {
+                    var myChild = _.find(contentIdea.ideas, function (idea) {
+                        return idea.id === childIdeaId;
+                    });
+                    return myChild || _.reduce(contentIdea.ideas, function (result, idea) {
                         return result || idea.findSubIdeaById(childIdeaId);
                     }, undefined);
                 };
-                contentIdea.find = function(predicate) {
+                contentIdea.find = function (predicate) {
                     var current = predicate(contentIdea) ? [_.pick(contentIdea, 'id', 'title')] : [];
-                    if (_.size(contentIdea.ideas) == 0) return current;
-                    else return _.reduce(contentIdea.ideas, function(result, idea) {
-                        return _.union(result, idea.find(predicate))
+                    if (_.size(contentIdea.ideas) === 0) {
+						return current;
+					}
+                    return _.reduce(contentIdea.ideas, function (result, idea) {
+                        return _.union(result, idea.find(predicate));
                     }, current);
                 };
-                contentIdea.getStyle = function(name) {
-                    if (contentIdea.style && contentIdea.style[name]) return contentIdea.style[name];
+                contentIdea.getStyle = function (name) {
+                    if (contentIdea.style && contentIdea.style[name]) {
+						return contentIdea.style[name];
+					}
                     return false;
-                }
+                };
                 return contentIdea;
-            };
-        contentAggregate.maxId = function maxId(idea) {
-            idea = idea || contentAggregate;
-            if (!idea.ideas) return idea.id || 0;
-            return _.reduce(
-            idea.ideas, function(result, subidea) {
-                return Math.max(result, maxId(subidea));
-            }, idea.id || 0);
-        };
-
-
-        /*** private utility methods ***/
-        var maxKey = function(kv_map, sign) {
+            },
+			maxKey = function (kv_map, sign) {
                 sign = sign || 1;
-                if (_.size(kv_map) == 0) return 0;
+                if (_.size(kv_map) === 0) {
+					return 0;
+				}
                 var current_keys = _.keys(kv_map);
                 current_keys.push(0); /* ensure at least 0 is there for negative ranks */
-                return _.max(_.map(current_keys, parseFloat), function(x) {
-                    return x * sign
+                return _.max(_.map(current_keys, parseFloat), function (x) {
+                    return x * sign;
                 });
-            }
-        var nextChildRank = function(parentIdea) {
-                var childRankSign = 1;
-                if (parentIdea.id == contentAggregate.id) {
-                    var counts = _.countBy(parentIdea.ideas, function(v, k) {
+            },
+			nextChildRank = function (parentIdea) {
+                var new_rank, counts, childRankSign = 1;
+                if (parentIdea.id === contentAggregate.id) {
+                    counts = _.countBy(parentIdea.ideas, function (v, k) {
                         return k < 0;
                     });
-                    if ((counts.true || 0) < counts.false) childRankSign = -1;
+                    if ((counts.true || 0) < counts.false) {childRankSign = -1; }
                 }
-                var new_rank = maxKey(parentIdea.ideas, childRankSign) + childRankSign;
+                new_rank = maxKey(parentIdea.ideas, childRankSign) + childRankSign;
                 return new_rank;
-            }
-        var appendSubIdea = function(parentIdea, subIdea) {
-                if (!parentIdea.ideas) parentIdea.ideas = {}
+            },
+			appendSubIdea = function (parentIdea, subIdea) {
+                parentIdea.ideas = parentIdea.ideas || {};
 
                 parentIdea.ideas[nextChildRank(parentIdea)] = subIdea;
-            }
-        var findIdeaById = function(ideaId) {
+            },
+			findIdeaById = function (ideaId) {
+				//TODO: changing the line below to use === breaks some tests, need to work out why
                 return contentAggregate.id == ideaId ? contentAggregate : contentAggregate.findSubIdeaById(ideaId);
-            }
-        var traverseAndRemoveIdea = function(parentIdea, subIdeaId) {
-                var childRank = parentIdea.findChildRankById(subIdeaId);
+            },
+			traverseAndRemoveIdea = function (parentIdea, subIdeaId) {
+                var deleted, childRank = parentIdea.findChildRankById(subIdeaId);
                 if (childRank) {
-                    var deleted = parentIdea.ideas[childRank];
+                    deleted = parentIdea.ideas[childRank];
                     delete parentIdea.ideas[childRank];
                     return deleted;
                 }
                 return _.reduce(
-                parentIdea.ideas, function(result, child) {
-                    return result || traverseAndRemoveIdea(child, subIdeaId);
-                }, false);
-            }
-        contentAggregate.findParent = function(subIdeaId) {
-            var parentIdea = arguments[1] || contentAggregate;
+					parentIdea.ideas,
+					function (result, child) {
+						return result || traverseAndRemoveIdea(child, subIdeaId);
+					},
+					false
+				);
+            },
+			sign = function (number) {
+				/* intentionally not returning 0 case, to help with split sorting into 2 groups */
+				return number < 0 ? -1 : 1;
+			}
+		contentAggregate.maxId = function maxId(idea) {
+            idea = idea || contentAggregate;
+            if (!idea.ideas) {
+				return idea.id || 0;
+			}
+            return _.reduce(
+				idea.ideas,
+				function (result, subidea) {
+					return Math.max(result, maxId(subidea));
+				},
+				idea.id || 0
+			);
+        };
+
+
+        /*** private utility methods ***/
+        contentAggregate.findParent = function (subIdeaId, parentIdea) {
+            parentIdea = parentIdea || contentAggregate;
             var childRank = parentIdea.findChildRankById(subIdeaId);
             if (childRank) {
                 return parentIdea;
             }
             return _.reduce(
-            parentIdea.ideas, function(result, child) {
-                return result || contentAggregate.findParent(subIdeaId, child);
-            }, false);
+				parentIdea.ideas,
+				function (result, child) {
+					return result || contentAggregate.findParent(subIdeaId, child);
+				},
+				false
+			);
         }
 
-        /* intentionally not returning 0 case, to help with split sorting into 2 groups */
-        var sign = function(number) {
-                return number < 0 ? -1 : 1;
-            }
             /**** aggregate command processing methods ****/
-            contentAggregate.flip = function(ideaId) {
+            contentAggregate.flip = function (ideaId) {
                 var new_rank,max_rank, current_rank = contentAggregate.findChildRankById(ideaId);
                 if (!current_rank) return false;
                 max_rank = maxKey(contentAggregate.ideas, -1 * sign(current_rank));
@@ -113,14 +139,14 @@ var content;
                 contentAggregate.dispatchEvent('changed', 'flip', [ideaId]);
                 return true;
             }
-        contentAggregate.updateTitle = function(ideaId, title) {
+        contentAggregate.updateTitle = function (ideaId, title) {
             var idea = findIdeaById(ideaId);
             if (!idea) return false;
             idea.title = title;
             contentAggregate.dispatchEvent('changed', 'updateTitle', [ideaId, title]);
             return true;
         };
-        contentAggregate.addSubIdea = function(parentId, ideaTitle) {
+        contentAggregate.addSubIdea = function (parentId, ideaTitle) {
             var newId = arguments[2];
             if (newId && findIdeaById(newId)) return false;
             var parent = findIdeaById(parentId);
@@ -133,14 +159,14 @@ var content;
             contentAggregate.dispatchEvent('changed', 'addSubIdea', [parentId, ideaTitle, idea.id]);
             return true;
         }
-        contentAggregate.removeSubIdea = function(subIdeaId) {
+        contentAggregate.removeSubIdea = function (subIdeaId) {
             var result = traverseAndRemoveIdea(contentAggregate, subIdeaId);
             if (result) {
                 contentAggregate.dispatchEvent('changed', 'removeSubIdea', [subIdeaId]);
             }
             return result;
         }
-        contentAggregate.insertIntermediate = function(inFrontOfIdeaId, title, newIdeaId) {
+        contentAggregate.insertIntermediate = function (inFrontOfIdeaId, title, newIdeaId) {
             if (newIdeaId && findIdeaById(newIdeaId)) return false;
             if (contentAggregate.id == inFrontOfIdeaId) return false;
             var parentIdea = contentAggregate.findParent(inFrontOfIdeaId);
@@ -159,7 +185,7 @@ var content;
             contentAggregate.dispatchEvent('changed', 'insertIntermediate', [inFrontOfIdeaId, title, newIdea.id]);
             return true;
         }
-        contentAggregate.changeParent = function(ideaId, newParentId) {
+        contentAggregate.changeParent = function (ideaId, newParentId) {
             if (ideaId == newParentId) return false;
             var parent = findIdeaById(newParentId);
             if (!parent) return false;
@@ -189,11 +215,11 @@ var content;
 			contentAggregate.dispatchEvent('changed','updateStyle',[ideaId,styleName,styleValue]);
 			return true;
 		}
-        contentAggregate.positionBefore = function(ideaId, positionBeforeIdeaId) {
+        contentAggregate.positionBefore = function (ideaId, positionBeforeIdeaId) {
             var parentIdea = arguments[2] || contentAggregate;
             var current_rank = parentIdea.findChildRankById(ideaId);
             if (!current_rank) return _.reduce(
-            parentIdea.ideas, function(result, idea) {
+            parentIdea.ideas, function (result, idea) {
                 return result || contentAggregate.positionBefore(ideaId, positionBeforeIdeaId, idea)
             }, false);
             if (ideaId == positionBeforeIdeaId) return false;
@@ -201,10 +227,10 @@ var content;
             if (positionBeforeIdeaId) {
                 var after_rank = parentIdea.findChildRankById(positionBeforeIdeaId);
                 if (!after_rank) return false;
-                var sibling_ranks = _(_.map(_.keys(parentIdea.ideas), parseFloat)).reject(function(k) {
+                var sibling_ranks = _(_.map(_.keys(parentIdea.ideas), parseFloat)).reject(function (k) {
                     return k * current_rank < 0
                 });
-                var candidate_siblings = _.reject(_.sortBy(sibling_ranks, Math.abs), function(k) {
+                var candidate_siblings = _.reject(_.sortBy(sibling_ranks, Math.abs), function (k) {
                     return Math.abs(k) >= Math.abs(after_rank)
                 });
                 var before_rank = candidate_siblings.length > 0 ? _.max(candidate_siblings) : 0;
