@@ -236,7 +236,7 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 			if (previousSibling) {
 				self.selectNode(previousSibling);
 			} else {
-				if (!currentNode) return;
+				if (!currentNode) { return; }
 				nodesAbove = _.reject(nodesWithIDs(), function (node) { return node.y >= currentNode.y; });
 				if (_.size(nodesAbove) === 0) {
 					return;
@@ -256,7 +256,7 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 			if (nextSibling) {
 				self.selectNode(nextSibling);
 			} else {
-				if (!currentNode) return;
+				if (!currentNode) { return; }
 				nodesBelow = _.reject(nodesWithIDs(), function (node) { return node.y <= currentNode.y; });
 				if (_.size(nodesBelow) === 0) {
 					return;
