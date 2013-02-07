@@ -17,6 +17,7 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 		getRandomTitle = function (titles) {
 			return titles[Math.floor(titles.length * Math.random())];
 		},
+		horizontalSelectionThreshold = 300,
 		updateCurrentLayout = function (newLayout) {
 			var nodeId, newNode, oldNode, newConnector, oldConnector;
 			for (nodeId in currentLayout.connectors) {
@@ -237,7 +238,9 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 				self.selectNode(previousSibling);
 			} else {
 				if (!currentNode) { return; }
-				nodesAbove = _.reject(nodesWithIDs(), function (node) { return node.y >= currentNode.y; });
+				nodesAbove = _.reject(nodesWithIDs(), function (node) {
+					return node.y >= currentNode.y || Math.abs(node.x - currentNode.x) > horizontalSelectionThreshold;
+				});
 				if (_.size(nodesAbove) === 0) {
 					return;
 				}
@@ -257,7 +260,9 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 				self.selectNode(nextSibling);
 			} else {
 				if (!currentNode) { return; }
-				nodesBelow = _.reject(nodesWithIDs(), function (node) { return node.y <= currentNode.y; });
+				nodesBelow = _.reject(nodesWithIDs(), function (node) {
+					return node.y <= currentNode.y || Math.abs(node.x - currentNode.x) > horizontalSelectionThreshold;
+				});
 				if (_.size(nodesBelow) === 0) {
 					return;
 				}
