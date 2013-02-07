@@ -5,19 +5,17 @@ var MAPJS = MAPJS || {};
 	'use strict';
 	MAPJS.calculateDimensions = function calculateDimensions(idea, dimensionProvider, margin) {
 		var dimensions = dimensionProvider(idea.title),
-			result = {
-				id: idea.id,
+			result = _.extend(_.pick(idea, ['id', 'title', 'style']), {
 				width: dimensions.width + 2 * margin,
 				height: dimensions.height + 2 * margin,
-				title: idea.title
-			},
+			}),
 			leftOrRight,
 			subIdeaWidths = [0, 0],
 			subIdeaHeights = [0, 0],
 			subIdeaRank,
 			subIdea,
 			subIdeaDimensions;
-		if (idea.ideas) {
+		if (idea.ideas && !idea.getStyle('collapsed')) {
 			result.ideas = {};
 			for (subIdeaRank in idea.ideas) {
 				subIdea = idea.ideas[subIdeaRank];
@@ -60,7 +58,8 @@ var MAPJS = MAPJS || {};
 			ranks.sort(function ascending(firstRank, secondRank) {
 				if (firstRank >= 0 && secondRank >= 0) {
 					return secondRank - firstRank;
-				} else if (firstRank < 0 && secondRank < 0) {
+				}
+				if (firstRank < 0 && secondRank < 0) {
 					return firstRank - secondRank;
 				}
 				return secondRank - firstRank;
@@ -88,15 +87,11 @@ var MAPJS = MAPJS || {};
 			calculateLayoutInner = function (positions, level) {
 				var subIdeaRank, from, to;
 				level = level || 1;
-				result.nodes[positions.id] = {
-					id: positions.id,
+				result.nodes[positions.id] = _.extend(_.pick(positions, ['id', 'width', 'height', 'title', 'style']), {
 					x: positions.x - root.x - 0.5 * root.width + margin,
 					y: positions.y - root.y - 0.5 * root.height + margin,
-					width: positions.width,
-					height: positions.height,
-					title: positions.title,
 					level: level
-				};
+				});
 				if (positions.ideas) {
 					for (subIdeaRank in positions.ideas) {
 						calculateLayoutInner(positions.ideas[subIdeaRank], level + 1);

@@ -37,6 +37,12 @@ describe('MapModel', function () {
 						x: 50,
 						y: 20,
 						title: 'second'
+					},
+					9: {
+						x: 100,
+						y: 100,
+						title: 'style change',
+						style: {prop: 'old val'}
 					}
 				}
 			};
@@ -51,6 +57,12 @@ describe('MapModel', function () {
 						x: 100,
 						y: 200,
 						title: 'This node will be created'
+					},
+					9: {
+						x: 100,
+						y: 100,
+						title: 'style change',
+						style: {prop: 'new val'}
 					}
 				}
 			};
@@ -150,6 +162,12 @@ describe('MapModel', function () {
 
 			expect(nodeEditRequestedListener).toHaveBeenCalledWith(true);
 		});
+		it('should dispatch nodeStyleChanged the style changes is created', function () {
+			var nodeStyleChangedListener = jasmine.createSpy();
+			underTest.addEventListener('nodeStyleChanged', nodeStyleChangedListener);
+			anIdea.dispatchEvent('changed');
+			expect(nodeStyleChangedListener).toHaveBeenCalledWith(layoutAfter.nodes[9]);
+		});
 		it('should dispatch nodeEditRequested when an intermediary is created', function () {
 			anIdea = content({
 				id: 1,
@@ -194,6 +212,16 @@ describe('MapModel', function () {
 
 			expect(anIdea.addSubIdea).toHaveBeenCalledWith(123, 'double click to edit');
 		});
+		it('should expand the node when addSubIdea is called', function () {
+			underTest.selectNode(1);
+			var nodeSelectionChangedListener = jasmine.createSpy();
+			underTest.collapse('source', true);
+			spyOn(anIdea, 'updateStyle');
+			underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
+			underTest.addSubIdea();
+
+			expect(anIdea.updateStyle).toHaveBeenCalledWith(1, 'collapsed', false);
+		});
 		it('should invoke idea.addSubIdea with randomly selected title when addSubIdea method is invoked', function () {
 			var underTest = new MAPJS.MapModel(
 				observable({}),
@@ -218,13 +246,21 @@ describe('MapModel', function () {
 
 			expect(anIdea.removeSubIdea).toHaveBeenCalledWith(321);
 		});
-		it('should invoke idea.updateTitle with specified ideaId when updateTitle method is invoked', function () {
-			spyOn(anIdea, 'updateTitle');
-			underTest.selectNode(111);
+		it('should not invoke idea.updateStyle with selected IdeaId when collapse method is invoked', function () {
+			spyOn(anIdea, 'updateStyle');
+			underTest.selectNode(2);
 
-			underTest.updateTitle(112, 'new title');
+			underTest.collapse('source', true);
 
-			expect(anIdea.updateTitle).toHaveBeenCalledWith(112, 'new title');
+			expect(anIdea.updateStyle).not.toHaveBeenCalledWith(2, 'collapsed', true);
+		});
+		it('should invoke idea.updateStyle with selected IdeaId when collapse method is invoked', function () {
+			spyOn(anIdea, 'updateStyle');
+			underTest.selectNode(321);
+
+			underTest.collapse('source', true);
+
+			expect(anIdea.updateStyle).toHaveBeenCalledWith(321, 'collapsed', true);
 		});
 		it('should invoke idea.addSubIdea with a parent of a currently selected node when addSiblingIdea is invoked', function () {
 			underTest.selectNode(2);
@@ -366,39 +402,63 @@ describe('MapModel', function () {
 			underTest.removeSubIdea('toolbar');
 			expect(nodeSelectionChangedListener).toHaveBeenCalledWith(5, true);
 		});
-		it('should select lowest ranking child when selectNodeRight invoked on and currently selected node is right of central node', function () {
-			var nodeSelectionChangedListener = jasmine.createSpy();
-			underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
+		describe('selectNodeRight', function () {
+			it('should select lowest ranking child when currently selected node is right of central node', function () {
+				var nodeSelectionChangedListener = jasmine.createSpy();
+				underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
 
-			underTest.selectNodeRight();
+				underTest.selectNodeRight();
 
-			expect(nodeSelectionChangedListener).toHaveBeenCalledWith(4, true);
+				expect(nodeSelectionChangedListener).toHaveBeenCalledWith(4, true);
+			});
+			it('should expand and select lowest ranking child when currently selected node is collapsed and to the right of central node', function () {
+				var nodeSelectionChangedListener = jasmine.createSpy();
+				underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
+				underTest.collapse('source', true);
+
+				underTest.selectNodeRight();
+
+				expect(nodeSelectionChangedListener).toHaveBeenCalledWith(4, true);
+				expect(anIdea.getStyle('collapsed')).toBeFalsy();
+			});
+			it('should select parent node when currently selected node left of central node', function () {
+				underTest.selectNode(3);
+				var nodeSelectionChangedListener = jasmine.createSpy();
+				underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
+
+				underTest.selectNodeRight();
+
+				expect(nodeSelectionChangedListener).toHaveBeenCalledWith(1, true);
+			});
 		});
-		it('should select parent node when selectNodeRight invoked on a currently selected node left of central node', function () {
-			underTest.selectNode(3);
-			var nodeSelectionChangedListener = jasmine.createSpy();
-			underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
+		describe("selectNodeLeft", function () {
+			it('should select lowest ranking child when currently selected node is left of central node', function () {
+				var nodeSelectionChangedListener = jasmine.createSpy();
+				underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
 
-			underTest.selectNodeRight();
+				underTest.selectNodeLeft();
 
-			expect(nodeSelectionChangedListener).toHaveBeenCalledWith(1, true);
-		});
-		it('should select lowest ranking child when selectNodeLeft invoked on and currently selected node is left of central node', function () {
-			var nodeSelectionChangedListener = jasmine.createSpy();
-			underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
+				expect(nodeSelectionChangedListener).toHaveBeenCalledWith(3, true);
+			});
+			it('should expand the node and select lowest ranking child when selected node is collapsed and left of central node', function () {
+				var nodeSelectionChangedListener = jasmine.createSpy();
+				underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
+				underTest.collapse('source', true);
 
-			underTest.selectNodeLeft();
+				underTest.selectNodeLeft();
+				expect(anIdea.getStyle('collapsed')).toBeFalsy();
 
-			expect(nodeSelectionChangedListener).toHaveBeenCalledWith(3, true);
-		});
-		it('should select parent node when selectNodeLeft invoked on a currently selected node right of central node', function () {
-			underTest.selectNode(5);
-			var nodeSelectionChangedListener = jasmine.createSpy();
-			underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
+				expect(nodeSelectionChangedListener).toHaveBeenCalledWith(3, true);
+			});
+			it('should select parent node currently selected node right of central node', function () {
+				underTest.selectNode(5);
+				var nodeSelectionChangedListener = jasmine.createSpy();
+				underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
 
-			underTest.selectNodeLeft();
+				underTest.selectNodeLeft();
 
-			expect(nodeSelectionChangedListener).toHaveBeenCalledWith(1, true);
+				expect(nodeSelectionChangedListener).toHaveBeenCalledWith(1, true);
+			});
 		});
 		describe("selectNodeUp", function () {
 			it('should select sibling above', function () {
@@ -444,10 +504,10 @@ describe('MapModel', function () {
 				return {
 					nodes: {
 						1: { x: 0 },
-						2: { x: -10 },
-						3: { x: -10 },
-						4: { x: 10 },
-						5: { x: 10 }
+					  2: { x: -10 },
+					  3: { x: -10 },
+					  4: { x: 10 },
+					  5: { x: 10 }
 					}
 				};
 			});
@@ -457,21 +517,21 @@ describe('MapModel', function () {
 				ideas: {
 					'-2': {
 						id: 2,
-						title: 'lower left'
+				title: 'lower left'
 					},
-					'-1': {
-						id: 3,
-						title: 'upper left'
-					},
+				'-1': {
+					id: 3,
+				title: 'upper left'
+				},
+				1: {
+					id: 4,
+				title: 'upper right'
+				},
+				2: {
+					id: 5,
+				title: 'lower right',
+				ideas : {
 					1: {
-						id: 4,
-						title: 'upper right'
-					},
-					2: {
-						id: 5,
-						title: 'lower right',
-						ideas : {
-							1: {
 								id: 6
 							}
 						}
@@ -483,11 +543,15 @@ describe('MapModel', function () {
 			analyticListener = jasmine.createSpy();
 			underTest.addEventListener('analytic', analyticListener);
 		});
+		it('should dispatch analytic event when collapse method is invoked', function () {
+			underTest.collapse('toolbar',false);
+			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'collapse:false', 'toolbar');
+		});
 		it('should dispatch analytic event when scaleUp method is invoked', function () {
 			underTest.scaleUp('toolbar');
 			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'scaleUp', 'toolbar');
 		});
-		it('should dispatch analytic event when scaleUp method is invoked', function () {
+		it('should dispatch analytic event when scaleDown method is invoked', function () {
 			underTest.scaleDown('toolbar');
 
 			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'scaleDown', 'toolbar');

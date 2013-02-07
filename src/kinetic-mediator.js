@@ -15,6 +15,7 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			x: n.x,
 			y: n.y,
 			text: n.title,
+			mmStyle: n.style,
 			opacity: 0
 		});
 		/* in kinetic 4.3 cannot use click because click if fired on dragend */
@@ -81,6 +82,11 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			duration: 0.4,
 			easing: 'ease-in-out'
 		});
+	});
+	mapModel.addEventListener('nodeStyleChanged', function (n) {
+		var node = nodeByIdeaId[n.id];
+		node.mmStyle = n.style;
+		layer.draw();
 	});
 	mapModel.addEventListener('nodeDroppableChanged', function (ideaId, isDroppable) {
 		var node = nodeByIdeaId[ideaId];
@@ -158,7 +164,8 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			39: mapModel.selectNodeRight.bind(mapModel, 'keyboard'),
 			40: mapModel.selectNodeDown.bind(mapModel, 'keyboard'),
 			46: mapModel.removeSubIdea.bind(mapModel, 'keyboard'),
-			32: mapModel.editNode.bind(mapModel, 'keyboard')
+			32: mapModel.editNode.bind(mapModel, 'keyboard'),
+			191: mapModel.toggleCollapse.bind(mapModel, 'keyboard')
 		}, shiftKeyboardEventHandlers = {
 			9: mapModel.insertIntermediate.bind(mapModel, 'keyboard')
 		},

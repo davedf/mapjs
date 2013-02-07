@@ -49,6 +49,9 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 					if (newNode.title !== oldNode.title) {
 						self.dispatchEvent('nodeTitleChanged', newNode);
 					}
+					if (!_.isEqual(newNode.style || {}, oldNode.style || {})) {
+						self.dispatchEvent('nodeStyleChanged', newNode);
+					}
 				}
 			}
 			for (nodeId in newLayout.connectors) {
@@ -72,6 +75,15 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 				newIdeaId = args[2];
 				self.selectNode(newIdeaId);
 				self.editNode(false, true);
+			}
+		},
+		currentlySelectedIdea = function () {
+			return (idea.findSubIdeaById(currentlySelectedIdeaId) || idea);
+		},
+		ensureNodeIsExpanded = function (source, nodeId) {
+			var node = idea.findSubIdeaById(nodeId) || idea;
+			if (node.getStyle('collapsed')) {
+				idea.updateStyle(nodeId, 'collapsed', false);
 			}
 		};
 	observable(this);
@@ -101,8 +113,20 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 			self.dispatchEvent('nodeSelectionChanged', id, true);
 		}
 	};
+	this.toggleCollapse = function (source) {
+		var isCollapsed = currentlySelectedIdea().getStyle('collapsed');
+		this.collapse(source, !isCollapsed);
+	};
+	this.collapse = function (source, doCollapse) {
+		analytic('collapse:' + doCollapse, source);
+		var node = currentlySelectedIdea();
+		if (node.ideas && _.size(node.ideas) > 0) {
+			idea.updateStyle(currentlySelectedIdeaId, 'collapsed', doCollapse);
+		}
+	};
 	this.addSubIdea = function (source) {
 		analytic('addSubIdea', source);
+		ensureNodeIsExpanded(source, currentlySelectedIdeaId);
 		idea.addSubIdea(currentlySelectedIdeaId, getRandomTitle(titlesToRandomlyChooseFrom));
 	};
 	this.insertIntermediate = function (source) {
@@ -131,7 +155,7 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 		if (source) {
 			analytic('editNode', source);
 		}
-		var title = (idea.findSubIdeaById(currentlySelectedIdeaId) || idea).title;
+		var title = currentlySelectedIdea().title;
 		if (intermediaryTitlesToRandomlyChooseFrom.indexOf(title) !== -1 ||
 				 titlesToRandomlyChooseFrom.indexOf(title) !== -1) {
 			shouldSelectAll = true;
@@ -169,6 +193,7 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 			analytic('selectNodeLeft', source);
 			if (isRootOrLeftHalf(currentlySelectedIdeaId)) {
 				node = idea.id === currentlySelectedIdeaId ? idea : idea.findSubIdeaById(currentlySelectedIdeaId);
+				ensureNodeIsExpanded(source, node.id);
 				for (rank in node.ideas) {
 					rank = parseFloat(rank);
 					if ((isRoot && rank < 0 && rank > targetRank) || (!isRoot && rank > 0 && rank < targetRank)) {
@@ -187,6 +212,7 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 			analytic('selectNodeRight', source);
 			if (isRootOrRightHalf(currentlySelectedIdeaId)) {
 				node = idea.id === currentlySelectedIdeaId ? idea : idea.findSubIdeaById(currentlySelectedIdeaId);
+				ensureNodeIsExpanded(source, node.id);
 				for (rank in node.ideas) {
 					rank = parseFloat(rank);
 					if (rank > 0 && rank < minimumPositiveRank) {

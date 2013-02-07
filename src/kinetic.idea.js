@@ -31,6 +31,7 @@
 			oldSetText;
 		config.text = breakWords(config.text);
 		this.level = config.level;
+		this.mmStyle = config.mmStyle;
 		this.isSelected = false;
 		this.setStyle(config);
 		config.align = 'center';
@@ -55,6 +56,38 @@
 			this.on('mouseover touchstart', setStageDraggable.bind(null, false));
 			this.on('mouseout touchend', setStageDraggable.bind(null, true));
 		}
+		this.oldDrawFunc = this.getDrawFunc();
+
+		this.setDrawFunc(function (canvas) {
+			if (this.mmStyle && this.mmStyle.collapsed) {
+				var context = canvas.getContext(), width = this.getWidth(), height = this.getHeight();
+				this.drawCollapsedBG(canvas, {x: 8, y: 8});
+				this.drawCollapsedBG(canvas, {x: 4, y: 4});
+			}
+			this.oldDrawFunc(canvas);
+		});
+		this.drawCollapsedBG =  function (canvas, offset) {
+            var context = canvas.getContext(),
+				cornerRadius = this.getCornerRadius(),
+				width = this.getWidth(),
+				height = this.getHeight();
+            context.beginPath();
+            if (cornerRadius === 0) {
+                context.rect(offset.x, offset.y, width, height);
+            } else {
+                context.moveTo(offset.x + cornerRadius, offset.y);
+                context.lineTo(offset.x + width - cornerRadius, offset.y);
+                context.arc(offset.x + width - cornerRadius, offset.y + cornerRadius, cornerRadius, Math.PI * 3 / 2, 0, false);
+                context.lineTo(offset.x + width, offset.y + height - cornerRadius);
+                context.arc(offset.x + width - cornerRadius, offset.y + height - cornerRadius, cornerRadius, 0, Math.PI / 2, false);
+                context.lineTo(offset.x + cornerRadius, offset.y + height);
+                context.arc(offset.x + cornerRadius, offset.y + height - cornerRadius, cornerRadius, Math.PI / 2, Math.PI, false);
+                context.lineTo(offset.x, offset.y + cornerRadius);
+                context.arc(offset.x + cornerRadius, offset.y + cornerRadius, cornerRadius, Math.PI, Math.PI * 3 / 2, false);
+            }
+            context.closePath();
+            canvas.fillStroke(this);
+        };
 		this.editNode = function (shouldSelectAll) {
 			//this only works for solid color nodes
 			self.attrs.textFill = self.attrs.fill;
