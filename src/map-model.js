@@ -153,15 +153,6 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 			},
 			isRootOrLeftHalf = function (id) {
 				return currentLayout.nodes[id].x <= currentLayout.nodes[idea.id].x;
-			},
-			currentlySelectedIdeaRank = function (parent) {
-				var rank;
-				for (rank in parent.ideas) {
-					rank = parseFloat(rank);
-					if (parent.ideas[rank].id === currentlySelectedIdeaId) {
-						return rank;
-					}
-				}
 			};
 		self.selectNodeLeft = function (source) {
 			var node,
@@ -204,42 +195,19 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 			}
 		};
 		self.selectNodeUp = function (source) {
-			var parent = idea.findParent(currentlySelectedIdeaId), myRank, previousSiblingRank, rank, isPreviousSiblingWithNegativeRank, isPreviousSiblingWithPositiveRank;
+			var previousSibling = idea.previousSiblingId(currentlySelectedIdeaId);
 			analytic('selectNodeUp', source);
-			if (parent) {
-				myRank = currentlySelectedIdeaRank(parent);
-				previousSiblingRank = myRank > 0 ? -Infinity : Infinity;
-				for (rank in parent.ideas) {
-					rank = parseFloat(rank);
-					isPreviousSiblingWithNegativeRank = myRank < 0 && rank < 0 && rank > myRank && rank < previousSiblingRank;
-					isPreviousSiblingWithPositiveRank = myRank > 0 && rank > 0 && rank < myRank && rank > previousSiblingRank;
-					if (isPreviousSiblingWithNegativeRank || isPreviousSiblingWithPositiveRank) {
-						previousSiblingRank = rank;
-					}
-				}
-				if (previousSiblingRank !== Infinity && previousSiblingRank !== -Infinity) {
-					self.selectNode(parent.ideas[previousSiblingRank].id);
-				}
+			if (previousSibling) {
+				self.selectNode(previousSibling);
 			}
 		};
 		self.selectNodeDown = function (source) {
-			var parent = idea.findParent(currentlySelectedIdeaId), myRank, nextSiblingRank, rank, isNextSiblingWithNegativeRank, isNextSiblingWithPositiveRank;
+			var nextSibling = idea.nextSiblingId(currentlySelectedIdeaId);
 			analytic('selectNodeDown', source);
-			if (parent) {
-				myRank = currentlySelectedIdeaRank(parent);
-				nextSiblingRank = myRank > 0 ? Infinity : -Infinity;
-				for (rank in parent.ideas) {
-					rank = parseFloat(rank);
-					isNextSiblingWithNegativeRank = myRank < 0 && rank < 0 && rank < myRank && rank > nextSiblingRank;
-					isNextSiblingWithPositiveRank = myRank > 0 && rank > 0 && rank > myRank && rank < nextSiblingRank;
-					if (isNextSiblingWithNegativeRank || isNextSiblingWithPositiveRank) {
-						nextSiblingRank = rank;
-					}
-				}
-				if (nextSiblingRank !== Infinity && nextSiblingRank !== -Infinity) {
-					self.selectNode(parent.ideas[nextSiblingRank].id);
-				}
+			if (nextSibling) {
+				self.selectNode(nextSibling);
 			}
+
 		};
 	}());
 	//Todo - clean up this shit below

@@ -73,6 +73,9 @@ var content;
     var findIdeaById = function (ideaId){
       return contentAggregate.id==ideaId?contentAggregate:contentAggregate.findSubIdeaById(ideaId);
     }
+	var sameSideSiblingRanks = function (parentIdea, ideaRank){
+		return _(_.map(_.keys(parentIdea.ideas), parseFloat)).reject(function(k){return k*ideaRank<0});
+	}
     var traverseAndRemoveIdea = function (parentIdea,subIdeaId) {
       var childRank=parentIdea.findChildRankById(subIdeaId);
       if (childRank){
@@ -102,7 +105,26 @@ var content;
         false
       );
     }
-
+	contentAggregate.nextSiblingId = function (subIdeaId) {
+		var parentIdea=contentAggregate.findParent(subIdeaId),
+			currentRank, candidateSiblingRanks, siblingsAfter;
+		if (!parentIdea) return false;
+		currentRank=parentIdea.findChildRankById(subIdeaId);
+		candidateSiblingRanks=sameSideSiblingRanks(parentIdea,currentRank);
+		siblingsAfter=_.reject(candidateSiblingRanks,function(k){ return Math.abs(k)<=Math.abs(currentRank) });
+		if (siblingsAfter.length===0) return false;
+		return parentIdea.ideas[_.min(siblingsAfter,Math.abs)].id;
+	}
+	contentAggregate.previousSiblingId = function (subIdeaId) {
+		var parentIdea=contentAggregate.findParent(subIdeaId),
+			currentRank, candidateSiblingRanks, siblingsBefore;
+		if (!parentIdea) return false;
+		currentRank=parentIdea.findChildRankById(subIdeaId);
+		candidateSiblingRanks=sameSideSiblingRanks(parentIdea,currentRank);
+		siblingsBefore=_.reject(candidateSiblingRanks,function(k){ return Math.abs(k)>=Math.abs(currentRank) });
+		if (siblingsBefore.length===0) return false;
+		return parentIdea.ideas[_.max(siblingsBefore,Math.abs)].id;
+	}
     /* intentionally not returning 0 case, to help with split sorting into 2 groups */
     var sign=function(number){
       return number<0?-1:1;
@@ -187,7 +209,7 @@ var content;
       if (positionBeforeIdeaId) {
         var after_rank = parentIdea.findChildRankById(positionBeforeIdeaId);
         if (!after_rank) return false;
-        var sibling_ranks=_(_.map(_.keys(parentIdea.ideas), parseFloat)).reject(function(k){return k*current_rank<0});
+        var sibling_ranks=sameSideSiblingRanks(parentIdea,current_rank);
         var candidate_siblings=_.reject(_.sortBy(sibling_ranks,Math.abs),function(k){ return Math.abs(k)>=Math.abs(after_rank) });
         var before_rank = candidate_siblings.length > 0 ? _.max(candidate_siblings) : 0;
         if (before_rank == current_rank)

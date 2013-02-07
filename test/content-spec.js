@@ -75,6 +75,60 @@ describe ("content aggregate", function(){
         expect(aggregate.find(function(idea){ return idea.id>103 })).toEqual([]);
       });
     });
+	describe ("nextSiblingId", function(){
+		it ("returns the next sibling ID by rank within the parent", function(){
+			var idea=content({id:1, ideas: { 5: { id: 2}, 10: { id:3}, 15 : {id:4}}});
+			expect (idea.nextSiblingId(2)).toBe(3);
+		});
+		it ("for negative ranks, looks for the next rank by absolute value", function(){
+			var idea=content({id:1, ideas: { '-5': { id: 2}, '-10': { id:3}, '-15' : {id:4}}});
+			expect (idea.nextSiblingId(2)).toBe(3);
+		});
+		it ("only looks within its rank group (positive/negative)", function(){
+			var idea=content({id:1, ideas: { '-5': { id: 2}, '-10': { id:3}, 15 : {id:4}}});
+			expect (idea.nextSiblingId(2)).toBe(3);
+		});
+		it ("returns false if there is no next sibling", function(){
+			var idea=content({id:1, ideas: { '-5': { id: 2}, 10: { id:3}, 15 : {id:4}}});
+			expect (idea.nextSiblingId(4)).toBeFalsy();
+			expect (idea.nextSiblingId(2)).toBeFalsy();
+		});
+		it ("returns false if there is no such idea", function(){
+			var idea=content({id:1, ideas: { 5: { id: 2}, 10: { id:3}, 15 : {id:4}}});
+			expect (idea.nextSiblingId(22)).toBeFalsy();
+		});
+		it ("returns false if there are no siblings", function(){
+			var idea=content({id:1, ideas: { 5: { id: 2}}});
+			expect (idea.nextSiblingId(5)).toBeFalsy();
+		});
+	});
+	describe ("previousSiblingId", function(){
+		it ("returns the previous sibling ID by rank within the parent", function(){
+			var idea=content({id:1, ideas: { 5: { id: 2}, 10: { id:3}, 15 : {id:4}}});
+			expect (idea.previousSiblingId(3)).toBe(2);
+		});
+		it ("for negative ranks, looks for the previous rank by absolute value", function(){
+			var idea=content({id:1, ideas: { '-5': { id: 2}, '-10': { id:3}, '-15' : {id:4}}});
+			expect (idea.previousSiblingId(3)).toBe(2);
+		});
+		it ("only looks within its rank group (positive/negative)", function(){
+			var idea=content({id:1, ideas: { '-5': { id: 2}, 10: { id:3}, 15 : {id:4}}});
+			expect (idea.previousSiblingId(4)).toBe(3);
+		});
+		it ("returns false if there is no previous sibling", function(){
+			var idea=content({id:1, ideas: { '-5': { id: 2}, 10: { id:3}, 15 : {id:4}}});
+			expect (idea.previousSiblingId(2)).toBeFalsy();
+			expect (idea.previousSiblingId(3)).toBeFalsy();
+		});
+		it ("returns false if there is no such idea", function(){
+			var idea=content({id:1, ideas: { 5: { id: 2}, 10: { id:3}, 15 : {id:4}}});
+			expect (idea.previousSiblingId(22)).toBeFalsy();
+		});
+		it ("returns false if there are no siblings", function(){
+			var idea=content({id:1, ideas: { 5: { id: 2}}});
+			expect (idea.previousSiblingId(5)).toBeFalsy();
+		});
+	});
   });
   describe ("command processing",function(){
     describe ("updateTitle", function(){
