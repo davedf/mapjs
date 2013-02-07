@@ -17,7 +17,7 @@ var MAPJS = MAPJS || {};
 			subIdeaRank,
 			subIdea,
 			subIdeaDimensions;
-		if (idea.ideas) {
+		if (idea.ideas && !idea.getStyle('collapsed')) {
 			result.ideas = {};
 			for (subIdeaRank in idea.ideas) {
 				subIdea = idea.ideas[subIdeaRank];
@@ -60,7 +60,8 @@ var MAPJS = MAPJS || {};
 			ranks.sort(function ascending(firstRank, secondRank) {
 				if (firstRank >= 0 && secondRank >= 0) {
 					return secondRank - firstRank;
-				} else if (firstRank < 0 && secondRank < 0) {
+				}
+				if (firstRank < 0 && secondRank < 0) {
 					return firstRank - secondRank;
 				}
 				return secondRank - firstRank;

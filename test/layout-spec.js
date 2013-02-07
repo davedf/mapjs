@@ -59,6 +59,29 @@ describe('layout', function () {
 				}
 			});
 		});
+		it('should disregard children of collapsed nodes', function () {
+			var contentAggregate = content({
+					id: 7,
+					title: '1',
+					style: { collapsed: true },
+					ideas: {
+						1: {
+							id: 8,
+							title: '11'
+						}
+					}
+				}),
+				result = MAPJS.calculateDimensions(contentAggregate, dimensionProvider, 10);
+			expect(result).toEqual({
+				id: 7,
+				title: '1',
+				width: 60,
+				height: 40,
+				Width: 60,
+				Height: 40,
+				WidthLeft: 0,
+			});
+		});
 		it('', function () {
 			var contentAggregate = content({
 					id: 7,

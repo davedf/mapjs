@@ -73,6 +73,9 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 				self.selectNode(newIdeaId);
 				self.editNode(false, true);
 			}
+		},
+		currentlySelectedIdea = function () {
+			return (idea.findSubIdeaById(currentlySelectedIdeaId) || idea);
 		};
 	observable(this);
 	analytic = self.dispatchEvent.bind(self, 'analytic', 'mapModel');
@@ -100,6 +103,10 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 			currentlySelectedIdeaId = id;
 			self.dispatchEvent('nodeSelectionChanged', id, true);
 		}
+	};
+	this.collapse = function (source, doCollapse) {
+		analytic('collapse:' + doCollapse, source);
+		idea.updateStyle(currentlySelectedIdeaId, 'collapsed', doCollapse);
 	};
 	this.addSubIdea = function (source) {
 		analytic('addSubIdea', source);
@@ -131,7 +138,7 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 		if (source) {
 			analytic('editNode', source);
 		}
-		var title = (idea.findSubIdeaById(currentlySelectedIdeaId) || idea).title;
+		var title = currentlySelectedIdea().title;
 		if (intermediaryTitlesToRandomlyChooseFrom.indexOf(title) !== -1 ||
 				 titlesToRandomlyChooseFrom.indexOf(title) !== -1) {
 			shouldSelectAll = true;
@@ -172,6 +179,9 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 			analytic('selectNodeLeft', source);
 			if (isRootOrLeftHalf(currentlySelectedIdeaId)) {
 				node = idea.id === currentlySelectedIdeaId ? idea : idea.findSubIdeaById(currentlySelectedIdeaId);
+				if (node.getStyle('collapsed')) {
+					this.collapse(source, false);
+				}
 				for (rank in node.ideas) {
 					rank = parseFloat(rank);
 					if ((isRoot && rank < 0 && rank > targetRank) || (!isRoot && rank > 0 && rank < targetRank)) {
@@ -190,6 +200,9 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 			analytic('selectNodeRight', source);
 			if (isRootOrRightHalf(currentlySelectedIdeaId)) {
 				node = idea.id === currentlySelectedIdeaId ? idea : idea.findSubIdeaById(currentlySelectedIdeaId);
+				if (node.getStyle('collapsed')) {
+					this.collapse(source, false);
+				}
 				for (rank in node.ideas) {
 					rank = parseFloat(rank);
 					if (rank > 0 && rank < minimumPositiveRank) {
