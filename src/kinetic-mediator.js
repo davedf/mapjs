@@ -181,13 +181,16 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 		mapModel.addEventListener('inputEnabledChanged', function (isInputEnabled) {
 			jQuery(document)[isInputEnabled ? 'bind' : 'unbind']('keydown', onKeydown);
 		});
-		jQuery('#container').mousewheel(function (event, delta, deltaX, deltaY) {
+		jQuery(window).mousewheel(function (event, delta, deltaX, deltaY) {
 			if (stage) {
-				if (deltaY !== 0) { stage.attrs.y += (deltaY < 0 ? -10 : 10); }
-				if (deltaX !== 0) { stage.attrs.x += (deltaX < 0 ? 10 : -10); }
+				if (deltaY !== 0) { stage.attrs.y += (deltaY < 0 ? -5 : 5); }
+				if (deltaX !== 0) { stage.attrs.x += (deltaX < 0 ? 5 : -5); }
 				stage.draw();
 			}
 			if (deltaX < 0) { /* stop the back button */
+				event.preventDefault();
+			}
+			if (deltaY < 0) { /*stop scrolling down */
 				event.preventDefault();
 			}
 		});
