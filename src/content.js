@@ -175,17 +175,13 @@ var content = function (contentAggregate) {
 		contentAggregate.dispatchEvent('changed', 'updateTitle', [ideaId, title]);
 		return true;
 	};
-	contentAggregate.addSubIdea = function (parentId, ideaTitle, newId) {
-		if (newId && findIdeaById(newId)) {
-			return false;
-		}
+	contentAggregate.addSubIdea = function (parentId, ideaTitle) {
 		var idea, parent = findIdeaById(parentId);
 		if (!parent) {
 			return false;
 		}
 		idea = init({
-			title: ideaTitle,
-			id: newId
+			title: ideaTitle
 		});
 		appendSubIdea(parent, idea);
 		contentAggregate.dispatchEvent('changed', 'addSubIdea', [parentId, ideaTitle, idea.id]);
@@ -198,10 +194,7 @@ var content = function (contentAggregate) {
 		}
 		return result;
 	};
-	contentAggregate.insertIntermediate = function (inFrontOfIdeaId, title, newIdeaId) {
-		if (newIdeaId && findIdeaById(newIdeaId)) {
-			return false;
-		}
+	contentAggregate.insertIntermediate = function (inFrontOfIdeaId, title) {
 		if (contentAggregate.id === inFrontOfIdeaId) {
 			return false;
 		}
@@ -215,8 +208,7 @@ var content = function (contentAggregate) {
 		}
 		oldIdea = parentIdea.ideas[childRank];
 		newIdea = init({
-			title: title,
-			id: newIdeaId
+			title: title
 		});
 		parentIdea.ideas[childRank] = newIdea;
 		newIdea.ideas = {
