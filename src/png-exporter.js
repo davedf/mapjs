@@ -35,7 +35,8 @@ MAPJS.PNGExporter = function (mapRepository) {
 				level: n.level,
 				x: n.x,
 				y: n.y,
-				text: n.title
+				text: n.title,
+				mmStyle: n.style
 			});
 			nodeByIdeaId[n.id] = node;
 			layer.add(node);
