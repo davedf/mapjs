@@ -11,14 +11,14 @@ var content = function (contentAggregate) {
 		contentIdea.id = contentIdea.id || (contentAggregate.maxId() + 1);
 		contentIdea.containsDirectChild = contentIdea.findChildRankById = function (childIdeaId) {
 			return parseFloat(
-					_.reduce(
-						contentIdea.ideas,
-						function (res, value, key) {
-							return value.id === childIdeaId ? key : res;
-						},
-						undefined
-						)
-					);
+				_.reduce(
+					contentIdea.ideas,
+					function (res, value, key) {
+						return value.id === childIdeaId ? key : res;
+					},
+					undefined
+				)
+			);
 		};
 		contentIdea.findSubIdeaById = function (childIdeaId) {
 			var myChild = _.find(contentIdea.ideas, function (idea) {
@@ -202,7 +202,7 @@ var content = function (contentAggregate) {
 		if (newIdeaId && findIdeaById(newIdeaId)) {
 			return false;
 		}
-		if (contentAggregate.id == inFrontOfIdeaId) {
+		if (contentAggregate.id === inFrontOfIdeaId) {
 			return false;
 		}
 		var childRank, oldIdea, newIdea, parentIdea = contentAggregate.findParent(inFrontOfIdeaId);
@@ -226,7 +226,7 @@ var content = function (contentAggregate) {
 		return true;
 	};
 	contentAggregate.changeParent = function (ideaId, newParentId) {
-		if (ideaId == newParentId) {
+		if (ideaId === newParentId) {
 			return false;
 		}
 		var idea, parent = findIdeaById(newParentId);
@@ -281,7 +281,9 @@ var content = function (contentAggregate) {
 				false
 			);
 		}
-		if (ideaId == positionBeforeIdeaId) return false;
+		if (ideaId === positionBeforeIdeaId) {
+			return false;
+		}
 		new_rank = 0;
 		if (positionBeforeIdeaId) {
 			after_rank = parentIdea.findChildRankById(positionBeforeIdeaId);
@@ -293,18 +295,18 @@ var content = function (contentAggregate) {
 				return Math.abs(k) >= Math.abs(after_rank);
 			});
 			before_rank = candidate_siblings.length > 0 ? _.max(candidate_siblings) : 0;
-			if (before_rank == current_rank) {
+			if (before_rank === current_rank) {
 				return false;
 			}
 			new_rank = before_rank + (after_rank - before_rank) / 2;
 		} else {
 			max_rank = maxKey(parentIdea.ideas, current_rank < 0 ? -1 : 1);
-			if (max_rank == current_rank) {
+			if (max_rank === current_rank) {
 				return false;
 			}
 			new_rank = max_rank + 10 * (current_rank < 0 ? -1 : 1);
 		}
-		if (new_rank == current_rank) {
+		if (new_rank === current_rank) {
 			return false;
 		}
 		parentIdea.ideas[new_rank] = parentIdea.ideas[current_rank];
