@@ -7,7 +7,7 @@ var MAPJS = MAPJS || {};
 		var dimensions = dimensionProvider(idea.title),
 			result = _.extend(_.pick(idea, ['id', 'title', 'style']), {
 				width: dimensions.width + 2 * margin,
-				height: dimensions.height + 2 * margin,
+				height: dimensions.height + 2 * margin
 			}),
 			leftOrRight,
 			subIdeaWidths = [0, 0],
