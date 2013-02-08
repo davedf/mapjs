@@ -1,4 +1,4 @@
-/*global console, document, jQuery, Kinetic*/
+/*global console, window, document, jQuery, Kinetic*/
 var MAPJS = MAPJS || {};
 MAPJS.KineticMediator = function (mapModel, stage) {
 	'use strict';
@@ -181,10 +181,14 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 		mapModel.addEventListener('inputEnabledChanged', function (isInputEnabled) {
 			jQuery(document)[isInputEnabled ? 'bind' : 'unbind']('keydown', onKeydown);
 		});
-		MAPJS.ScrollEvent.addEventListener('moved', function (delta) {
+		jQuery('#container').mousewheel(function (event, delta, deltaX, deltaY) {
 			if (stage) {
-				stage.attrs.y += (delta < 0 ? -10 : 10);
+				if (deltaY !== 0) { stage.attrs.y += (deltaY < 0 ? -10 : 10); }
+				if (deltaX !== 0) { stage.attrs.x += (deltaX < 0 ? 10 : -10); }
 				stage.draw();
+			}
+			if (deltaX < 0) { /* stop the back button */
+				event.preventDefault();
 			}
 		});
 	}());
