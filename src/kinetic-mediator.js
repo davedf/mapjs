@@ -181,6 +181,12 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 		mapModel.addEventListener('inputEnabledChanged', function (isInputEnabled) {
 			jQuery(document)[isInputEnabled ? 'bind' : 'unbind']('keydown', onKeydown);
 		});
+		MAPJS.ScrollEvent.addEventListener('moved', function (delta) {
+			if (stage) {
+				stage.attrs.y += (delta < 0 ? -10 : 10);
+				stage.draw();
+			}
+		});
 	}());
 };
 MAPJS.KineticMediator.dimensionProvider = function (title) {
