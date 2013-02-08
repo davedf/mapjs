@@ -227,9 +227,9 @@ describe("content aggregate", function () {
 				idea.addEventListener('changed', listener);
 			});
 			it('adds an idea between the argument idea and its parent, keeping the same rank for the new node and reassigning rank of 1 to the argument', function () {
-				var result=idea.insertIntermediate(2,'Steve',33);
+				var result=idea.insertIntermediate(2,'Steve');
 				expect(result).toBeTruthy();
-				expect(idea.ideas[77]).toPartiallyMatch({id:33, title:'Steve'});
+				expect(idea.ideas[77]).toPartiallyMatch({id:3, title:'Steve'});
 				expect(_.size(idea.ideas)).toBe(1);
 				expect(_.size(idea.ideas[77].ideas)).toBe(1);
 				expect(idea.ideas[77].ideas[1]).toPartiallyMatch({id:2, title:'Moved'});
@@ -240,8 +240,8 @@ describe("content aggregate", function () {
 				expect(idea.ideas[77].id).not.toBeNull();
 			});
 			it('fires an event matching the method call when the operation succeeds', function () {
-				var result=idea.insertIntermediate(2,'Steve',33);
-				expect(listener).toHaveBeenCalledWith('insertIntermediate', [2,'Steve',33]);
+				var result=idea.insertIntermediate(2,'Steve');
+				expect(listener).toHaveBeenCalledWith('insertIntermediate', [2,'Steve',3]);
 			});
 			it('fires the generated ID in the event if the ID was not supplied', function () {
 				var result=idea.insertIntermediate(2,'Steve');
@@ -249,15 +249,11 @@ describe("content aggregate", function () {
 				expect(listener).toHaveBeenCalledWith('insertIntermediate', [2,'Steve',newId]);
 			});
 			it('fails if argument idea does not exist', function () {
-				expect(idea.insertIntermediate(22,'Steve',33)).toBeFalsy();
+				expect(idea.insertIntermediate(22,'Steve')).toBeFalsy();
 				expect(listener).not.toHaveBeenCalled();
 			});
 			it('fails if idea has no parent', function () {
-				expect(idea.insertIntermediate(1,'Steve',33)).toBeFalsy();
-				expect(listener).not.toHaveBeenCalled();
-			});
-			it('fails if new ID is supplied but already exists', function () {
-				expect(idea.insertIntermediate(2,'Steve',2)).toBeFalsy();
+				expect(idea.insertIntermediate(1,'Steve')).toBeFalsy();
 				expect(listener).not.toHaveBeenCalled();
 			});
 		});
@@ -283,16 +279,6 @@ describe("content aggregate", function () {
 				idea.addSubIdea(71);
 				expect(_.toArray(idea.ideas)[0].id).toBe(72);
 			});
-			it('assigns the next specified ID to the new idea if the ID was provided', function () {
-				var idea = content({id:71,title:'My Idea'});
-				idea.addSubIdea(71,'New Title',82);
-				expect(_.toArray(idea.ideas)[0].id).toBe(82);
-			});
-			it('fails if the specified ID already exists', function () {
-				var idea = content({id:71,title:'My Idea'});
-				expect(idea.addSubIdea(71,'New Title',71)).toBeFalsy();
-				expect(_.size(idea.ideas)).toBe(0);
-			});
 			it('assigns the first subidea the rank of 1', function () {
 				var idea = content({id:71,title:'My Idea'});
 				idea.addSubIdea(71);
@@ -300,7 +286,7 @@ describe("content aggregate", function () {
 			});
 			it('when adding nodes to 2nd level items and more, adds a node at a rank greater than any of its siblings', function () {
 				var idea = content({id:1, ideas: { 1: {id:5, ideas:{ 5: { id: 2}, 10: { id:3}, 15 : {id:4}}}}});
-				idea.addSubIdea(5,'x',6);
+				idea.addSubIdea(5,'x');
 				var new_key=idea.ideas[1].findChildRankById(6);
 				expect(new_key).not.toBeLessThan(15);
 			});
@@ -321,8 +307,8 @@ describe("content aggregate", function () {
 				var idea = content({id:71,title:'My Idea'});
 				var addedListener=jasmine.createSpy();
 				idea.addEventListener('changed', addedListener);
-				idea.addSubIdea(71,'New Title',88);
-				expect(addedListener).toHaveBeenCalledWith('addSubIdea', [71,'New Title',88]);
+				idea.addSubIdea(71,'New Title');
+				expect(addedListener).toHaveBeenCalledWith('addSubIdea', [71,'New Title',72]);
 			});
 			it('takes negative rank items as absolute while calculating new rank ID (bug resurrection test)', function () {
 				var idea = content({id:1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 6: { id:3, title:'I3'}, '-16' : {id:4, title:'I4'}}});
@@ -333,13 +319,13 @@ describe("content aggregate", function () {
 			describe('balances positive/negative ranks when adding to aggegate root', function () {
 				it('gives first child a positive rank', function () {
 					var idea = content({id:1});
-					idea.addSubIdea(1,'new',2);
+					idea.addSubIdea(1,'new');
 					expect(idea.findChildRankById(2)).not.toBeLessThan(0);
 				});
 				it('gives second child a negative rank', function () {
 					var idea = content({id:1});
-					idea.addSubIdea(1,'new',2);
-					idea.addSubIdea(1,'new',3);
+					idea.addSubIdea(1,'new');
+					idea.addSubIdea(1,'new');
 					expect(idea.findChildRankById(3)).toBeLessThan(0);
 				});
 				it('adds a negative rank if there are more positive ranks than negative', function () {
@@ -354,13 +340,13 @@ describe("content aggregate", function () {
 				});
 				it('when adding positive rank nodes, adds a node at a rank greater than any of its siblings', function () {
 					var idea = content({id:1, ideas: { '-3': {id:5}, '-5': { id: 2}, 10: { id:3}, 15 : {id:4}}});
-					idea.addSubIdea(1,'x',6);
+					idea.addSubIdea(1,'x');
 					var new_key=idea.findChildRankById(6);
 					expect(new_key).not.toBeLessThan(15);
 				});
 				it('when adding negative rank nodes, adds a node at a rank lesser than any of its siblings', function () {
 					var idea = content({id:1, ideas: { '-3': {id:5}, '-5': { id: 2}, 10: { id:3}, 15 : {id:4}, 20 : {id:6}}});
-					idea.addSubIdea(1,'x',7);
+					idea.addSubIdea(1,'x');
 					var new_key=idea.findChildRankById(7);
 					expect(new_key).toBeLessThan(-5);
 				});
