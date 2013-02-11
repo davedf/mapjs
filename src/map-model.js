@@ -1,5 +1,5 @@
+/*jslint forin: true, nomen: true*/
 /*global _, observable*/
-/*jslint forin: true*/
 var MAPJS = MAPJS || {};
 MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChooseFrom, intermediaryTitlesToRandomlyChooseFrom) {
 	'use strict';

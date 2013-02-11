@@ -1,4 +1,4 @@
-/*jslint forin: true*/
+/*jslint forin: true, nomen: true*/
 /*global _, observable*/
 var content = function (contentAggregate) {
 	'use strict';
@@ -62,7 +62,9 @@ var content = function (contentAggregate) {
 				counts = _.countBy(parentIdea.ideas, function (v, k) {
 					return k < 0;
 				});
-				if ((counts.true || 0) < counts.false) {childRankSign = -1; }
+				if ((counts['true'] || 0) < counts['false']) {
+					childRankSign = -1;
+				}
 			}
 			new_rank = maxKey(parentIdea.ideas, childRankSign) + childRankSign;
 			return new_rank;

@@ -272,7 +272,6 @@ describe("content aggregate", function () {
 				idea.addSubIdea(71,'Second idea');
 				var asArray=_.toArray(idea.ideas);
 				expect(asArray.length).toBe(2);
-
 			});
 			it('assigns the next available ID to the new idea if the ID was not provided', function () {
 				var idea = content({id:71,title:'My Idea'});
@@ -290,7 +289,6 @@ describe("content aggregate", function () {
 				var new_key=idea.ideas[1].findChildRankById(6);
 				expect(new_key).not.toBeLessThan(15);
 			});
-
 			it('propagates to children if it does not match the requested id, succeeding if any child ID matches', function () {
 				var ideas = content({id:1, title:'My Idea',
 					ideas: {  1: {id:2, title:'My First Subidea', ideas:{1:{id:3, title:'My First sub-sub-idea'}}}}});

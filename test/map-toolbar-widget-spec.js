@@ -5,14 +5,15 @@ describe('mapToolbarWidget', function () {
 	var mapModel, element;
 	beforeEach(function () {
 		mapModel = new MAPJS.MapModel(observable({}));
-		element = jQuery('<div>\
-				<input type="button" class="scaleUp" value="+"></input>\
-				<input type="button" class="scaleDown" value="-"></input>\
-				<input type="button" class="addSubIdea" value="++"></input>\
-				<input type="button" class="editNode" value="edit"></input>\
-				<input type="button" class="removeSubIdea" value="remove"></input>\
-				<input type="button" class="insertIntermediate" value="insert parent"></input>\
-				</div>'
+		element = jQuery(
+			'<div>\
+			<input type="button" class="scaleUp" value="+"></input>\
+			<input type="button" class="scaleDown" value="-"></input>\
+			<input type="button" class="addSubIdea" value="++"></input>\
+			<input type="button" class="editNode" value="edit"></input>\
+			<input type="button" class="removeSubIdea" value="remove"></input>\
+			<input type="button" class="insertIntermediate" value="insert parent"></input>\
+			</div>'
 		);
 		element.appendTo('body');
 	});

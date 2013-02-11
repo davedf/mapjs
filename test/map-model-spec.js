@@ -504,10 +504,10 @@ describe('MapModel', function () {
 				return {
 					nodes: {
 						1: { x: 0 },
-					  2: { x: -10 },
-					  3: { x: -10 },
-					  4: { x: 10 },
-					  5: { x: 10 }
+						2: { x: -10 },
+						3: { x: -10 },
+						4: { x: 10 },
+						5: { x: 10 }
 					}
 				};
 			});
@@ -517,21 +517,21 @@ describe('MapModel', function () {
 				ideas: {
 					'-2': {
 						id: 2,
-				title: 'lower left'
+						title: 'lower left'
 					},
-				'-1': {
-					id: 3,
-				title: 'upper left'
-				},
-				1: {
-					id: 4,
-				title: 'upper right'
-				},
-				2: {
-					id: 5,
-				title: 'lower right',
-				ideas : {
+					'-1': {
+						id: 3,
+						title: 'upper left'
+					},
 					1: {
+						id: 4,
+						title: 'upper right'
+					},
+					2: {
+						id: 5,
+						title: 'lower right',
+						ideas : {
+							1: {
 								id: 6
 							}
 						}
@@ -544,11 +544,13 @@ describe('MapModel', function () {
 			underTest.addEventListener('analytic', analyticListener);
 		});
 		it('should dispatch analytic event when collapse method is invoked', function () {
-			underTest.collapse('toolbar',false);
+			underTest.collapse('toolbar', false);
+
 			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'collapse:false', 'toolbar');
 		});
 		it('should dispatch analytic event when scaleUp method is invoked', function () {
 			underTest.scaleUp('toolbar');
+
 			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'scaleUp', 'toolbar');
 		});
 		it('should dispatch analytic event when scaleDown method is invoked', function () {
@@ -577,11 +579,14 @@ describe('MapModel', function () {
 		});
 		it('should dispatch analytic event when insertIntermediate method is invoked, unless there is nothing selected', function () {
 			underTest.selectNode(6);
+
 			underTest.insertIntermediate('toolbar');
+
 			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'insertIntermediate', 'toolbar');
 		});
 		it('should not dispatch analytic event when insertIntermediate method is invoked and nothing selected', function () {
 			underTest.insertIntermediate('toolbar');
+
 			expect(analyticListener).not.toHaveBeenCalledWith();
 		});
 		it('should dispatch analytic event when selectNode[Left,Right,Up,Down] method is invoked', function () {
@@ -590,6 +595,5 @@ describe('MapModel', function () {
 				expect(analyticListener).toHaveBeenCalledWith('mapModel', 'selectNode' + direction, 'toolbar');
 			});
 		});
-
 	});
 });
