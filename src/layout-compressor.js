@@ -45,6 +45,33 @@ MAPJS.LayoutCompressor.moveSubTreeVertically = function moveSubTreeVertically(po
 		moveSubTreeVertically(positions.ideas[subIdeaRank], delta);
 	}
 };
+MAPJS.centerSubTrees = function (positions) {
+	'use strict';
+	var subIdeaRank, ranksInOrder = [], i, allLowerNodes = [], lowerSubtree, upperSubtree, verticalDistance;
+	for (subIdeaRank in positions.ideas) {
+		subIdeaRank = parseFloat(subIdeaRank);
+		if (subIdeaRank > 0) {
+			ranksInOrder.push(subIdeaRank);
+		}
+	}
+	if (ranksInOrder.length > 2) {
+		ranksInOrder.sort(function ascending(first, second) {
+			return second - first;
+		});
+		for (i = 1; i < ranksInOrder.length - 1; i += 1) {
+			lowerSubtree = positions.ideas[ranksInOrder[i - 1]];
+			upperSubtree = positions.ideas[ranksInOrder[i]];
+			allLowerNodes = allLowerNodes.concat(MAPJS.LayoutCompressor.getSubTreeNodeList(lowerSubtree));
+			verticalDistance = MAPJS.LayoutCompressor.getVerticalDistanceBetweenNodeLists(
+				allLowerNodes,
+				MAPJS.LayoutCompressor.getSubTreeNodeList(upperSubtree)
+			);
+			if (verticalDistance > 0 && verticalDistance < Infinity) {
+				MAPJS.LayoutCompressor.moveSubTreeVertically(upperSubtree, 0.5 * verticalDistance);
+			}
+		}
+	}
+};
 MAPJS.LayoutCompressor.compress = function compress(positions) {
 	'use strict';
 	var subIdeaRank,
@@ -98,5 +125,6 @@ MAPJS.LayoutCompressor.compress = function compress(positions) {
 			MAPJS.LayoutCompressor.moveSubTreeVertically(positions.ideas[rank], delta);
 		});
 	}
+	MAPJS.centerSubTrees(positions);
 	return positions;
 };
