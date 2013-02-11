@@ -1,4 +1,4 @@
-/*jslint forin: true*/
+/*jslint forin: true, nomen: true*/
 /*global _*/
 var MAPJS = MAPJS || {};
 (function () {
@@ -86,7 +86,6 @@ var MAPJS = MAPJS || {};
 			root = MAPJS.calculatePositions(idea, dimensionProvider, margin, 0, 0),
 			calculateLayoutInner = function (positions, level) {
 				var subIdeaRank, from, to;
-				level = level || 1;
 				result.nodes[positions.id] = _.extend(_.pick(positions, ['id', 'width', 'height', 'title', 'style']), {
 					x: positions.x - root.x - 0.5 * root.width + margin,
 					y: positions.y - root.y - 0.5 * root.height + margin,
@@ -104,14 +103,15 @@ var MAPJS = MAPJS || {};
 					}
 				}
 			};
-		calculateLayoutInner(root);
+		//MAPJS.LayoutCompressor.compress(root);
+		calculateLayoutInner(root, 1);
 		return result;
 	};
 	MAPJS.calculateFrame = function (nodes, margin) {
 		margin = margin || 0;
 		var result = {
 			top: _.min(nodes, function (node) {return node.y; }).y - margin,
-			left: _.min(nodes, function (node) {return node.x; }).x - margin,
+			left: _.min(nodes, function (node) {return node.x; }).x - margin
 		};
 		result.width = margin + _.max(_.map(nodes, function (node) { return node.x + node.width; })) - result.left;
 		result.height = margin + _.max(_.map(nodes, function (node) { return node.y + node.height; })) - result.top;

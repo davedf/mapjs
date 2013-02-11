@@ -44,7 +44,7 @@
 		<input type="button" class="toggleCollapse" value="exp/col"></input>
 		<input type="button" onclick="mapModel.setInputEnabled(false)" value="disable"></input>
 		<input type="button" onclick="mapModel.setInputEnabled(true)" value="enable"></input>
-		<input type="button" data-mm-action="export-image" value="Export To Image"/> 
+		<input type="button" data-mm-action="export-image" value="Export To Image"/>
 		<div id="container"></div>
 		<script type="text/javascript" src="../lib/jquery-1.9.0.js"></script>
 		<script type="text/javascript" src="../lib/jquery.mousewheel.js"></script>
@@ -55,6 +55,7 @@
 		<script type="text/javascript" src="../src/observable.js"></script>
 		<script type="text/javascript" src="../src/content.js"></script>
 		<script type="text/javascript" src="../src/layout.js"></script>
+		<script type="text/javascript" src="../src/layout-compressor.js"></script>
 		<script type="text/javascript" src="../src/map-model.js"></script>
 		<script type="text/javascript" src="../src/kinetic-mediator.js"></script>
 		<script type="text/javascript" src="../src/map-toolbar-widget.js"></script>
@@ -86,12 +87,10 @@
 				var pngExporter = new MAPJS.PNGExporter(mapRepository);
 				$("[data-mm-action='export-image']").click(pngExporter.exportMap);
 				pngExporter.addEventListener('mapExported', function (url) {
-					$("<img/>").attr('src',url).appendTo('body');	
+					$("<img/>").attr('src',url).appendTo('body');
 				});
 				mapModel.addEventListener('analytic', console.log.bind(console));
-				mapRepository.dispatchEvent('mapLoaded',idea);
-
-			
+				mapRepository.dispatchEvent('mapLoaded', idea);
 			}());
 		</script>
 	</body>
