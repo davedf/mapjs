@@ -89,6 +89,7 @@
             canvas.fillStroke(this);
         };
 		this.editNode = function (shouldSelectAll) {
+			self.fire(':editing');
 			//this only works for solid color nodes
 			self.attrs.textFill = self.attrs.fill;
 			self.getLayer().draw();

@@ -47,8 +47,13 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 		});
 		node.on(':textChanged', function (event) {
 			mapModel.updateTitle(n.id, event.text);
+			mapModel.dispatchEvent('inputEnabledChanged', true);
+		});
+		node.on(':editing', function(event){
+			mapModel.dispatchEvent('inputEnabledChanged', false);
 		});
 		node.on(':nodeEditRequested', mapModel.editNode.bind(mapModel, 'mouse', false));
+
 		mapModel.addEventListener('nodeEditRequested:' + n.id, node.editNode);
 		nodeByIdeaId[n.id] = node;
 		layer.add(node);
@@ -176,24 +181,27 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 					eventHandler();
 					evt.preventDefault();
 				}
+			},
+			onScroll = function (event, delta, deltaX, deltaY) {
+				if (stage) {
+					if (deltaY !== 0) { stage.attrs.y += (deltaY < 0 ? -5 : 5); }
+					if (deltaX !== 0) { stage.attrs.x += (deltaX < 0 ? 5 : -5); }
+					stage.draw();
+				}
+				if (deltaX < 0) { /* stop the back button */
+					event.preventDefault();
+				}
+				if (deltaY < 0) { /*stop scrolling down */
+					event.preventDefault();
+				}
 			};
 		jQuery(document).keydown(onKeydown);
+		jQuery(window).mousewheel(onScroll);
 		mapModel.addEventListener('inputEnabledChanged', function (isInputEnabled) {
 			jQuery(document)[isInputEnabled ? 'bind' : 'unbind']('keydown', onKeydown);
+			jQuery(window)[isInputEnabled ? 'mousewheel' : 'unmousewheel'](onScroll);
 		});
-		jQuery(window).mousewheel(function (event, delta, deltaX, deltaY) {
-			if (stage) {
-				if (deltaY !== 0) { stage.attrs.y += (deltaY < 0 ? -5 : 5); }
-				if (deltaX !== 0) { stage.attrs.x += (deltaX < 0 ? 5 : -5); }
-				stage.draw();
-			}
-			if (deltaX < 0) { /* stop the back button */
-				event.preventDefault();
-			}
-			if (deltaY < 0) { /*stop scrolling down */
-				event.preventDefault();
-			}
-		});
+
 	}());
 };
 MAPJS.KineticMediator.dimensionProvider = function (title) {
