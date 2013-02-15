@@ -502,26 +502,26 @@ describe("content aggregate", function () {
 					ideas: {
 						5: {
 							id: 2,
-					ideas: {
-						5: {
-							id: 3
+							ideas: {
+								5: {
+									id: 3
+								},
+								10: {
+									id: 4
+								}
+							}
 						},
-					10: {
-						id: 4
-					}
-					}
-						},
-					10: {
-						id: 5,
-					ideas: {
-						5: {
-							id: 6
-						},
-					10: {
-						id: 7
-					}
-					}
-					}
+						10: {
+							id: 5,
+							ideas: {
+								5: {
+									id: 6
+								},
+								10: {
+									id: 7
+								}
+							}
+						}
 					}
 				});
 				spyOn(idea,'dispatchEvent');
@@ -627,6 +627,27 @@ describe("content aggregate", function () {
 				idea.addEventListener('changed', childRankSpy);
 				var result=idea.positionBefore(4,2);
 				expect(childRankSpy).toHaveBeenCalledWith('positionBefore',[4,2]);
+			});
+			it('should work for negative ranks', function () {
+				var idea = content({
+					"title": "1",
+					"id": 1,
+					"ideas": {
+						"-3": {
+							"title": "4",
+							"id": 4
+						},
+						"-2": {
+							"title": "3",
+							"id": 3
+						},
+						"-1": {
+							"title": "2",
+							"id": 2
+						}
+					}
+				});
+				expect(idea.positionBefore(2, 4)).toBe(true);
 			});
 		});
 	});
