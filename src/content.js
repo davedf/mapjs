@@ -288,7 +288,7 @@ var content = function (contentAggregate) {
 			candidate_siblings = _.reject(_.sortBy(sibling_ranks, Math.abs), function (k) {
 				return Math.abs(k) >= Math.abs(after_rank);
 			});
-			before_rank = candidate_siblings.length > 0 ? _.max(candidate_siblings) : 0;
+			before_rank = candidate_siblings.length > 0 ? _.max(candidate_siblings, Math.abs) : 0;
 			if (before_rank === current_rank) {
 				return false;
 			}
