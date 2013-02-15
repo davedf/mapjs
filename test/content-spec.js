@@ -17,6 +17,12 @@ describe("content aggregate", function () {
 			var wrapped = content({id: 55, title: 'My Idea', ideas: { 1: {title: 'My First Subidea', meta: {new_attr: 'new_val'}}}});
 			expect(wrapped.ideas[1].meta.new_attr).toBe('new_val');
 		});
+		it("normalises all ranks to floats to avoid selection problems with x.0", function () {
+			var wrapped = content({id: 55, ideas: { '2.0': {id: 2}, 3.0: {id: 3}, '-4.0': {id: 4}}});
+			expect(wrapped.ideas[2.0].id).toBe(2);
+			expect(wrapped.ideas[3].id).toBe(3);
+			expect(wrapped.ideas[-4].id).toBe(4);
+		});
 		describe("getStyle", function () {
 			it("returns false if the style attribute is not defined", function () {
 				var wrapped = content({});
