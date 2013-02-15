@@ -2,7 +2,7 @@
 /*jslint es5: true*/
 jQuery.fn.mapToolbarWidget = function (mapModel) {
 	'use strict';
-	var methodNames = ['insertIntermediate', 'scaleUp', 'scaleDown', 'addSubIdea', 'editNode', 'removeSubIdea', 'toggleCollapse'];
+	var methodNames = ['insertIntermediate', 'scaleUp', 'scaleDown', 'addSubIdea', 'editNode', 'removeSubIdea', 'toggleCollapse', 'addSiblingIdea'];
 	return this.each(function () {
 		var element = jQuery(this);
 		methodNames.forEach(function (methodName) {

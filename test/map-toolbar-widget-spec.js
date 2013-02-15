@@ -13,6 +13,7 @@ describe('mapToolbarWidget', function () {
 			<input type="button" class="editNode" value="edit"></input>\
 			<input type="button" class="removeSubIdea" value="remove"></input>\
 			<input type="button" class="insertIntermediate" value="insert parent"></input>\
+			<input type="button" class="addSiblingIdea" value="insert parent"></input>\
 			</div>'
 		);
 		element.appendTo('body');
@@ -64,7 +65,6 @@ describe('mapToolbarWidget', function () {
 
 		expect(mapModel.removeSubIdea).toHaveBeenCalledWith('toolbar');
 	});
-
 	it('should invoke insertIntermediate on map model when button is clicked', function () {
 		spyOn(mapModel, 'insertIntermediate');
 		element.mapToolbarWidget(mapModel);
@@ -72,5 +72,13 @@ describe('mapToolbarWidget', function () {
 		element.find('.insertIntermediate').click();
 
 		expect(mapModel.insertIntermediate).toHaveBeenCalledWith('toolbar');
+	});
+	it('should invoke addSiblingIdea on map model when button is clicked', function () {
+		spyOn(mapModel, 'addSiblingIdea');
+		element.mapToolbarWidget(mapModel);
+
+		element.find('.addSiblingIdea').click();
+
+		expect(mapModel.addSiblingIdea).toHaveBeenCalledWith('toolbar');
 	});
 });
