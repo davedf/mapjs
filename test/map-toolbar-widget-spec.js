@@ -14,6 +14,7 @@ describe('mapToolbarWidget', function () {
 			<input type="button" class="removeSubIdea" value="remove"></input>\
 			<input type="button" class="insertIntermediate" value="insert parent"></input>\
 			<input type="button" class="addSiblingIdea" value="insert parent"></input>\
+			<input type="text" class="updateStyle" value=""></input>\
 			</div>'
 		);
 		element.appendTo('body');
@@ -80,5 +81,13 @@ describe('mapToolbarWidget', function () {
 		element.find('.addSiblingIdea').click();
 
 		expect(mapModel.addSiblingIdea).toHaveBeenCalledWith('toolbar');
+	});
+	it('should invoke updateStyle on map model when value changes', function () {
+		spyOn(mapModel, 'updateStyle');
+		element.mapToolbarWidget(mapModel);
+		element.find('.updateStyle').val('yellow');
+		element.find('.updateStyle').data('mm-target-property', 'color');
+		element.find('.updateStyle').change();
+		expect(mapModel.updateStyle).toHaveBeenCalledWith('toolbar', 'color', 'yellow');
 	});
 });

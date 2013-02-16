@@ -146,7 +146,8 @@ Kinetic.Idea.prototype.setStyle = function (config) {
 	'use strict';
 	var isDroppable = this.isDroppable,
 		isSelected = this.isSelected,
-		isRoot = this.level === 1;
+		isRoot = this.level === 1,
+		background = (this.mmStyle && this.mmStyle.background);
 	config.strokeWidth = 1;
 	config.padding = 8;
 	config.fontSize = 10;
@@ -162,17 +163,23 @@ Kinetic.Idea.prototype.setStyle = function (config) {
 		};
 		config.textFill = '#FFFFFF';
 	} else if (isSelected) {
-		config.fill = '#5FBF5F';
+		config.fill = background || '#5FBF5F';
 		config.textFill = '#FFFFFF';
 	} else {
 		config.stroke = isRoot ? '#88F' : '#888';
 		config.fill = {
 			start: { x: 0, y: 0 },
 			end: {x: 50, y: 100 },
-			colorStops: isRoot ? [0, '#4FDFFF', 1, '#30C0FF'] : [0, '#FFFFFF', 1, '#E0E0E0']
+			colorStops: isRoot ? [0, background || '#4FDFFF', 1, background || '#30C0FF'] : [0, '#FFFFFF', 1, background || '#E0E0E0']
 		};
 		config.textFill = isRoot ? '#FFFFFF' : '#5F5F5F';
 	}
+};
+Kinetic.Idea.prototype.setMMStyle = function (newMMStyle) {
+	'use strict';
+	this.mmStyle = newMMStyle;
+	this.setStyle(this.attrs);
+	this.getLayer().draw();
 };
 Kinetic.Idea.prototype.setIsSelected = function (isSelected) {
 	'use strict';

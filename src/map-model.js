@@ -125,6 +125,10 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 			idea.updateStyle(currentlySelectedIdeaId, 'collapsed', doCollapse);
 		}
 	};
+	this.updateStyle = function (source, prop, value) {
+		analytic('updateStyle:' + prop, source);
+		idea.updateStyle(currentlySelectedIdeaId, prop, value);
+	};
 	this.addSubIdea = function (source) {
 		analytic('addSubIdea', source);
 		ensureNodeIsExpanded(source, currentlySelectedIdeaId);
