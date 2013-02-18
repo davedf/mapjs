@@ -14,7 +14,7 @@ describe('mapToolbarWidget', function () {
 			<input type="button" class="removeSubIdea" value="remove"></input>\
 			<input type="button" class="insertIntermediate" value="insert parent"></input>\
 			<input type="button" class="addSiblingIdea" value="insert parent"></input>\
-			<input type="text" class="updateStyle" value=""></input>\
+			<input data-mm-target-property="color" type="text" class="updateStyle" value=""></input>\
 			</div>'
 		);
 		element.appendTo('body');
@@ -86,8 +86,14 @@ describe('mapToolbarWidget', function () {
 		spyOn(mapModel, 'updateStyle');
 		element.mapToolbarWidget(mapModel);
 		element.find('.updateStyle').val('yellow');
-		element.find('.updateStyle').data('mm-target-property', 'color');
 		element.find('.updateStyle').change();
 		expect(mapModel.updateStyle).toHaveBeenCalledWith('toolbar', 'color', 'yellow');
+	});
+	it('updates mm-target-property values on selection change', function () {
+		var input = element.find('.updateStyle');
+		element.mapToolbarWidget(mapModel);
+		mapModel.getSelectedStyle = function (v) { if (v === 'color') { return 'x'; } };
+		mapModel.dispatchEvent('nodeSelectionChanged');
+		expect(input.val()).toBe('x');
 	});
 });

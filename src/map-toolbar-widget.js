@@ -6,6 +6,11 @@ jQuery.fn.mapToolbarWidget = function (mapModel) {
 		changeMethodNames = ['updateStyle'];
 	return this.each(function () {
 		var element = jQuery(this);
+		mapModel.addEventListener('nodeSelectionChanged', function () {
+			element.find('[data-mm-target-property]').val(function () {
+				return mapModel.getSelectedStyle(jQuery(this).data('mm-target-property'));
+			});
+		});
 		clickMethodNames.forEach(function (methodName) {
 			element.find('.' + methodName).click(function () {
 				if (mapModel[methodName]) {

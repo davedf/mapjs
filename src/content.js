@@ -250,7 +250,7 @@ var content = function (contentAggregate) {
 		if (!idea) {
 			return false;
 		}
-		idea.style = idea.style || {};
+		idea.style = _.extend({}, idea.style);
 		if (styleValue) {
 			idea.style[styleName] = styleValue;
 		} else {

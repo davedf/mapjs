@@ -607,4 +607,22 @@ describe('MapModel', function () {
 			});
 		});
 	});
+	describe("getSelectedStyle", function () {
+		var anIdea = content({ id: 1, style: {'v': 'x'}, ideas : {7: {id: 2, style: {'v': 'y'}}}}),
+			layoutCalculator = function () {
+				return [];
+			},
+			underTest;
+		beforeEach(function () {
+			underTest = new MAPJS.MapModel(observable({}), layoutCalculator);
+			underTest.setIdea(anIdea);
+		});
+		it("retrieves root node style by default", function () {
+			expect(underTest.getSelectedStyle('v')).toEqual('x');
+		});
+		it("retrieves root node style by default", function () {
+			underTest.selectNode(2);
+			expect(underTest.getSelectedStyle('v')).toEqual('y');
+		});
+	});
 });

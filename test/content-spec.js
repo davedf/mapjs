@@ -161,6 +161,11 @@ describe("content aggregate", function () {
 				expect(result).toBeTruthy();
 				expect(aggregate.ideas[5].getStyle('newStyle')).toBe('newValue');
 			});
+			it('clones style when setting to a new object to prevent stale references', function () {
+				var oldStyle={}, aggregate=content({id:1, style:oldStyle});
+				var result=aggregate.updateStyle(1,'newStyle','newValue');
+				expect(oldStyle).toEqual({});
+			});
 			it('should remove styles which have been set to false', function () {
 				var aggregate=content({id:1, style:{keptStyle:'oldValue', newStyle:'value'}});
 				var result=aggregate.updateStyle(1,'newStyle',false);
