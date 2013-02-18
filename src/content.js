@@ -5,7 +5,7 @@ var content = function (contentAggregate) {
 	var init = function (contentIdea) {
 		if (contentIdea.ideas) {
 			_.each(contentIdea.ideas, function (value, key) {
-				contentIdea.ideas[key] = init(value);
+				contentIdea.ideas[parseFloat(key)] = init(value);
 			});
 		}
 		contentIdea.id = contentIdea.id || (contentAggregate.maxId() + 1);
