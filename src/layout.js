@@ -1,6 +1,5 @@
-/*jslint forin: true, nomen: true*/
-/*global _*/
 var MAPJS = MAPJS || {};
+
 (function () {
 	'use strict';
 	MAPJS.calculateDimensions = function calculateDimensions(idea, dimensionProvider, margin) {
