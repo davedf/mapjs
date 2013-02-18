@@ -102,7 +102,7 @@ var MAPJS = MAPJS || {};
 					}
 				}
 			};
-		//MAPJS.LayoutCompressor.compress(root);
+		MAPJS.LayoutCompressor.compress(root);
 		calculateLayoutInner(root, 1);
 		return result;
 	};

@@ -24,9 +24,9 @@ MAPJS.LayoutCompressor.getVerticalDistanceBetweenNodeLists = function (firstNode
 MAPJS.LayoutCompressor.nodeAndConnectorCollisionBox = function (node, parent) {
 	'use strict';
 	return {
-		x: Math.min(node.x, parent.x),
+		x: Math.min(node.x, parent.x + 0.5 * parent.width),
 		y: Math.min(node.y, parent.y),
-		width: node.width + parent.width,
+		width: node.width + 0.5 * parent.width,
 		height: Math.max(node.y + node.height, parent.y + parent.height) - Math.min(node.y, parent.y)
 	};
 };
@@ -34,9 +34,10 @@ MAPJS.LayoutCompressor.getSubTreeNodeList = function getSubTreeNodeList(position
 	'use strict';
 	var subIdeaRank;
 	result = result || [];
-	result.push(_.pick(positions, 'x', 'y', 'width', 'height'));
 	if (parent) {
 		result.push(MAPJS.LayoutCompressor.nodeAndConnectorCollisionBox(positions, parent));
+	} else {
+		result.push(_.pick(positions, 'x', 'y', 'width', 'height'));
 	}
 	for (subIdeaRank in positions.ideas) {
 		getSubTreeNodeList(positions.ideas[subIdeaRank], result, positions);

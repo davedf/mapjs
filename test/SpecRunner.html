@@ -2,55 +2,53 @@
 <html>
 <head>
 	<title>MAPJS Spec Runner</title>
-
 	<link rel="stylesheet" type="text/css" href="../test-lib/jasmine-1.2.0/jasmine.css">
-  <script>
-    var loaderrors=[];
-    window.onerror=function(msg,url,line){
-      loaderrors.push({m:msg,u:url,l:line});
-    }
-  </script>
-	<script type="text/javascript" src="../test-lib/bind.js"></script>
-	<script type="text/javascript" src="../test-lib/jasmine-1.2.0/jasmine.js"></script>
-	<script type="text/javascript" src="../test-lib/jasmine-1.2.0/jasmine-html.js"></script>
-	<script type="text/javascript" src="../test-lib/console-runner.js"></script>
-  <script src="../test/jasmine-partial-match.js" ></script>
-
-	<script type="text/javascript" src="../lib/jquery-1.9.0.js"></script>
-	<script type="text/javascript" src="../lib/underscore-1.4.3-min.js"></script>
-
-	<script type="text/javascript" src="../src/observable.js"></script>
-	<script type="text/javascript" src="../src/content.js"></script>
-  <script type="text/javascript" src="../src/layout.js"></script>
-  <script type="text/javascript" src="../src/layout-compressor.js"></script>
-	<script type="text/javascript" src="../src/map-model.js"></script>
-	<script type="text/javascript" src="../src/map-toolbar-widget.js"></script>
-	<script type="text/javascript" src="../src/freemind-format.js"></script>
-
-	<script type="text/javascript" src="observable-spec.js"></script>
-	<script type="text/javascript" src="content-spec.js"></script>
-	<script type="text/javascript" src="layout-spec.js"></script>
-	<script type="text/javascript" src="map-model-spec.js"></script>
-	<script type="text/javascript" src="map-toolbar-widget-spec.js"></script>
-	<script type="text/javascript" src="freemind-format-spec.js"></script>
-  <script>
-      describe ("script loading for testing", function(){
-        it("should have no errors loading scripts for testing", function(){
-          expect(loaderrors).toEqual([]);
-        });
-      });
-  </script>
 </head>
 <body>
-<script type="text/javascript">
-  var console_reporter = new jasmine.ConsoleReporter(),
-  htmlReporter = new jasmine.HtmlReporter();
-  jasmine.getEnv().specFilter = function(spec) {
-    return htmlReporter.specFilter(spec);
-  };
-  jasmine.getEnv().addReporter(htmlReporter);
-  jasmine.getEnv().addReporter(console_reporter);
-  jasmine.getEnv().execute();
+<script>
+	var loaderrors=[];
+	window.onerror=function(msg,url,line){
+	loaderrors.push({m:msg,u:url,l:line});
+	}
+</script>
+<script type="text/javascript" src="../test-lib/bind.js"></script>
+<script type="text/javascript" src="../test-lib/jasmine-1.2.0/jasmine.js"></script>
+<script type="text/javascript" src="../test-lib/jasmine-1.2.0/jasmine-html.js"></script>
+<script type="text/javascript" src="../test-lib/console-runner.js"></script>
+<script src="../test/jasmine-partial-match.js" ></script>
+
+<script type="text/javascript" src="../lib/jquery-1.9.0.js"></script>
+<script type="text/javascript" src="../lib/underscore-1.4.3-min.js"></script>
+
+<script type="text/javascript" src="../src/observable.js"></script>
+<script type="text/javascript" src="../src/content.js"></script>
+<script type="text/javascript" src="../src/layout.js"></script>
+<script type="text/javascript" src="../src/layout-compressor.js"></script>
+<script type="text/javascript" src="../src/map-model.js"></script>
+<script type="text/javascript" src="../src/map-toolbar-widget.js"></script>
+<script type="text/javascript" src="../src/freemind-format.js"></script>
+
+<script type="text/javascript" src="observable-spec.js"></script>
+<script type="text/javascript" src="content-spec.js"></script>
+<script type="text/javascript" src="layout-spec.js"></script>
+<script type="text/javascript" src="layout-compressor-spec.js"></script>
+<script type="text/javascript" src="map-model-spec.js"></script>
+<script type="text/javascript" src="map-toolbar-widget-spec.js"></script>
+<script type="text/javascript" src="freemind-format-spec.js"></script>
+<script>
+	describe ("script loading for testing", function(){
+		it("should have no errors loading scripts for testing", function(){
+			expect(loaderrors).toEqual([]);
+		});
+	});
+	var console_reporter = new jasmine.ConsoleReporter(),
+	htmlReporter = new jasmine.HtmlReporter();
+	jasmine.getEnv().specFilter = function(spec) {
+		return htmlReporter.specFilter(spec);
+	};
+	jasmine.getEnv().addReporter(htmlReporter);
+	jasmine.getEnv().addReporter(console_reporter);
+	jasmine.getEnv().execute();
 </script>
 </body>
 </html>
