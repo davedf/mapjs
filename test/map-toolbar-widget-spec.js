@@ -1,10 +1,10 @@
-/*global beforeEach, describe, expect, it, jQuery, observable, spyOn, MAPJS*/
+/*global jasmine,beforeEach, describe, expect, it, jQuery, observable, spyOn, MAPJS*/
 /*jslint es5: true*/
 describe('mapToolbarWidget', function () {
 	'use strict';
 	var mapModel, element;
 	beforeEach(function () {
-		mapModel = new MAPJS.MapModel(observable({}));
+		mapModel = new MAPJS.MapModel(observable({}), function () { return []; });
 		element = jQuery(
 			'<div>\
 			<input type="button" class="scaleUp" value="+"></input>\
@@ -90,10 +90,14 @@ describe('mapToolbarWidget', function () {
 		expect(mapModel.updateStyle).toHaveBeenCalledWith('toolbar', 'color', 'yellow');
 	});
 	it('updates mm-target-property values on selection change', function () {
-		var input = element.find('.updateStyle');
+		var input = element.find('.updateStyle'),
+			spy = jasmine.createSpy('changed');
 		element.mapToolbarWidget(mapModel);
+		input.change(spy);
+		mapModel.setIdea(content({}));
 		mapModel.getSelectedStyle = function (v) { if (v === 'color') { return 'x'; } };
 		mapModel.dispatchEvent('nodeSelectionChanged');
 		expect(input.val()).toBe('x');
+		expect(spy).toHaveBeenCalled();
 	});
 });
