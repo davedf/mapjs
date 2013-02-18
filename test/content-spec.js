@@ -173,6 +173,13 @@ describe("content aggregate", function () {
 				expect(aggregate.style['newStyle']).toBeUndefined();
 				expect(aggregate.style['keptStyle']).toBe('oldValue');
 			});
+			it('should remove styles which have been set to false - as a string', function () {
+				var aggregate=content({id:1, style:{keptStyle:'oldValue', newStyle:'value'}});
+				var result=aggregate.updateStyle(1,'newStyle',"false");
+				expect(result).toBeTruthy();
+				expect(aggregate.style['newStyle']).toBeUndefined();
+				expect(aggregate.style['keptStyle']).toBe('oldValue');
+			});
 			it('should remove style hash when no styles are left in the object', function () {
 				var aggregate=content({id:1, style:{newStyle:'value'}});
 				var result=aggregate.updateStyle(1,'newStyle',false);
