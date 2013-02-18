@@ -1,4 +1,4 @@
-/*global console, jQuery, Kinetic*/
+/*global Color, _, console, jQuery, Kinetic*/
 /*jslint nomen: true*/
 (function () {
 	'use strict';
@@ -34,14 +34,7 @@
 		this.mmStyle = config.mmStyle;
 		this.isSelected = false;
 		this.setStyle(config);
-		config.align = 'center';
-		config.shadow = {
-			color: 'black',
-			blur: 10,
-			offset: [4, 4],
-			opacity: 0.4
-		};
-		config.cornerRadius = 10;
+
 		config.draggable = true;
 		config.name = 'Idea';
 		Kinetic.Text.apply(this, [config]);
@@ -142,12 +135,26 @@
 		};
 	};
 }());
+
 Kinetic.Idea.prototype.setStyle = function (config) {
 	'use strict';
 	var isDroppable = this.isDroppable,
 		isSelected = this.isSelected,
 		isRoot = this.level === 1,
-		background = (this.mmStyle && this.mmStyle.background);
+		background = (this.mmStyle && this.mmStyle.background) ||  (isRoot ? '#30C0FF' : '#E0E0E0'),
+		offset =  (this.mmStyle && this.mmStyle.collapsed) ? 3 : 4,
+		normalShadow = {
+			color: 'black',
+			blur: 10,
+			offset: [offset, offset],
+			opacity: 0.4
+		},
+		selectedShadow = {
+			color: 'black',
+			blur: 0,
+			offset: [offset, offset],
+			opacity: 1
+		};
 	config.strokeWidth = 1;
 	config.padding = 8;
 	config.fontSize = 10;
@@ -163,17 +170,23 @@ Kinetic.Idea.prototype.setStyle = function (config) {
 		};
 		config.textFill = '#FFFFFF';
 	} else if (isSelected) {
-		config.fill = background || '#5FBF5F';
-		config.textFill = '#FFFFFF';
+		config.fill = background;
 	} else {
 		config.stroke = isRoot ? '#88F' : '#888';
 		config.fill = {
 			start: { x: 0, y: 0 },
-			end: {x: 50, y: 100 },
-			colorStops: isRoot ? [0, background || '#4FDFFF', 1, background || '#30C0FF'] : [0, '#FFFFFF', 1, background || '#E0E0E0']
+			end: {x: 100, y: 100 },
+			colorStops: [0, Color(background).mix(Color('white')).hexString(), 1, background]
 		};
-		config.textFill = isRoot ? '#FFFFFF' : '#5F5F5F';
 	}
+	config.align = 'center';
+	if (this.attrs && this.attrs.shadow) {
+		this.setShadow(isSelected ? selectedShadow : normalShadow);
+	} else {
+		config.shadow = isSelected ? selectedShadow : normalShadow;
+	}
+	config.cornerRadius = 10;
+	config.textFill = (Color(background).luminosity()>0.6) ? '#5F5F5F' : '#FFFFFF';
 };
 Kinetic.Idea.prototype.setMMStyle = function (newMMStyle) {
 	'use strict';
