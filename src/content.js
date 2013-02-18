@@ -252,8 +252,15 @@ var content = function (contentAggregate) {
 		}
 		idea.style = _.extend({}, idea.style);
 		if (styleValue) {
+			/* leave ==, if it's a number and someone sends the equal string, it's still the same */
+			if (idea.style[styleName] == styleValue) {
+				return false;
+			}
 			idea.style[styleName] = styleValue;
 		} else {
+			if (!idea.style[styleName]) {
+				return false;
+			}
 			delete idea.style[styleName];
 		}
 		if (_.size(idea.style) === 0) {

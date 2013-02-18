@@ -194,6 +194,22 @@ describe("content aggregate", function () {
 				expect(result).toBeFalsy();
 				expect(listener).not.toHaveBeenCalled();
 			});
+			it('should fail if old style equals new one', function () {
+				var listener=jasmine.createSpy('style_listener');
+				var aggregate=content({id:1, style: {'v': 'x'} });
+				aggregate.addEventListener('changed', listener);
+				var result=aggregate.updateStyle(1,'v','x');
+				expect(result).toBeFalsy();
+				expect(listener).not.toHaveBeenCalled();
+			});
+			it('should fail if removing a non existent property', function () {
+				var listener=jasmine.createSpy('style_listener');
+				var aggregate=content({id:1, style: {'v': 'x'} });
+				aggregate.addEventListener('changed', listener);
+				var result=aggregate.updateStyle(1,'y',false);
+				expect(result).toBeFalsy();
+				expect(listener).not.toHaveBeenCalled();
+			});
 		});
 		describe("updateTitle", function () {
 			it('changes the title of the current idea only if it matches ID in command', function () {
