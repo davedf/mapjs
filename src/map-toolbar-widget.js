@@ -7,9 +7,9 @@ jQuery.fn.mapToolbarWidget = function (mapModel) {
 	return this.each(function () {
 		var element = jQuery(this);
 		mapModel.addEventListener('nodeSelectionChanged', function () {
-			element.find('[data-mm-target-property]').val(function () {
+			element.find('.updateStyle[data-mm-target-property]').val(function () {
 				return mapModel.getSelectedStyle(jQuery(this).data('mm-target-property'));
-			});
+			}).change();
 		});
 		clickMethodNames.forEach(function (methodName) {
 			element.find('.' + methodName).click(function () {
