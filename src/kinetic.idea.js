@@ -199,7 +199,7 @@ Kinetic.Idea.prototype.setStyle = function (config) {
 	if (luminosity < 0.5) {
 		config.textFill = '#EEEEEE';
 	} else if (luminosity < 0.9) {
-		config.textFill = '#3F3F3F';
+		config.textFill = '#4F4F4F';
 	} else {
 		config.textFill = '#000000';
 	}
