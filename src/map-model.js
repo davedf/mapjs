@@ -131,7 +131,9 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 	};
 	this.updateStyle = function (source, prop, value) {
 		analytic('updateStyle:' + prop, source);
-		idea.updateStyle(currentlySelectedIdeaId, prop, value);
+		if (this.getSelectedStyle(prop) != value) {
+			idea.updateStyle(currentlySelectedIdeaId, prop, value);
+		}
 	};
 	this.addSubIdea = function (source) {
 		analytic('addSubIdea', source);

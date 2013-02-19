@@ -77,6 +77,11 @@ var MAPJS = MAPJS || {};
 		}
 		return result;
 	};
+	MAPJS.defaultStyles = {
+		root: {background: '#30C0FF'},
+		nonRoot: {background: '#E0E0E0'}
+	};
+
 	MAPJS.calculateLayout = function (idea, dimensionProvider, margin) {
 		margin = margin || 10;
 		var result = {
@@ -86,7 +91,7 @@ var MAPJS = MAPJS || {};
 			root = MAPJS.calculatePositions(idea, dimensionProvider, margin, 0, 0),
 			calculateLayoutInner = function (positions, level) {
 				var subIdeaRank, from, to, isRoot = level === 1,
-					defaultStyle = { background: (isRoot ? '#30C0FF' : '#E0E0E0')};
+					defaultStyle = MAPJS.defaultStyles[isRoot ? 'root' : 'nonRoot'];
 				result.nodes[positions.id] = _.extend(_.pick(positions, ['id', 'width', 'height', 'title']), {
 					x: positions.x - root.x - 0.5 * root.width + margin,
 					y: positions.y - root.y - 0.5 * root.height + margin,

@@ -200,6 +200,7 @@ describe('MapModel', function () {
 			});
 			underTest = new MAPJS.MapModel(observable({}), function () {
 				return {
+					nodes: {2: {style: {styleprop: 'oldValue'}}}
 				};
 			});
 			underTest.setIdea(anIdea);
@@ -280,10 +281,17 @@ describe('MapModel', function () {
 		});
 		it('should invoke idea.updateStyle with selected ideaId and style argument when updateStyle is called', function () {
 			spyOn(anIdea, 'updateStyle');
-			underTest.selectNode(321);
+			underTest.selectNode(2);
 			underTest.updateStyle('source', 'styleprop', 'styleval');
-			expect(anIdea.updateStyle).toHaveBeenCalledWith(321, 'styleprop', 'styleval');
+			expect(anIdea.updateStyle).toHaveBeenCalledWith(2, 'styleprop', 'styleval');
 		});
+		it('should not invoke idea.updateStyle with selected ideaId and style argument when updateStyle is called with same value', function () {
+			spyOn(anIdea, 'updateStyle');
+			underTest.selectNode(2);
+			underTest.updateStyle('source', 'styleprop', 'oldValue');
+			expect(anIdea.updateStyle).not.toHaveBeenCalled();
+		});
+
 		describe("insertIntermediate", function () {
 			it('should invoke idea.insertIntermediate with the id of the selected node and a random title', function () {
 				var underTest = new MAPJS.MapModel(
