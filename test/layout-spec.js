@@ -191,7 +191,7 @@ describe('layout', function () {
 			}),
 			result;
 		result = MAPJS.calculateLayout(contentAggregate, dimensionProvider);
-		expect(result.nodes[7]).toEqual({
+		expect(result.nodes[7]).toPartiallyMatch({
 			id: 7,
 			x: -60,
 			y: -30,
@@ -308,12 +308,20 @@ describe('layout', function () {
 	it('should copy style to nodes', function () {
 		var contentAggregate = content({
 			title: '123',
-			style: { collapsed: true }
+			style: { collapsed: true, background: '#FFFFFF'}
 		}),
 			result = MAPJS.calculateLayout(contentAggregate, dimensionProvider);
 		expect(result.nodes[1]).toPartiallyMatch({
-			style: {collapsed: true}
+			style: {collapsed: true, background: '#FFFFFF'}
 		});
+	});
+	it('should set style using defaults where not defined', function () {
+		var contentAggregate = content({
+			title: '123',
+			style: { collapsed: true}
+		}),
+			result = MAPJS.calculateLayout(contentAggregate, dimensionProvider);
+		expect(result.nodes[1].style.background).not.toBeUndefined();
 	});
 
 });

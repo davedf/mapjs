@@ -115,7 +115,8 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 		}
 	};
 	this.getSelectedStyle = function (prop) {
-		return currentlySelectedIdea().getStyle(prop);
+		var style = currentLayout.nodes[currentlySelectedIdeaId].style;
+		return style && style[prop];
 	};
 	this.toggleCollapse = function (source) {
 		var isCollapsed = currentlySelectedIdea().getStyle('collapsed');

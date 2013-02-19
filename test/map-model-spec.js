@@ -610,7 +610,20 @@ describe('MapModel', function () {
 	describe("getSelectedStyle", function () {
 		var anIdea = content({ id: 1, style: {'v': 'x'}, ideas : {7: {id: 2, style: {'v': 'y'}}}}),
 			layoutCalculator = function () {
-				return [];
+				return {
+					nodes: {
+						1: {
+							style: {
+								'v': 'x'
+							}
+						},
+						2: {
+							style: {
+								'v': 'y'
+							}
+						}
+					}
+				};
 			},
 			underTest;
 		beforeEach(function () {

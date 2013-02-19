@@ -1,3 +1,4 @@
+/*global _*/
 var MAPJS = MAPJS || {};
 
 (function () {
@@ -84,11 +85,13 @@ var MAPJS = MAPJS || {};
 		},
 			root = MAPJS.calculatePositions(idea, dimensionProvider, margin, 0, 0),
 			calculateLayoutInner = function (positions, level) {
-				var subIdeaRank, from, to;
-				result.nodes[positions.id] = _.extend(_.pick(positions, ['id', 'width', 'height', 'title', 'style']), {
+				var subIdeaRank, from, to, isRoot = level === 1,
+					defaultStyle = { background: (isRoot ? '#30C0FF' : '#E0E0E0')};
+				result.nodes[positions.id] = _.extend(_.pick(positions, ['id', 'width', 'height', 'title']), {
 					x: positions.x - root.x - 0.5 * root.width + margin,
 					y: positions.y - root.y - 0.5 * root.height + margin,
-					level: level
+					level: level,
+					style: _.extend({}, defaultStyle, positions.style)
 				});
 				if (positions.ideas) {
 					for (subIdeaRank in positions.ideas) {
