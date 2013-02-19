@@ -78,7 +78,7 @@ var MAPJS = MAPJS || {};
 		return result;
 	};
 	MAPJS.defaultStyles = {
-		root: {background: '#30C0FF'},
+		root: {background: '#22AAE0'},
 		nonRoot: {background: '#E0E0E0'}
 	};
 

@@ -141,7 +141,7 @@ Kinetic.Idea.prototype.setStyle = function (config) {
 	var isDroppable = this.isDroppable,
 		isSelected = this.isSelected,
 		isRoot = this.level === 1,
-		defaultBg =  (isRoot ? '#30C0FF' : '#E0E0E0'),
+		defaultBg = MAPJS.defaultStyles[isRoot ? 'root' : 'nonRoot'].background,
 		offset =  (this.mmStyle && this.mmStyle.collapsed) ? 3 : 4,
 		normalShadow = {
 			color: 'black',
@@ -162,7 +162,9 @@ Kinetic.Idea.prototype.setStyle = function (config) {
 			var parsed = Color(color).hexString();
 			return color.toUpperCase() === parsed.toUpperCase() ? color : defaultColor;
 		},
-		background = validColor(this.mmStyle && this.mmStyle.background, defaultBg);
+		background = validColor(this.mmStyle && this.mmStyle.background, defaultBg),
+		tintedBackground = Color(background).mix(Color('#EEEEEE')).hexString(),
+		luminosity = Color(tintedBackground).luminosity();
 	config.strokeWidth = 1;
 	config.padding = 8;
 	config.fontSize = 10;
@@ -176,15 +178,15 @@ Kinetic.Idea.prototype.setStyle = function (config) {
 			end: {x: 0, y: 20 },
 			colorStops: [0, '#EF6F6F', 1, '#CF4F4F']
 		};
-		config.textFill = '#FFFFFF';
+		background = '#EF6F6F';
 	} else if (isSelected) {
 		config.fill = background;
 	} else {
-		config.stroke = isRoot ? '#88F' : '#888';
+		config.stroke = '#888';
 		config.fill = {
 			start: { x: 0, y: 0 },
 			end: {x: 100, y: 100 },
-			colorStops: [0, Color(background).mix(Color('white')).hexString(), 1, background]
+			colorStops: [0, tintedBackground, 1, background]
 		};
 	}
 	config.align = 'center';
@@ -194,7 +196,13 @@ Kinetic.Idea.prototype.setStyle = function (config) {
 		config.shadow = isSelected ? selectedShadow : normalShadow;
 	}
 	config.cornerRadius = 10;
-	config.textFill = (Color(background).luminosity() > 0.6) ? '#5F5F5F' : '#FFFFFF';
+	if (luminosity < 0.5) {
+		config.textFill = '#EEEEEE';
+	} else if (luminosity < 0.9) {
+		config.textFill = '#3F3F3F';
+	} else {
+		config.textFill = '#000000';
+	}
 };
 Kinetic.Idea.prototype.setMMStyle = function (newMMStyle) {
 	'use strict';
