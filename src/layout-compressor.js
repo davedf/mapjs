@@ -34,10 +34,9 @@ MAPJS.LayoutCompressor.getSubTreeNodeList = function getSubTreeNodeList(position
 	'use strict';
 	var subIdeaRank;
 	result = result || [];
+	result.push(_.pick(positions, 'x', 'y', 'width', 'height'));
 	if (parent) {
 		result.push(MAPJS.LayoutCompressor.nodeAndConnectorCollisionBox(positions, parent));
-	} else {
-		result.push(_.pick(positions, 'x', 'y', 'width', 'height'));
 	}
 	for (subIdeaRank in positions.ideas) {
 		getSubTreeNodeList(positions.ideas[subIdeaRank], result, positions);
@@ -100,7 +99,7 @@ MAPJS.LayoutCompressor.compress = function compress(positions) {
 					allUpperNodes,
 					MAPJS.LayoutCompressor.getSubTreeNodeList(lowerSubtree)
 				);
-				if (verticalDistance > 0 && verticalDistance < Infinity) {
+				if (verticalDistance < Infinity) {
 					MAPJS.LayoutCompressor.moveSubTreeVertically(lowerSubtree, -verticalDistance);
 				}
 			}
