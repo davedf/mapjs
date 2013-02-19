@@ -114,6 +114,9 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 			self.dispatchEvent('nodeSelectionChanged', id, true);
 		}
 	};
+	this.getSelectedStyle = function (prop) {
+		return currentlySelectedIdea().getStyle(prop);
+	};
 	this.toggleCollapse = function (source) {
 		var isCollapsed = currentlySelectedIdea().getStyle('collapsed');
 		this.collapse(source, !isCollapsed);
@@ -124,6 +127,10 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 		if (node.ideas && _.size(node.ideas) > 0) {
 			idea.updateStyle(currentlySelectedIdeaId, 'collapsed', doCollapse);
 		}
+	};
+	this.updateStyle = function (source, prop, value) {
+		analytic('updateStyle:' + prop, source);
+		idea.updateStyle(currentlySelectedIdeaId, prop, value);
 	};
 	this.addSubIdea = function (source) {
 		analytic('addSubIdea', source);

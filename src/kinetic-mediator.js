@@ -90,8 +90,7 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 	});
 	mapModel.addEventListener('nodeStyleChanged', function (n) {
 		var node = nodeByIdeaId[n.id];
-		node.mmStyle = n.style;
-		layer.draw();
+		node.setMMStyle(n.style);
 	});
 	mapModel.addEventListener('nodeDroppableChanged', function (ideaId, isDroppable) {
 		var node = nodeByIdeaId[ideaId];

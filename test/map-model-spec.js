@@ -278,6 +278,12 @@ describe('MapModel', function () {
 
 			expect(anIdea.addSubIdea).toHaveBeenCalledWith(1, 'double click to edit');
 		});
+		it('should invoke idea.updateStyle with selected ideaId and style argument when updateStyle is called', function () {
+			spyOn(anIdea, 'updateStyle');
+			underTest.selectNode(321);
+			underTest.updateStyle('source', 'styleprop', 'styleval');
+			expect(anIdea.updateStyle).toHaveBeenCalledWith(321, 'styleprop', 'styleval');
+		});
 		describe("insertIntermediate", function () {
 			it('should invoke idea.insertIntermediate with the id of the selected node and a random title', function () {
 				var underTest = new MAPJS.MapModel(
@@ -548,6 +554,11 @@ describe('MapModel', function () {
 
 			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'collapse:false', 'toolbar');
 		});
+		it('should dispatch analytic event when collapse method is invoked', function () {
+			underTest.updateStyle('toolbar', 'propname', 'propval');
+
+			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'updateStyle:propname', 'toolbar');
+		});
 		it('should dispatch analytic event when scaleUp method is invoked', function () {
 			underTest.scaleUp('toolbar');
 
@@ -594,6 +605,24 @@ describe('MapModel', function () {
 				underTest['selectNode' + direction]('toolbar');
 				expect(analyticListener).toHaveBeenCalledWith('mapModel', 'selectNode' + direction, 'toolbar');
 			});
+		});
+	});
+	describe("getSelectedStyle", function () {
+		var anIdea = content({ id: 1, style: {'v': 'x'}, ideas : {7: {id: 2, style: {'v': 'y'}}}}),
+			layoutCalculator = function () {
+				return [];
+			},
+			underTest;
+		beforeEach(function () {
+			underTest = new MAPJS.MapModel(observable({}), layoutCalculator);
+			underTest.setIdea(anIdea);
+		});
+		it("retrieves root node style by default", function () {
+			expect(underTest.getSelectedStyle('v')).toEqual('x');
+		});
+		it("retrieves root node style by default", function () {
+			underTest.selectNode(2);
+			expect(underTest.getSelectedStyle('v')).toEqual('y');
 		});
 	});
 });

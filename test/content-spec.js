@@ -161,9 +161,21 @@ describe("content aggregate", function () {
 				expect(result).toBeTruthy();
 				expect(aggregate.ideas[5].getStyle('newStyle')).toBe('newValue');
 			});
+			it('clones style when setting to a new object to prevent stale references', function () {
+				var oldStyle={}, aggregate=content({id:1, style:oldStyle});
+				var result=aggregate.updateStyle(1,'newStyle','newValue');
+				expect(oldStyle).toEqual({});
+			});
 			it('should remove styles which have been set to false', function () {
 				var aggregate=content({id:1, style:{keptStyle:'oldValue', newStyle:'value'}});
 				var result=aggregate.updateStyle(1,'newStyle',false);
+				expect(result).toBeTruthy();
+				expect(aggregate.style['newStyle']).toBeUndefined();
+				expect(aggregate.style['keptStyle']).toBe('oldValue');
+			});
+			it('should remove styles which have been set to false - as a string', function () {
+				var aggregate=content({id:1, style:{keptStyle:'oldValue', newStyle:'value'}});
+				var result=aggregate.updateStyle(1,'newStyle',"false");
 				expect(result).toBeTruthy();
 				expect(aggregate.style['newStyle']).toBeUndefined();
 				expect(aggregate.style['keptStyle']).toBe('oldValue');
@@ -186,6 +198,22 @@ describe("content aggregate", function () {
 				var aggregate=content({id:1, ideas: { 5: { id: 2}}});
 				aggregate.addEventListener('changed', listener);
 				var result=aggregate.updateStyle(100,'newStyle','newValue');
+				expect(result).toBeFalsy();
+				expect(listener).not.toHaveBeenCalled();
+			});
+			it('should fail if old style equals new one', function () {
+				var listener=jasmine.createSpy('style_listener');
+				var aggregate=content({id:1, style: {'v': 'x'} });
+				aggregate.addEventListener('changed', listener);
+				var result=aggregate.updateStyle(1,'v','x');
+				expect(result).toBeFalsy();
+				expect(listener).not.toHaveBeenCalled();
+			});
+			it('should fail if removing a non existent property', function () {
+				var listener=jasmine.createSpy('style_listener');
+				var aggregate=content({id:1, style: {'v': 'x'} });
+				aggregate.addEventListener('changed', listener);
+				var result=aggregate.updateStyle(1,'y',false);
 				expect(result).toBeFalsy();
 				expect(listener).not.toHaveBeenCalled();
 			});

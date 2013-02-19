@@ -250,11 +250,18 @@ var content = function (contentAggregate) {
 		if (!idea) {
 			return false;
 		}
-		idea.style = idea.style || {};
-		if (styleValue) {
-			idea.style[styleName] = styleValue;
-		} else {
+		idea.style = _.extend({}, idea.style);
+		if (!styleValue || styleValue === "false") {
+			if (!idea.style[styleName]) {
+				return false;
+			}
 			delete idea.style[styleName];
+		} else {
+			/* leave ==, if it's a number and someone sends the equal string, it's still the same */
+			if (idea.style[styleName] == styleValue) {
+				return false;
+			}
+			idea.style[styleName] = styleValue;
 		}
 		if (_.size(idea.style) === 0) {
 			delete idea.style;
