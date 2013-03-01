@@ -92,6 +92,7 @@ var content = function (contentAggregate) {
 		notifyChange = function (method, args, undofunc) {
 			contentAggregate.dispatchEvent('changed', method, args);
 			eventStack.push({eventMethod: method, eventArgs: args, undoFunction: undofunc});
+			redoStack = [];
 		},
 		reorderChild = function (parentIdea, newRank, oldRank) {
 			parentIdea.ideas[newRank] = parentIdea.ideas[oldRank];
@@ -352,10 +353,12 @@ var content = function (contentAggregate) {
 		return false;
 	};
 	contentAggregate.redo = function () {
-		var topEvent;
+		var topEvent, oldRedoStack;
 		topEvent = redoStack.pop();
+		oldRedoStack = redoStack;
 		if (topEvent) {
 			contentAggregate[topEvent.eventMethod].apply(contentAggregate, topEvent.eventArgs);
+			redoStack = oldRedoStack;
 			return true;
 		}
 		return false;

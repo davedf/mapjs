@@ -791,6 +791,14 @@ describe("content aggregate", function () {
 			wrapped.redo();
 			expect(spy).toHaveBeenCalledWith('updateTitle',[1,'First']);
 		});
+		it("does not leave trailing redos if the last action was not caused by an undo/redo", function() {
+			var wrapped = content({id: 1, title: 'Original'});
+			wrapped.updateTitle(1, 'First');
+			wrapped.undo();
+			wrapped.updateTitle(1, 'Second');
+			wrapped.redo();
+			expect(wrapped.title).toBe('Second');
+		});
 	});
 	describe ("undo", function () {
 		it("succeeds if there is something to undo", function () {
@@ -828,5 +836,6 @@ describe("content aggregate", function () {
 			expect(wrapped.undo()).toBeFalsy();
 			expect(spy).not.toHaveBeenCalled();
 		});
+
 	});
 });
