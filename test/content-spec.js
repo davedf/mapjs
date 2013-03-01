@@ -749,11 +749,52 @@ describe("content aggregate", function () {
 			});
 		});
 	});
+	describe ("redo", function () {
+		it("succeeds if there is something to redo", function () {
+			var wrapped = content({id: 1, title: 'Original'}), result;
+			wrapped.updateTitle(1, 'First');
+			wrapped.undo();
+			result = wrapped.redo();
+			expect(result).toBeTruthy();
+			expect(wrapped.title).toBe('First');
+		});
+		it("fails if there is nothing to undo", function () {
+			var wrapped = content({id: 1, title: 'Original'}), result;
+			wrapped.updateTitle(1, 'First');
+			result = wrapped.redo();
+			expect(result).toBeFalsy();
+		});
+		it("cancels the top undo from the stack", function () {
+			var wrapped = content({id: 1, title: 'Original'}), result;
+			wrapped.updateTitle(1, 'First');
+			wrapped.updateTitle(1, 'Second');
+			wrapped.undo();
+			result = wrapped.redo();
+			expect(result).toBeTruthy();
+			expect(wrapped.title).toBe('Second');
+		});
+		it("fires a change event if it succeeds", function () {
+			var wrapped = content({id: 1, title: 'Original'}),
+				spy = jasmine.createSpy('change');
+			wrapped.updateTitle(1, 'First');
+			wrapped.undo();
+			wrapped.addEventListener('changed', spy);
+			wrapped.redo();
+			expect(spy).toHaveBeenCalledWith('updateTitle',[1,'First']);
+		});
+	});
 	describe ("undo", function () {
 		it("succeeds if there is something to undo", function () {
 			var wrapped = content({id: 1, title: 'Original'});
 			wrapped.updateTitle(1, 'First');
 			expect(wrapped.undo()).toBeTruthy();
+		});
+		it("undos the top event from the stack", function () {
+			var wrapped = content({id: 1, title: 'Original'});
+			wrapped.updateTitle(1, 'First');
+			wrapped.updateTitle(1, 'Second');
+			wrapped.undo();
+			expect(wrapped.title).toBe('First');
 		});
 		it("multiple changes stack on the undo stack in the order of recency", function () {
 			var wrapped = content({id: 1, title: 'Original'});

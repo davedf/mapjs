@@ -88,6 +88,7 @@ var content = function (contentAggregate) {
 			return number < 0 ? -1 : 1;
 		},
 		eventStack = [],
+		redoStack = [],
 		notifyChange = function (method, args, undofunc) {
 			contentAggregate.dispatchEvent('changed', method, args);
 			eventStack.push({eventMethod: method, eventArgs: args, undoFunction: undofunc});
@@ -341,7 +342,17 @@ var content = function (contentAggregate) {
 		topEvent = eventStack.pop();
 		if (topEvent && topEvent.undoFunction) {
 			topEvent.undoFunction();
+			redoStack.push(topEvent);
 			contentAggregate.dispatchEvent('changed', 'undo', []);
+			return true;
+		}
+		return false;
+	};
+	contentAggregate.redo = function () {
+		var topEvent;
+		topEvent = redoStack.pop();
+		if (topEvent) {
+			contentAggregate[topEvent.eventMethod].apply(contentAggregate, topEvent.eventArgs);
 			return true;
 		}
 		return false;
