@@ -249,9 +249,18 @@ describe("content aggregate", function () {
 			});
 			it('fails if the aggregate does not contain the target ID', function () {
 				var second=content({id:72,title:'Untouched'}),
-					second_succeeded=second.updateTitle(71,'Updated');
-				expect(second_succeeded).toBeFalsy();
+					listener = jasmine.createSpy('title_listener');
+				second.addEventListener('changed', listener);
+				expect(second.updateTitle(71, 'Updated')).toBeFalsy();
 				expect(second.title).toBe('Untouched');
+				expect(listener).not.toHaveBeenCalled();
+			});
+			it('fails if the title is the same', function () {
+				var second=content({id:1,title:'Untouched'}),
+					listener = jasmine.createSpy('title_listener');
+				second.addEventListener('changed', listener);
+				expect(second.updateTitle(1, 'Untouched')).toBeFalsy();
+				expect(listener).not.toHaveBeenCalled();
 			});
 			it('propagates changes to child ideas if the ID does not match, succeeding if there is a matching child', function () {
 				var ideas = content({id: 1, title:'My Idea',

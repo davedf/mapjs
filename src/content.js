@@ -1,4 +1,4 @@
-/*jslint forin: true, nomen: true*/
+/*jslint eqeq: true, forin: true, nomen: true*/
 /*global _, observable*/
 var content = function (contentAggregate) {
 	'use strict';
@@ -172,6 +172,9 @@ var content = function (contentAggregate) {
 			return false;
 		}
 		originalTitle = idea.title;
+		if (originalTitle == title) {
+			return false;
+		}
 		idea.title = title;
 		notifyChange('updateTitle', [ideaId, title], function () {
 			idea.title = originalTitle;
