@@ -213,6 +213,18 @@ describe('MapModel', function () {
 
 			expect(anIdea.addSubIdea).toHaveBeenCalledWith(123, 'double click to edit');
 		});
+		it('should invoke idea.undo when undo method is invoked', function () {
+			underTest.selectNode(123);
+			spyOn(anIdea, 'undo');
+			underTest.undo();
+			expect(anIdea.undo).toHaveBeenCalled();
+		});
+		it('should invoke idea.redo when redo method is invoked', function () {
+			underTest.selectNode(123);
+			spyOn(anIdea, 'redo');
+			underTest.redo();
+			expect(anIdea.redo).toHaveBeenCalled();
+		});
 		it('should expand the node when addSubIdea is called', function () {
 			underTest.selectNode(1);
 			var nodeSelectionChangedListener = jasmine.createSpy();
@@ -556,6 +568,14 @@ describe('MapModel', function () {
 			underTest.setIdea(anIdea);
 			analyticListener = jasmine.createSpy();
 			underTest.addEventListener('analytic', analyticListener);
+		});
+		it('should dispatch analytic event when undo method is invoked', function () {
+			underTest.undo('source');
+			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'undo', 'source');
+		});
+		it('should dispatch analytic event when redo method is invoked', function () {
+			underTest.redo('source');
+			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'redo', 'source');
 		});
 		it('should dispatch analytic event when collapse method is invoked', function () {
 			underTest.collapse('toolbar', false);

@@ -283,6 +283,14 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 			}
 
 		};
+		self.undo = function (source) {
+			analytic('undo', source);
+			idea.undo();
+		};
+		self.redo = function (source) {
+			analytic('redo', source);
+			idea.redo();
+		};
 	}());
 	//Todo - clean up this shit below
 	(function () {
