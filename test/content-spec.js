@@ -749,4 +749,34 @@ describe("content aggregate", function () {
 			});
 		});
 	});
+	describe ("undo", function () {
+		it("succeeds if there is something to undo", function () {
+			var wrapped = content({id: 1, title: 'Original'});
+			wrapped.updateTitle(1, 'First');
+			expect(wrapped.undo()).toBeTruthy();
+		});
+		it("multiple changes stack on the undo stack in the order of recency", function () {
+			var wrapped = content({id: 1, title: 'Original'});
+			wrapped.updateTitle(1, 'First');
+			wrapped.updateTitle(1, 'Second');
+			wrapped.undo();
+			wrapped.undo();
+			expect(wrapped.title).toBe('Original');
+		});
+		it("fires a change event if it succeeds", function () {
+			var wrapped = content({id: 1, title: 'Original'}),
+				spy = jasmine.createSpy('change');
+			wrapped.updateTitle(1, 'First');
+			wrapped.addEventListener('changed', spy);
+			wrapped.undo();
+			expect(spy).toHaveBeenCalledWith('undo',[]);
+		});
+		it("fails if there is nothing to undo", function () {
+			var wrapped = content({id: 1, title: 'Original'}),
+				spy = jasmine.createSpy('change');
+			wrapped.addEventListener('changed', spy);
+			expect(wrapped.undo()).toBeFalsy();
+			expect(spy).not.toHaveBeenCalled();
+		});
+	});
 });

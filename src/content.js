@@ -339,7 +339,12 @@ var content = function (contentAggregate) {
 	contentAggregate.undo = function () {
 		var topEvent;
 		topEvent = eventStack.pop();
-		if (topEvent && topEvent.undoFunction) { topEvent.undoFunction(); }
+		if (topEvent && topEvent.undoFunction) {
+			topEvent.undoFunction();
+			contentAggregate.dispatchEvent('changed', 'undo', []);
+			return true;
+		}
+		return false;
 	};
 	init(contentAggregate);
 	return observable(contentAggregate);
