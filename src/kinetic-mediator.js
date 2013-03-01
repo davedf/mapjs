@@ -178,7 +178,7 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			89: mapModel.redo.bind(mapModel, 'keyboard')
 		},
 			onKeydown = function (evt) {
-				var eventHandler = (evt.metaKey ? metaKeyboardEventHandlers :
+				var eventHandler = ((evt.metaKey || evt.ctrlKey) ? metaKeyboardEventHandlers :
 						(evt.shiftKey ? shiftKeyboardEventHandlers : keyboardEventHandlers))[evt.which];
 				if (eventHandler) {
 					eventHandler();
