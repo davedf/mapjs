@@ -789,7 +789,7 @@ describe("content aggregate", function () {
 			wrapped.undo();
 			wrapped.addEventListener('changed', spy);
 			wrapped.redo();
-			expect(spy).toHaveBeenCalledWith('updateTitle',[1,'First']);
+			expect(spy).toHaveBeenCalledWith('redo');
 		});
 		it("does not leave trailing redos if the last action was not caused by an undo/redo", function() {
 			var wrapped = content({id: 1, title: 'Original'});

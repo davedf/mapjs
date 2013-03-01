@@ -89,10 +89,15 @@ var content = function (contentAggregate) {
 		},
 		eventStack = [],
 		redoStack = [],
+		isRedoInProgress = false,
 		notifyChange = function (method, args, undofunc) {
-			contentAggregate.dispatchEvent('changed', method, args);
 			eventStack.push({eventMethod: method, eventArgs: args, undoFunction: undofunc});
-			redoStack = [];
+			if (isRedoInProgress) {
+				contentAggregate.dispatchEvent('changed', 'redo');
+			} else {
+				contentAggregate.dispatchEvent('changed', method, args);
+				redoStack = [];
+			}
 		},
 		reorderChild = function (parentIdea, newRank, oldRank) {
 			parentIdea.ideas[newRank] = parentIdea.ideas[oldRank];
@@ -353,12 +358,12 @@ var content = function (contentAggregate) {
 		return false;
 	};
 	contentAggregate.redo = function () {
-		var topEvent, oldRedoStack;
+		var topEvent;
 		topEvent = redoStack.pop();
-		oldRedoStack = redoStack;
 		if (topEvent) {
+			isRedoInProgress = true;
 			contentAggregate[topEvent.eventMethod].apply(contentAggregate, topEvent.eventArgs);
-			redoStack = oldRedoStack;
+			isRedoInProgress = false;
 			return true;
 		}
 		return false;
