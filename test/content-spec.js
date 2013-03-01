@@ -221,6 +221,18 @@ describe("content aggregate", function () {
 				expect(result).toBeFalsy();
 				expect(listener).not.toHaveBeenCalled();
 			});
+			it('should pop an undo function onto event stack if successful', function () {
+				var aggregate = content({id: 71, style: {'newStyle': 'oldValue'}});
+				aggregate.updateStyle(71, 'newStyle', 'newValue');
+				aggregate.undo();
+				expect(aggregate.getStyle('newStyle')).toBe('oldValue');
+			});
+			it('should undo style deletion if successful', function () {
+				var aggregate = content({id: 71, style: {'newStyle': 'oldValue'}});
+				aggregate.updateStyle(71, 'newStyle', false);
+				aggregate.undo();
+				expect(aggregate.getStyle('newStyle')).toBe('oldValue');
+			});
 		});
 		describe("updateTitle", function () {
 			it('changes the title of the current idea only if it matches ID in command', function () {
@@ -255,6 +267,12 @@ describe("content aggregate", function () {
 				wrapped.addEventListener('changed', listener);
 				wrapped.updateTitle(1, 'New Title');
 				expect(listener).toHaveBeenCalledWith('updateTitle', [1,'New Title']);
+			});
+			it("puts a undo method on the stack when successful", function () {
+				var wrapped = content({id: 71, title: 'My Idea'});
+				wrapped.updateTitle(71, 'Updated');
+				wrapped.undo();
+				expect(wrapped.title).toBe('My Idea');
 			});
 		});
 		describe("insertIntermediate", function () {
@@ -293,6 +311,11 @@ describe("content aggregate", function () {
 			it('fails if idea has no parent', function () {
 				expect(idea.insertIntermediate(1,'Steve')).toBeFalsy();
 				expect(listener).not.toHaveBeenCalled();
+			});
+			it('pops an event to undo stack if successful', function () {
+				idea.insertIntermediate(2,'Steve');
+				idea.undo();
+				expect(idea.ideas[77]).toPartiallyMatch({id:2, title:'Moved'});
 			});
 		});
 		describe("addSubIdea", function () {
@@ -345,6 +368,13 @@ describe("content aggregate", function () {
 				idea.addEventListener('changed', addedListener);
 				idea.addSubIdea(71,'New Title');
 				expect(addedListener).toHaveBeenCalledWith('addSubIdea', [71,'New Title',72]);
+			});
+			it('pops an event on the undo stack if successful', function () {
+				var idea = content({id:4, ideas:{ 1:{id:5, title:'My Idea'}}});
+				idea.addSubIdea(4,'New');
+				idea.undo();
+				expect(idea.ideas[1]).toPartiallyMatch({id:5, title: 'My Idea'});
+				expect(_.size(idea.ideas)).toBe(1);
 			});
 			it('takes negative rank items as absolute while calculating new rank ID (bug resurrection test)', function () {
 				var idea = content({id: 1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 6: { id:3, title:'I3'}, '-16' : {id:4, title:'I4'}}});
@@ -421,6 +451,12 @@ describe("content aggregate", function () {
 			it("fails if asked to put an idea in it's current parent", function () {
 				expect(idea.changeParent(1,5)).toBeFalsy();
 			});
+			it("pops an operation to the undo stack if it succeeds", function () {
+				idea.changeParent(4,5);
+				idea.undo();
+				expect(idea.containsDirectChild(4)).toBeFalsy();
+				expect(idea.ideas[9].containsDirectChild(4)).toBeTruthy();
+			});
 		});
 		describe("removeSubIdea", function () {
 			it('removes a child idea matching the provided id', function () {
@@ -447,6 +483,12 @@ describe("content aggregate", function () {
 				idea.addEventListener('changed', addedListener);
 				idea.removeSubIdea(3);
 				expect(addedListener).toHaveBeenCalledWith('removeSubIdea',[3]);
+			});
+			it('pops an event to undo stack if successful', function () {
+				var idea = content({id: 1, title:'I1', ideas: { 5: { id: 2, title:'I2'}, 10: { id:3, title:'I3'}, 15 : {id:4, title:'I4'}}});
+				idea.removeSubIdea(2);
+				idea.undo();
+				expect(idea.ideas[5]).toPartiallyMatch({id: 2, title: 'I2' });
 			});
 		});
 		describe("flip", function () {
@@ -485,6 +527,14 @@ describe("content aggregate", function () {
 				spyOn(idea,'dispatchEvent');
 				idea.flip(2);
 				expect(idea.dispatchEvent).toHaveBeenCalledWith('changed','flip',[2]);
+			});
+			it('stores an undo function on the event stack', function () {
+				var idea = content({id: 1, ideas: { '-5': { id: 2}}}), newRank;
+				idea.flip(2);
+				newRank=idea.findChildRankById(2);
+				idea.undo();
+				expect(idea.findChildRankById(2)).toBe(-5);
+				expect(idea.ideas[newRank]).toBeUndefined();
 			});
 		});
 		describe("positionBefore", function () {
@@ -686,6 +736,16 @@ describe("content aggregate", function () {
 					}
 				});
 				expect(idea.positionBefore(2, 4)).toBe(true);
+			});
+			it('pops an undo function onto the event stack if successful', function () {
+				var idea = content({id: 1, ideas: { 5: { id: 2}, 10: { id: 3}, 15 : {id: 4}}}),
+					newKey;
+				idea.positionBefore(4,3);
+				newKey=idea.findChildRankById(4);
+				idea.undo();
+				expect(idea.ideas[15].id).toBe(4);
+				expect(idea.ideas[newKey]).toBeUndefined();
+				expect(_.size(idea.ideas)).toBe(3);
 			});
 		});
 	});
