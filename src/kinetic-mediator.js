@@ -209,7 +209,6 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 };
 MAPJS.KineticMediator.dimensionProvider = _.memoize(function (title) {
 	'use strict';
-	console.log('here');
 	var text = new Kinetic.Idea({
 		text: title
 	});
