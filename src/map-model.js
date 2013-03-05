@@ -92,6 +92,7 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 	this.setIdea = function (anIdea) {
 		if (idea) {
 			idea.removeEventListener('changed', onIdeaChanged);
+			currentlySelectedIdeaId = undefined;
 		}
 		idea = anIdea;
 		idea.addEventListener('changed', onIdeaChanged);
