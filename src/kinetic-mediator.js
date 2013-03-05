@@ -207,8 +207,9 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 
 	}());
 };
-MAPJS.KineticMediator.dimensionProvider = function (title) {
+MAPJS.KineticMediator.dimensionProvider = _.memoize(function (title) {
 	'use strict';
+	console.log('here');
 	var text = new Kinetic.Idea({
 		text: title
 	});
@@ -216,7 +217,7 @@ MAPJS.KineticMediator.dimensionProvider = function (title) {
 		width: text.getWidth(),
 		height: text.getHeight()
 	};
-};
+});
 MAPJS.KineticMediator.layoutCalculator = function (idea) {
 	'use strict';
 	return MAPJS.calculateLayout(idea, MAPJS.KineticMediator.dimensionProvider);
