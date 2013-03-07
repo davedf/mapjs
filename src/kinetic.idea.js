@@ -115,11 +115,18 @@
 						text: newText || unformattedText
 					});
 					ideaInput.remove();
+					self.getStage().off('xChange yChange', onStageMoved);
 				},
 				onCommit = function () {
 					updateText(ideaInput.val());
 				},
-				scale = self.getStage().getScale().x || 1;
+				scale = self.getStage().getScale().x || 1,
+				onStageMoved = _.throttle(function () {
+					ideaInput.css({
+						top: canvasPosition.top + self.getAbsolutePosition().y,
+						left: canvasPosition.left + self.getAbsolutePosition().x
+					});
+				}, 10);
 			ideaInput = jQuery('<textarea type="text" wrap="soft" class="ideaInput"></textarea>')
 				.css({
 					top: canvasPosition.top + self.getAbsolutePosition().y,
@@ -146,12 +153,7 @@
 			} else if (ideaInput[0].setSelectionRange) {
 				ideaInput[0].setSelectionRange(unformattedText.length, unformattedText.length);
 			}
-			self.getStage().on('xChange yChange', function () {
-				ideaInput.css({
-					top: canvasPosition.top + self.getAbsolutePosition().y,
-					left: canvasPosition.left + self.getAbsolutePosition().x
-				});
-			});
+			self.getStage().on('xChange yChange', onStageMoved);
 		};
 	};
 }());
