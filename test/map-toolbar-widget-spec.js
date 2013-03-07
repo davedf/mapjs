@@ -1,4 +1,4 @@
-/*global jasmine,beforeEach, describe, expect, it, jQuery, observable, spyOn, MAPJS, content*/
+/*global _, jasmine,beforeEach, describe, expect, it, jQuery, observable, spyOn, MAPJS, content*/
 /*jslint es5: true*/
 describe('mapToolbarWidget', function () {
 	'use strict';
@@ -14,6 +14,8 @@ describe('mapToolbarWidget', function () {
 			<input type="button" class="removeSubIdea" value="remove"></input>\
 			<input type="button" class="insertIntermediate" value="insert parent"></input>\
 			<input type="button" class="addSiblingIdea" value="insert parent"></input>\
+			<input type="button" class="undo" value="undo"></input>\
+			<input type="button" class="redo" value="redo"></input>\
 			<input data-mm-target-property="color" type="text" class="updateStyle" value=""></input>\
 			</div>'
 		);
@@ -26,62 +28,16 @@ describe('mapToolbarWidget', function () {
 
 		expect(result).toBe(element);
 	});
-	it('should invoke scaleUp method on map model when + button is clicked', function () {
-		spyOn(mapModel, 'scaleUp');
-		element.mapToolbarWidget(mapModel);
-
-		element.find('.scaleUp').click();
-
-		expect(mapModel.scaleUp).toHaveBeenCalledWith('toolbar');
+	it('should invoke underlying method on map model when button is clicked', function () {
+		var methods = ['scaleUp', 'scaleDown', 'removeSubIdea', 'editNode', 'addSubIdea', 'insertIntermediate', 'addSiblingIdea'];
+		_.each(methods, function (method) {
+			spyOn(mapModel, method);
+			element.mapToolbarWidget(mapModel);
+			element.find('.' + method).click();
+			expect(mapModel[method]).toHaveBeenCalledWith('toolbar');
+		});
 	});
-	it('should invoke scaleDown method on map model when - button is clicked', function () {
-		spyOn(mapModel, 'scaleDown');
-		element.mapToolbarWidget(mapModel);
 
-		element.find('.scaleDown').click();
-
-		expect(mapModel.scaleDown).toHaveBeenCalledWith('toolbar');
-	});
-	it('should invoke addSubIdea on map model when button is clicked', function () {
-		spyOn(mapModel, 'addSubIdea');
-		element.mapToolbarWidget(mapModel);
-
-		element.find('.addSubIdea').click();
-
-		expect(mapModel.addSubIdea).toHaveBeenCalledWith('toolbar');
-	});
-	it('should invoke editNode on map model when button is clicked', function () {
-		spyOn(mapModel, 'editNode');
-		element.mapToolbarWidget(mapModel);
-
-		element.find('.editNode').click();
-
-		expect(mapModel.editNode).toHaveBeenCalledWith('toolbar');
-	});
-	it('should invoke removeSubIdea on map model when button is clicked', function () {
-		spyOn(mapModel, 'removeSubIdea');
-		element.mapToolbarWidget(mapModel);
-
-		element.find('.removeSubIdea').click();
-
-		expect(mapModel.removeSubIdea).toHaveBeenCalledWith('toolbar');
-	});
-	it('should invoke insertIntermediate on map model when button is clicked', function () {
-		spyOn(mapModel, 'insertIntermediate');
-		element.mapToolbarWidget(mapModel);
-
-		element.find('.insertIntermediate').click();
-
-		expect(mapModel.insertIntermediate).toHaveBeenCalledWith('toolbar');
-	});
-	it('should invoke addSiblingIdea on map model when button is clicked', function () {
-		spyOn(mapModel, 'addSiblingIdea');
-		element.mapToolbarWidget(mapModel);
-
-		element.find('.addSiblingIdea').click();
-
-		expect(mapModel.addSiblingIdea).toHaveBeenCalledWith('toolbar');
-	});
 	it('should invoke updateStyle on map model when value changes', function () {
 		spyOn(mapModel, 'updateStyle');
 		element.mapToolbarWidget(mapModel);
