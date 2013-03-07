@@ -4,10 +4,18 @@
 	'use strict';
 	var horizontalConnector, calculateConnector;
 	Kinetic.Connector = function (config) {
+		var oldTransitionTo;
 		this.shapeFrom = config.shapeFrom;
 		this.shapeTo = config.shapeTo;
 		this.shapeType = 'Connector';
 		Kinetic.Shape.call(this, config);
+		oldTransitionTo = this.transitionTo.bind(this);
+		this.transitionTo = function (transition) {
+			if (!(this.shapeFrom.isVisible || this.shapeTo.isVisible())) {
+				transition.duration = 0.01;
+			}
+			oldTransitionTo(transition);
+		};
 		this._setDrawFuncs();
 	};
 	horizontalConnector = function (parent, child) {
