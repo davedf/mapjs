@@ -51,9 +51,13 @@
 			var context = canvas.getContext(),
 				shapeFrom = this.shapeFrom,
 				shapeTo = this.shapeTo,
-				conn = calculateConnector(shapeFrom, shapeTo),
+				conn,
 				offset,
 				maxOffset;
+			if (!(shapeFrom.isVisible() || shapeTo.isVisible())) {
+				return;
+			}
+			conn = calculateConnector(shapeFrom, shapeTo);
 			if (!conn) {
 				return;
 			}
