@@ -90,16 +90,18 @@
 			canvas.fillStroke(this);
 		};
 		this.isVisible = function () {
-			var stage = self.getStage(),
-				scale = stage.getScale().x || 1,
-				position = self.attrs,
-				result = !(
-					position.x > -stage.attrs.x + stage.getWidth() ||
-					-stage.attrs.x > position.x + scale * self.getWidth() ||
-					position.y > -stage.attrs.y + stage.getHeight() ||
-					-stage.attrs.y > position.y + scale * self.getHeight()
-				);
-			return result;
+			var stage = self.getStage(), scale, position;
+			if (!stage) {
+				return false;
+			}
+			scale = stage.getScale().x || 1;
+			position = self.attrs;
+			return !(
+				scale * position.x > -stage.attrs.x + stage.getWidth() ||
+				-stage.attrs.x > scale * position.x + scale * self.getWidth() ||
+				scale * position.y > -stage.attrs.y + stage.getHeight() ||
+				-stage.attrs.y > scale * position.y + scale * self.getHeight()
+			);
 		};
 		this.editNode = function (shouldSelectAll) {
 			self.fire(':editing');
