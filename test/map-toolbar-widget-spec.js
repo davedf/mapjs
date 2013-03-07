@@ -29,7 +29,7 @@ describe('mapToolbarWidget', function () {
 		expect(result).toBe(element);
 	});
 	it('should invoke underlying method on map model when button is clicked', function () {
-		var methods = ['scaleUp', 'scaleDown', 'removeSubIdea', 'editNode', 'addSubIdea', 'insertIntermediate', 'addSiblingIdea'];
+		var methods = ['scaleUp', 'scaleDown', 'removeSubIdea', 'editNode', 'addSubIdea', 'insertIntermediate', 'addSiblingIdea', 'undo', 'redo'];
 		_.each(methods, function (method) {
 			spyOn(mapModel, method);
 			element.mapToolbarWidget(mapModel);
