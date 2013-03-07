@@ -28,7 +28,8 @@
 				self.getStage().setDraggable(isDraggable);
 			},
 			unformattedText = joinLines(config.text),
-			oldSetText;
+			oldSetText,
+			oldTransitionTo;
 		config.text = breakWords(config.text);
 		this.level = config.level;
 		this.mmStyle = config.mmStyle;
@@ -59,6 +60,13 @@
 				this.oldDrawFunc(canvas);
 			}
 		});
+		oldTransitionTo = this.transitionTo.bind(this);
+		this.transitionTo = function (transition) {
+			if (!self.isVisible()) {
+				transition.duration = 0.01;
+			}
+			oldTransitionTo(transition);
+		};
 		this.drawCollapsedBG = function (canvas, offset) {
 			var context = canvas.getContext(),
 				cornerRadius = this.getCornerRadius(),
