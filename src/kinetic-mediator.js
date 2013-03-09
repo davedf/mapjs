@@ -1,4 +1,4 @@
-/*global console, window, document, jQuery, Kinetic*/
+/*global _, console, window, document, jQuery, Kinetic*/
 var MAPJS = MAPJS || {};
 MAPJS.KineticMediator = function (mapModel, stage) {
 	'use strict';
@@ -49,7 +49,7 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			mapModel.updateTitle(n.id, event.text);
 			mapModel.dispatchEvent('inputEnabledChanged', true);
 		});
-		node.on(':editing', function(event){
+		node.on(':editing', function (event) {
 			mapModel.dispatchEvent('inputEnabledChanged', false);
 		});
 		node.on(':nodeEditRequested', mapModel.editNode.bind(mapModel, 'mouse', false));
