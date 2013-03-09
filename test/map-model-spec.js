@@ -343,7 +343,7 @@ describe('MapModel', function () {
 			});
 		});
 	});
-	describe('map scaling', function () {
+	describe('map scaling and movement', function () {
 		it('should dispatch mapScaleChanged event with 1.25 scale when scaleUp method is invoked', function () {
 			var underTest = new MAPJS.MapModel(observable({})),
 				mapScaleChangedListener = jasmine.createSpy();
@@ -370,6 +370,13 @@ describe('MapModel', function () {
 			underTest.scale('toolbar', 777);
 
 			expect(mapScaleChangedListener).toHaveBeenCalledWith(777);
+		});
+		it('should dispatch mapMoveRequested passsing args when a move is requested', function () {
+			var underTest = new MAPJS.MapModel(observable({})),
+				spy = jasmine.createSpy('moveRequested');
+			underTest.addEventListener('mapMoveRequested', spy);
+			underTest.move('toolbar', 100, 200);
+			expect(spy).toHaveBeenCalledWith(100, 200);
 		});
 	});
 	describe('Selection', function () {
@@ -600,6 +607,11 @@ describe('MapModel', function () {
 			underTest.scaleUp('toolbar');
 
 			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'scaleUp', 'toolbar');
+		});
+		it('should dispatch analytic event when move method is invoked', function () {
+			underTest.move('toolbar');
+
+			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'mapMoveRequested', 'toolbar');
 		});
 		it('should dispatch analytic event when scaleDown method is invoked', function () {
 			underTest.scaleDown('toolbar');

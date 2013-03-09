@@ -185,6 +185,10 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 		self.dispatchEvent('mapScaleChanged', scaleMultiplier);
 		analytic(scaleMultiplier < 1 ? 'scaleDown' : 'scaleUp', source);
 	};
+	this.move = function (source, deltaX, deltaY) {
+		self.dispatchEvent('mapMoveRequested', deltaX, deltaY);
+		analytic('mapMoveRequested', source);
+	};
 	(function () {
 		var isRootOrRightHalf = function (id) {
 				return currentLayout.nodes[id].x >= currentLayout.nodes[idea.id].x;
