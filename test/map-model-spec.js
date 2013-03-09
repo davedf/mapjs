@@ -344,23 +344,32 @@ describe('MapModel', function () {
 		});
 	});
 	describe('map scaling', function () {
-		it('should dispatch mapScaleChanged event when scaleUp method is invoked', function () {
+		it('should dispatch mapScaleChanged event with 1.25 scale when scaleUp method is invoked', function () {
 			var underTest = new MAPJS.MapModel(observable({})),
 				mapScaleChangedListener = jasmine.createSpy();
 			underTest.addEventListener('mapScaleChanged', mapScaleChangedListener);
 
 			underTest.scaleUp('toolbar');
 
-			expect(mapScaleChangedListener).toHaveBeenCalledWith(true);
+			expect(mapScaleChangedListener).toHaveBeenCalledWith(1.25);
 		});
-		it('should dispatch mapScaleChanged event when scaleDown method is invoked', function () {
+		it('should dispatch mapScaleChanged event with 0.8 when scaleDown method is invoked', function () {
 			var underTest = new MAPJS.MapModel(observable({})),
 				mapScaleChangedListener = jasmine.createSpy();
 			underTest.addEventListener('mapScaleChanged', mapScaleChangedListener);
 
 			underTest.scaleDown('toolbar');
 
-			expect(mapScaleChangedListener).toHaveBeenCalledWith(false);
+			expect(mapScaleChangedListener).toHaveBeenCalledWith(0.8);
+		});
+		it('should dispatch mapScaleChanged event with scale arg when scale method is invoked', function () {
+			var underTest = new MAPJS.MapModel(observable({})),
+				mapScaleChangedListener = jasmine.createSpy();
+			underTest.addEventListener('mapScaleChanged', mapScaleChangedListener);
+
+			underTest.scale('toolbar', 777);
+
+			expect(mapScaleChangedListener).toHaveBeenCalledWith(777);
 		});
 	});
 	describe('Selection', function () {

@@ -176,12 +176,14 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 
 	};
 	this.scaleUp = function (source) {
-		self.dispatchEvent('mapScaleChanged', true);
-		analytic('scaleUp', source);
+		self.scale(source, 1.25);
 	};
 	this.scaleDown = function (source) {
-		self.dispatchEvent('mapScaleChanged', false);
-		analytic('scaleDown', source);
+		self.scale(source, 0.8);
+	};
+	this.scale = function (source, scaleMultiplier) {
+		self.dispatchEvent('mapScaleChanged', scaleMultiplier);
+		analytic(scaleMultiplier < 1 ? 'scaleDown' : 'scaleUp', source);
 	};
 	(function () {
 		var isRootOrRightHalf = function (id) {

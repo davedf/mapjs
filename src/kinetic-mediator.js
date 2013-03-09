@@ -148,8 +148,8 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			callback: connector.remove.bind(connector)
 		});
 	});
-	mapModel.addEventListener('mapScaleChanged', function (isScaleUp) {
-		var scale = (stage.getScale().x || 1) * (isScaleUp ? 1.25 : 0.8);
+	mapModel.addEventListener('mapScaleChanged', function (scaleMultiplier) {
+		var scale = (stage.getScale().x || 1) * scaleMultiplier;
 		stage.transitionTo({
 			scale: {
 				x: scale,
