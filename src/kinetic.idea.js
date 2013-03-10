@@ -149,7 +149,14 @@
 					e.stopPropagation();
 				})
 				.blur(onCommit)
-				.focus();
+				.focus()
+				.on('input', function () {
+					var text = new Kinetic.Idea({
+						text: ideaInput.val()
+					});
+					ideaInput.width(Math.max(ideaInput.width(), text.getWidth()));
+					ideaInput.height(Math.max(ideaInput.height(), text.getHeight()));
+				});
 			if (shouldSelectAll) {
 				ideaInput.select();
 			} else if (ideaInput[0].setSelectionRange) {
