@@ -22,11 +22,8 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 				return is && is.shape;
 			}
 			return false;
-		};
-	stage.add(layer);
-	jQuery(stage.getContainer()).on('dblclick', function (evt) { stage.simulate('dblclick', evt); });
-	stage.on('dbltap dblclick', function (evt) {
-		if (!getTargetShape(evt)) {
+		},
+		resetStage = function (evt) {
 			stage.transitionTo({
 				x: 0.5 * stage.getWidth(),
 				y: 0.5 * stage.getHeight(),
@@ -37,6 +34,12 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 				duration: 0.5,
 				easing: 'ease-in-out'
 			});
+		};
+	stage.add(layer);
+	jQuery(stage.getContainer()).on('dblclick', function (evt) { stage.simulate('dblclick', evt); });
+	stage.on('dbltap dblclick', function (evt) {
+		if (!getTargetShape(evt)) {
+			resetStage();
 		}
 	});
 	mapModel.addEventListener('nodeCreated', function (n) {
@@ -208,6 +211,7 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			9: mapModel.insertIntermediate.bind(mapModel, 'keyboard'),
 			38: mapModel.toggleCollapse.bind(mapModel, 'keyboard'),
 		}, metaKeyboardEventHandlers = {
+			48: resetStage,
 			90: mapModel.undo.bind(mapModel, 'keyboard'),
 			89: mapModel.redo.bind(mapModel, 'keyboard'),
 			187: mapModel.scaleUp.bind(mapModel, 'keyboard'),
