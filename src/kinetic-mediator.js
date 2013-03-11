@@ -10,17 +10,9 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 		},
 		moveStage = function (deltaX, deltaY) {
 			if (stage) {
-				/*
 				if (deltaY !== 0) { stage.attrs.y += deltaY; }
 				if (deltaX !== 0) { stage.attrs.x += deltaX; }
 				stage.draw();
-				*/
-				stage.transitionTo({
-					x: deltaX === 'center' ? 0.5 * stage.getWidth() : stage.attrs.x + deltaX,
-					y: deltaY === 'center' ? 0.5 * stage.getHeight() : stage.attrs.y + deltaY,
-					duration: 0.5,
-					easing: 'ease-in-out'
-				});
 			}
 		},
 		getTargetShape = function (evt) {
