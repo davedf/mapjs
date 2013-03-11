@@ -1,4 +1,4 @@
-/*global _, console, window, document, jQuery, Kinetic*/
+/*global _, window, document, jQuery, Kinetic*/
 var MAPJS = MAPJS || {};
 MAPJS.KineticMediator = function (mapModel, stage) {
 	'use strict';
@@ -22,12 +22,19 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 					easing: 'ease-in-out'
 				});
 			}
+		},
+		getTargetShape = function (evt) {
+			var is;
+			if (evt.offsetX && evt.offsetY) {
+				is = stage.getIntersection({x: evt.offsetX, y: evt.offsetY});
+				return is && is.shape;
+			}
+			return false;
 		};
 	stage.add(layer);
 	jQuery(stage.getContainer()).on('dblclick', function (evt) { stage.simulate('dblclick', evt); });
 	stage.on('dbltap dblclick', function (evt) {
-		var targetElement = stage.getIntersection({x: evt.offsetX, y: evt.offsetY});
-		if (!targetElement) {
+		if (!getTargetShape(evt)) {
 			stage.transitionTo({
 				x: 0.5 * stage.getWidth(),
 				y: 0.5 * stage.getHeight(),
@@ -40,12 +47,6 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			});
 		}
 	});
-	stage.on('hold', function (evt) {
-		var targetElement = stage.getIntersection({x: evt.offsetX, y: evt.offsetY});
-		if (targetElement && targetElement.shape) {
-			targetElement.shape.simulate('dblclick');
-		}
-	});
 	mapModel.addEventListener('nodeCreated', function (n) {
 		var node = new Kinetic.Idea({
 			level: n.level,
@@ -56,16 +57,20 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			opacity: 0
 		});
 		/* in kinetic 4.3 cannot use click because click if fired on dragend */
-		node.on('click tap', mapModel.selectNode.bind(mapModel, n.id));
+		node.on('click tap', function () {
+			console.log('click/tap', node, n);
+			if (!node.isSelected) {
+				mapModel.selectNode(n.id);
+			} else {
+				mapModel.toggleCollapse(n.id);
+			}
+		});
 		node.on('dragstart', function () {
 			node.moveToTop();
 			node.attrs.shadow.offset = {
 				x: 8,
 				y: 8
 			};
-		});
-		node.on('dbltap', function () {
-			mapModel.toggleCollapse(n.id);
 		});
 		node.on('dragmove', function () {
 			mapModel.nodeDragMove(

@@ -44,7 +44,7 @@
 			oldSetText(breakWords(text));
 		};
 		this.classType = 'Idea';
-		this.on('dblclick', self.fire.bind(self, ':nodeEditRequested'));
+		this.on('dblclick dbltap', self.fire.bind(self, ':nodeEditRequested'));
 		if (config.level > 1) {
 			this.on('mouseover touchstart', setStageDraggable.bind(null, false));
 			this.on('mouseout touchend', setStageDraggable.bind(null, true));
@@ -117,10 +117,14 @@
 						text: newText || unformattedText
 					});
 					ideaInput.remove();
+					self.stopEditing = undefined;
 					self.getStage().off('xChange yChange', onStageMoved);
 				},
 				onCommit = function () {
 					updateText(ideaInput.val());
+				},
+				onCancelEdit = function () {
+					updateText(unformattedText);
 				},
 				scale = self.getStage().getScale().x || 1,
 				onStageMoved = _.throttle(function () {
@@ -142,7 +146,7 @@
 					if (e.which === ENTER_KEY_CODE) {
 						onCommit();
 					} else if (e.which === ESC_KEY_CODE) {
-						updateText(unformattedText);
+						onCancelEdit();
 					} else if (e.which === 9) {
 						e.preventDefault();
 					}
@@ -157,6 +161,7 @@
 					ideaInput.width(Math.max(ideaInput.width(), text.getWidth()));
 					ideaInput.height(Math.max(ideaInput.height(), text.getHeight()));
 				});
+			self.stopEditing = onCancelEdit;
 			if (shouldSelectAll) {
 				ideaInput.select();
 			} else if (ideaInput[0].setSelectionRange) {
@@ -246,6 +251,9 @@ Kinetic.Idea.prototype.setIsSelected = function (isSelected) {
 	this.isSelected = isSelected;
 	this.setStyle(this.attrs);
 	this.getLayer().draw();
+	if (!isSelected && this.stopEditing) {
+		this.stopEditing();
+	}
 };
 Kinetic.Idea.prototype.setIsDroppable = function (isDroppable) {
 	'use strict';
