@@ -57,14 +57,7 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			opacity: 0
 		});
 		/* in kinetic 4.3 cannot use click because click if fired on dragend */
-		node.on('click tap', function () {
-			console.log('click/tap', node, n);
-			if (!node.isSelected) {
-				mapModel.selectNode(n.id);
-			} else {
-				mapModel.toggleCollapse(n.id);
-			}
-		});
+		node.on('click tap', mapModel.selectNode.bind(mapModel, n.id));
 		node.on('dragstart', function () {
 			node.moveToTop();
 			node.attrs.shadow.offset = {
