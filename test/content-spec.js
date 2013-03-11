@@ -457,6 +457,10 @@ describe("content aggregate", function () {
 			it("fails if asked to make a cycle (make a idea a child of it's own child)", function () {
 				expect(idea.changeParent(1,2)).toBeFalsy();
 			});
+			it("should convert types passed as ids for parent and child nodes", function () {
+				expect(idea.changeParent(1,'2')).toBeFalsy();
+				expect(idea.changeParent('1',2)).toBeFalsy();
+			});			
 			it("fails if asked to put an idea in it's current parent", function () {
 				expect(idea.changeParent(1,5)).toBeFalsy();
 			});

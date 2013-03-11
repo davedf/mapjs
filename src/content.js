@@ -14,7 +14,7 @@ var content = function (contentAggregate) {
 				_.reduce(
 					contentIdea.ideas,
 					function (res, value, key) {
-						return value.id === childIdeaId ? key : res;
+						return value.id == childIdeaId ? key : res;
 					},
 					undefined
 				)
@@ -22,7 +22,7 @@ var content = function (contentAggregate) {
 		};
 		contentIdea.findSubIdeaById = function (childIdeaId) {
 			var myChild = _.find(contentIdea.ideas, function (idea) {
-				return idea.id === childIdeaId;
+				return idea.id == childIdeaId;
 			});
 			return myChild || _.reduce(contentIdea.ideas, function (result, idea) {
 				return result || idea.findSubIdeaById(childIdeaId);
@@ -58,7 +58,7 @@ var content = function (contentAggregate) {
 		},
 		nextChildRank = function (parentIdea) {
 			var new_rank, counts, childRankSign = 1;
-			if (parentIdea.id === contentAggregate.id) {
+			if (parentIdea.id == contentAggregate.id) {
 				counts = _.countBy(parentIdea.ideas, function (v, k) {
 					return k < 0;
 				});
@@ -78,7 +78,7 @@ var content = function (contentAggregate) {
 		},
 		findIdeaById = function (ideaId) {
 			ideaId = parseFloat(ideaId);
-			return contentAggregate.id === ideaId ? contentAggregate : contentAggregate.findSubIdeaById(ideaId);
+			return contentAggregate.id == ideaId ? contentAggregate : contentAggregate.findSubIdeaById(ideaId);
 		},
 		sameSideSiblingRanks = function (parentIdea, ideaRank) {
 			return _(_.map(_.keys(parentIdea.ideas), parseFloat)).reject(function (k) {return k * ideaRank < 0; });
@@ -215,7 +215,7 @@ var content = function (contentAggregate) {
 		return false;
 	};
 	contentAggregate.insertIntermediate = function (inFrontOfIdeaId, title) {
-		if (contentAggregate.id === inFrontOfIdeaId) {
+		if (contentAggregate.id == inFrontOfIdeaId) {
 			return false;
 		}
 		var childRank, oldIdea, newIdea, parentIdea = contentAggregate.findParent(inFrontOfIdeaId);
@@ -241,7 +241,7 @@ var content = function (contentAggregate) {
 	};
 	contentAggregate.changeParent = function (ideaId, newParentId) {
 		var oldParent, oldRank, newRank, idea, parent = findIdeaById(newParentId);
-		if (ideaId === newParentId) {
+		if (ideaId == newParentId) {
 			return false;
 		}
 		if (!parent) {
@@ -310,7 +310,7 @@ var content = function (contentAggregate) {
 				false
 			);
 		}
-		if (ideaId === positionBeforeIdeaId) {
+		if (ideaId == positionBeforeIdeaId) {
 			return false;
 		}
 		new_rank = 0;
@@ -324,18 +324,18 @@ var content = function (contentAggregate) {
 				return Math.abs(k) >= Math.abs(after_rank);
 			});
 			before_rank = candidate_siblings.length > 0 ? _.max(candidate_siblings, Math.abs) : 0;
-			if (before_rank === current_rank) {
+			if (before_rank == current_rank) {
 				return false;
 			}
 			new_rank = before_rank + (after_rank - before_rank) / 2;
 		} else {
 			max_rank = maxKey(parentIdea.ideas, current_rank < 0 ? -1 : 1);
-			if (max_rank === current_rank) {
+			if (max_rank == current_rank) {
 				return false;
 			}
 			new_rank = max_rank + 10 * (current_rank < 0 ? -1 : 1);
 		}
-		if (new_rank === current_rank) {
+		if (new_rank == current_rank) {
 			return false;
 		}
 		reorderChild(parentIdea, new_rank, current_rank);
