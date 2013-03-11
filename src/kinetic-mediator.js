@@ -24,6 +24,28 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			}
 		};
 	stage.add(layer);
+	jQuery(stage.getContainer()).on('dblclick', function (evt) { stage.simulate('dblclick', evt); });
+	stage.on('dbltap dblclick', function (evt) {
+		var targetElement = stage.getIntersection({x: evt.offsetX, y: evt.offsetY});
+		if (!targetElement) {
+			stage.transitionTo({
+				x: 0.5 * stage.getWidth(),
+				y: 0.5 * stage.getHeight(),
+				scale: {
+					x: 1,
+					y: 1
+				},
+				duration: 0.5,
+				easing: 'ease-in-out'
+			});
+		}
+	});
+	stage.on('hold', function (evt) {
+		var targetElement = stage.getIntersection({x: evt.offsetX, y: evt.offsetY});
+		if (targetElement && targetElement.shape) {
+			targetElement.shape.simulate('dblclick');
+		}
+	});
 	mapModel.addEventListener('nodeCreated', function (n) {
 		var node = new Kinetic.Idea({
 			level: n.level,
@@ -41,6 +63,9 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 				x: 8,
 				y: 8
 			};
+		});
+		node.on('dbltap', function () {
+			mapModel.toggleCollapse(n.id);
 		});
 		node.on('dragmove', function () {
 			mapModel.nodeDragMove(
