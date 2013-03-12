@@ -226,7 +226,7 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 				}
 			},
 			onScroll = function (event, delta, deltaX, deltaY) {
-				moveStage(deltaX, deltaY);
+				moveStage(-1 * deltaX, deltaY);
 				if (deltaX < 0) { /* stop the back button */
 					event.preventDefault();
 				}
