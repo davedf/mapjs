@@ -139,6 +139,10 @@
 						onCancelEdit();
 					} else if (e.which === 9) {
 						e.preventDefault();
+					} else if (e.which === 83 && (e.metaKey || e.ctrlKey)) {
+						e.preventDefault();
+						onCommit();
+						return; /* propagate to let the environment handle ctrl+s */
 					}
 					e.stopPropagation();
 				})
