@@ -1,5 +1,37 @@
 /*global _, window, document, jQuery, Kinetic*/
 var MAPJS = MAPJS || {};
+if (Kinetic.Stage.prototype.isRectVisible) {
+	throw ("isRectVisible already exists, should not mix in our methods");
+}
+MAPJS.Rectangle = function (x, y, width, height) {
+	'use strict';
+	this.scale = function (scale) {
+		return new MAPJS.Rectangle(x * scale, y * scale, width * scale, height * scale);
+	};
+	this.translate = function (dx, dy) {
+		return new MAPJS.Rectangle(x + dx, y + dy, width, height);
+	};
+	this.inset = function (margin) {
+		return new MAPJS.Rectangle(x + margin, y + margin, width - (margin * 2), height - (margin * 2));
+	};
+	this.x = x;
+	this.y = y;
+	this.height = height;
+	this.width = width;
+};
+Kinetic.Stage.prototype.isRectVisible = function (rect, offset) {
+	'use strict';
+	offset = offset || {x: 0, y: 0, margin: 0};
+	var scale = this.getScale().x || 1;
+	rect = rect.scale(scale).translate(offset.x, offset.y).inset(offset.margin);
+	return !(
+		rect.x + this.attrs.x > this.getWidth() ||
+		rect.x + rect.width + this.attrs.x < 0  ||
+		rect.y + this.attrs.y > this.getHeight() ||
+		rect.y + rect.height + this.attrs.y < 0
+	);
+};
+
 MAPJS.KineticMediator = function (mapModel, stage) {
 	'use strict';
 	var layer = new Kinetic.Layer(),
@@ -8,8 +40,20 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 		connectorKey = function (fromIdeaId, toIdeaId) {
 			return fromIdeaId + '_' + toIdeaId;
 		},
+		atLeastOneVisible = function (list, deltaX, deltaY) {
+			var margin = Math.min(stage.getHeight(), stage.getWidth()) * 0.1;
+			return _.find(list, function (node) {
+				return node.isVisible({x: deltaX, y: deltaY, margin: margin});
+			});
+		},
 		moveStage = function (deltaX, deltaY) {
-			if (stage) {
+			var visibleAfterMove, visibleBeforeMove;
+			if (!stage) {
+				return;
+			}
+			visibleBeforeMove = atLeastOneVisible(nodeByIdeaId, 0, 0) || atLeastOneVisible(connectorByFromIdeaId_ToIdeaId, 0, 0);
+			visibleAfterMove = atLeastOneVisible(nodeByIdeaId, deltaX, deltaY) || atLeastOneVisible(connectorByFromIdeaId_ToIdeaId, deltaX, deltaY);
+			if (visibleAfterMove || (!visibleBeforeMove)) {
 				if (deltaY !== 0) { stage.attrs.y += deltaY; }
 				if (deltaX !== 0) { stage.attrs.x += deltaX; }
 				stage.draw();
@@ -227,10 +271,7 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			},
 			onScroll = function (event, delta, deltaX, deltaY) {
 				moveStage(-1 * deltaX, deltaY);
-				if (deltaX < 0) { /* stop the back button */
-					event.preventDefault();
-				}
-				if (deltaY < 0) { /*stop scrolling down */
+				if (event.preventDefault) { /* stop the back button */
 					event.preventDefault();
 				}
 			};

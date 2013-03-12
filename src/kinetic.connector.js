@@ -1,4 +1,4 @@
-/*global Kinetic*/
+/*global Kinetic, MAPJS*/
 /*jslint nomen: true*/
 (function () {
 	'use strict';
@@ -55,6 +55,14 @@
 		};
 	};
 	Kinetic.Connector.prototype = {
+		isVisible: function (offset) {
+			var stage = this.getStage(),
+				conn = calculateConnector(this.shapeFrom, this.shapeTo),
+				x = Math.min(conn.from.x, conn.to.x),
+				y = Math.min(conn.from.y, conn.to.y),
+				rect = new MAPJS.Rectangle(x, y, Math.max(conn.from.x, conn.to.x) - x, Math.max(conn.from.y, conn.to.y) - y);
+			return stage && stage.isRectVisible(rect, offset);
+		},
 		drawFunc: function (canvas) {
 			var context = canvas.getContext(),
 				shapeFrom = this.shapeFrom,
@@ -62,7 +70,7 @@
 				conn,
 				offset,
 				maxOffset;
-			if (!(shapeFrom.isVisible() || shapeTo.isVisible())) {
+			if (!this.isVisible()) {
 				return;
 			}
 			conn = calculateConnector(shapeFrom, shapeTo);

@@ -1,4 +1,4 @@
-/*global Color, _, console, jQuery, Kinetic*/
+/*global MAPJS, Color, _, console, jQuery, Kinetic*/
 /*jslint nomen: true, newcap: true*/
 (function () {
 	'use strict';
@@ -89,19 +89,9 @@
 			context.closePath();
 			canvas.fillStroke(this);
 		};
-		this.isVisible = function () {
-			var stage = self.getStage(), scale, position;
-			if (!stage) {
-				return false;
-			}
-			scale = stage.getScale().x || 1;
-			position = self.attrs;
-			return !(
-				scale * position.x > -stage.attrs.x + stage.getWidth() ||
-				-stage.attrs.x > scale * position.x + scale * self.getWidth() ||
-				scale * position.y > -stage.attrs.y + stage.getHeight() ||
-				-stage.attrs.y > scale * position.y + scale * self.getHeight()
-			);
+		this.isVisible = function (offset) {
+			var stage = self.getStage();
+			return stage && stage.isRectVisible(new MAPJS.Rectangle(self.attrs.x, self.attrs.y, self.getWidth(), self.getHeight()), offset);
 		};
 		this.editNode = function (shouldSelectAll) {
 			self.fire(':editing');
