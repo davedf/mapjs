@@ -344,32 +344,32 @@ describe('MapModel', function () {
 		});
 	});
 	describe('map scaling and movement', function () {
-		it('should dispatch mapScaleChanged event with 1.25 scale when scaleUp method is invoked', function () {
+		it('should dispatch mapScaleChanged event with 1.25 scale and no zoom point when scaleUp method is invoked', function () {
 			var underTest = new MAPJS.MapModel(observable({})),
 				mapScaleChangedListener = jasmine.createSpy();
 			underTest.addEventListener('mapScaleChanged', mapScaleChangedListener);
 
 			underTest.scaleUp('toolbar');
 
-			expect(mapScaleChangedListener).toHaveBeenCalledWith(1.25);
+			expect(mapScaleChangedListener).toHaveBeenCalledWith(1.25, undefined);
 		});
-		it('should dispatch mapScaleChanged event with 0.8 when scaleDown method is invoked', function () {
+		it('should dispatch mapScaleChanged event with 0.8 and no zoom point when scaleDown method is invoked', function () {
 			var underTest = new MAPJS.MapModel(observable({})),
 				mapScaleChangedListener = jasmine.createSpy();
 			underTest.addEventListener('mapScaleChanged', mapScaleChangedListener);
 
 			underTest.scaleDown('toolbar');
 
-			expect(mapScaleChangedListener).toHaveBeenCalledWith(0.8);
+			expect(mapScaleChangedListener).toHaveBeenCalledWith(0.8, undefined);
 		});
-		it('should dispatch mapScaleChanged event with scale arg when scale method is invoked', function () {
+		it('should dispatch mapScaleChanged event with scale arguments when scale method is invoked', function () {
 			var underTest = new MAPJS.MapModel(observable({})),
 				mapScaleChangedListener = jasmine.createSpy();
 			underTest.addEventListener('mapScaleChanged', mapScaleChangedListener);
 
-			underTest.scale('toolbar', 777);
+			underTest.scale('toolbar', 777, 'zoompoint');
 
-			expect(mapScaleChangedListener).toHaveBeenCalledWith(777);
+			expect(mapScaleChangedListener).toHaveBeenCalledWith(777, 'zoompoint');
 		});
 		it('should dispatch mapMoveRequested passsing args when a move is requested', function () {
 			var underTest = new MAPJS.MapModel(observable({})),

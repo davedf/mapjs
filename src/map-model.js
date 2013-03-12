@@ -181,8 +181,8 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 	this.scaleDown = function (source) {
 		self.scale(source, 0.8);
 	};
-	this.scale = function (source, scaleMultiplier) {
-		self.dispatchEvent('mapScaleChanged', scaleMultiplier);
+	this.scale = function (source, scaleMultiplier, zoomPoint) {
+		self.dispatchEvent('mapScaleChanged', scaleMultiplier, zoomPoint);
 		analytic(scaleMultiplier < 1 ? 'scaleDown' : 'scaleUp', source);
 	};
 	this.move = function (source, deltaX, deltaY) {

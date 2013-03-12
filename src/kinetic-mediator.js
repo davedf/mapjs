@@ -225,19 +225,20 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			callback: connector.remove.bind(connector)
 		});
 	});
-	mapModel.addEventListener('mapScaleChanged', function (scaleMultiplier) {
+	mapModel.addEventListener('mapScaleChanged', function (scaleMultiplier, zoomPoint) {
 		var currentScale = stage.getScale().x || 1,
 			targetScale = Math.max(Math.min(currentScale * scaleMultiplier, 5), 0.2);
 		if (currentScale === targetScale) {
 			return;
 		}
+		zoomPoint = zoomPoint || {x:  0.5 * stage.getWidth(), y: 0.5 * stage.getHeight()};
 		stage.transitionTo({
 			scale: {
 				x: targetScale,
 				y: targetScale
 			},
-			x: 0.5 * stage.getWidth() + (stage.attrs.x - 0.5 * stage.getWidth()) * targetScale / currentScale,
-			y: 0.5 * stage.getHeight() + (stage.attrs.y - 0.5 * stage.getHeight()) * targetScale / currentScale,
+			x: zoomPoint.x + (stage.attrs.x - zoomPoint.x) * targetScale / currentScale,
+			y: zoomPoint.y + (stage.attrs.y - zoomPoint.y) * targetScale / currentScale,
 			duration: 0.1,
 			easing: 'ease-in-out'
 		});
