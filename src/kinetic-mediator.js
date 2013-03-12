@@ -226,13 +226,20 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 		});
 	});
 	mapModel.addEventListener('mapScaleChanged', function (scaleMultiplier) {
-		var scale = Math.max(Math.min((stage.getScale().x || 1) * scaleMultiplier, 5), 0.2);
+		var currentScale = stage.getScale().x || 1,
+			targetScale = Math.max(Math.min(currentScale * scaleMultiplier, 5), 0.2);
+		if (currentScale === targetScale) {
+			return;
+		}
 		stage.transitionTo({
 			scale: {
-				x: scale,
-				y: scale
+				x: targetScale,
+				y: targetScale
 			},
-			duration: 0.1
+			x: 0.5 * stage.getWidth() + (stage.attrs.x - 0.5 * stage.getWidth()) * targetScale / currentScale,
+			y: 0.5 * stage.getHeight() + (stage.attrs.y - 0.5 * stage.getHeight()) * targetScale / currentScale,
+			duration: 0.1,
+			easing: 'ease-in-out'
 		});
 	});
 	mapModel.addEventListener('mapMoveRequested', function (deltaX, deltaY) {
