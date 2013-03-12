@@ -182,7 +182,7 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 		});
 	});
 	mapModel.addEventListener('mapScaleChanged', function (scaleMultiplier) {
-		var scale = (stage.getScale().x || 1) * scaleMultiplier;
+		var scale = Math.max(Math.min((stage.getScale().x || 1) * scaleMultiplier, 5), 0.2);
 		stage.transitionTo({
 			scale: {
 				x: scale,
