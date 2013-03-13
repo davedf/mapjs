@@ -7,6 +7,8 @@
 				height: 100%;
 			}
 		</style>
+		<button id="addNodeButton">Add Node</button>
+		<span id="nodeCount"></span>
 		<div id="framerate"></div>
 		<div id="container"></div>
 		<script type="text/javascript" src="../lib/jquery-1.9.0.js"></script>
@@ -50,12 +52,8 @@
 								duration: 0.5
 							});
 						}
-					};
-
-				stage.add(layer);
-
-
-				for (var i = 0; i < 30; i++) {
+					},
+				addNode = function () {
 					var node = new Kinetic.Idea({
 						level: 2,
 						x: 10,
@@ -63,8 +61,10 @@
 						text: 'this is a title for the node ' + i + '. A very special one.'
 					});
 					layer.add(node);
-					if (true === false) {
+					var useImages = false;
+					if (!useImages) {
 						nodes.push(node);
+						$('#nodeCount').text(nodes.length + ' nodes using images:' + useImages);
 					} else {
 						node.toImage({
 							width: node.getWidth() + 20,
@@ -78,11 +78,21 @@
 								layer.add(image);
 								layer.draw();
 								nodes.push(image);
+								$('#nodeCount').text(nodes.length + ' nodes using images:' + useImages);
 							}
 						});
 						node.remove();
 					}
+
+				};
+
+				stage.add(layer);
+				$('#addNodeButton').click(addNode);
+
+				for (var i = 0; i < 30; i++) {
+					addNode();
 				}
+
 				setStageDimensions();
 				if (true == true) {
 					setInterval(moveNodes, 500);
