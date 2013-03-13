@@ -34,6 +34,7 @@
 				}),
 				layer = new Kinetic.Layer(),
 				setStageDimensions = function () {
+					console.log("setStageDimensions");
 					stage.setWidth(container.width());
 					stage.setHeight(container.height());
 					stage.draw();
@@ -46,38 +47,29 @@
 				for (var i = 0; i < 30; i++) {
 					var node = new Kinetic.Idea({
 						level: 2,
-						x: Math.random() * stage.getWidth(),
-						y: Math.random() * stage.getHeight(),
+						x: 0,
+						y: 0,
 						text: 'this is a title for the node ' + i + '. A very special one.'
 					});
 					layer.add(node);
-					nodes.push(node);
+					if (true === false) {
+						nodes.push(node);
+					} else {
+						node.toImage({
+							callback: function (img) {
+								var image = new Kinetic.Image({
+									x: 0,
+									y: 0,
+									image: img
+								});
+								layer.add(image);
+								layer.draw();
+								nodes.push(image);
+							}
+						});
+						node.remove();
+					}
 				}
-
-				// for (var i = 0; i < 10; i++) {
-				// 	var node = new Kinetic.Idea({
-				// 		level: 2,
-				// 		x: 0,
-				// 		y: 0,
-				// 		text: 'this is a title for the node ' + i + '. A very special one.',
-				// 		text2: 'hello',
-				// 		fill: ['green', 'red', 'blue', 'yellow'][Math.floor(4 * Math.random())]
-				// 	});
-				// 	layer.add(node);
-				// 	node.toImage({
-				// 		callback: function (img) {
-				// 			var image = new Kinetic.Image({
-				// 				x: 0,
-				// 				y: 0,
-				// 				image: img
-				// 			});
-				// 			layer.add(image);
-				// 			layer.draw();
-				// 			nodes.push(image);
-				// 		}
-				// 	});
-				// 	node.remove();
-				// }
 
 				setInterval(function () {
 					var i;
