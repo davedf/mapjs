@@ -39,16 +39,27 @@
 					stage.setHeight(container.height());
 					stage.draw();
 				},
-				nodes = [];
-				setStageDimensions();
-				$(window).resize(setStageDimensions);
+				nodes = [],
+				moveNodes = function () {
+						var i;
+						for (i = 0; i < nodes.length; i++) {
+							nodes[i].transitionTo({
+								x: Math.round(stage.getWidth() / 12) * Math.round(10 * Math.random()),
+								y: Math.round(stage.getHeight() / 12) * Math.round(10 * Math.random()),
+								easing: 'ease-in-out',
+								duration: 0.5
+							});
+						}
+					};
+
 				stage.add(layer);
+
 
 				for (var i = 0; i < 30; i++) {
 					var node = new Kinetic.Idea({
 						level: 2,
-						x: 0,
-						y: 0,
+						x: 10,
+						y: 10,
 						text: 'this is a title for the node ' + i + '. A very special one.'
 					});
 					layer.add(node);
@@ -56,11 +67,13 @@
 						nodes.push(node);
 					} else {
 						node.toImage({
+							width: node.getWidth() + 20,
+							height: node.getHeight() + 20,
 							callback: function (img) {
 								var image = new Kinetic.Image({
 									x: 0,
 									y: 0,
-									image: img
+									image: img,									
 								});
 								layer.add(image);
 								layer.draw();
@@ -70,18 +83,14 @@
 						node.remove();
 					}
 				}
-
-				setInterval(function () {
-					var i;
-					for (i = 0; i < nodes.length; i++) {
-						nodes[i].transitionTo({
-							x: Math.round(stage.getWidth() / 12) * Math.round(10 * Math.random()),
-							y: Math.round(stage.getHeight() / 12) * Math.round(10 * Math.random()),
-							easing: 'ease-in-out',
-							duration: 0.5
-						});
-					}
-				}, 500);
+				setStageDimensions();
+				if (true == true) {
+					setInterval(moveNodes, 500);
+				} else {
+					setTimeout(moveNodes, 500);
+				}
+				
+				$(window).resize(setStageDimensions);
 			}());
 			(function () {
 				var oldRequestAnimationFrame = window.requestAnimationFrame,
