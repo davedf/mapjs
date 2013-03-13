@@ -7,6 +7,7 @@
 				height: 100%;
 			}
 		</style>
+		<button id="moveNodeButton">Move Nodes</button>
 		<button id="addNodeButton">Add Node</button>
 		<span id="nodeCount"></span>
 		<div id="framerate"></div>
@@ -81,6 +82,8 @@
 								var image = new Kinetic.Image({
 									x: 0,
 									y: 0,
+									width: node.getWidth() + 20,
+									height: node.getHeight() + 20,
 									image: img,									
 								});
 								layer.add(image);
@@ -96,6 +99,7 @@
 
 				stage.add(layer);
 				$('#addNodeButton').click(addNode);
+				$('#moveNodeButton').click(moveNodes);
 
 				for (var i = 0; i < 20; i++) {
 					addNode();
