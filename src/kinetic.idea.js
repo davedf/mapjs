@@ -60,6 +60,9 @@
 			}
 			oldTransitionTo(transition);
 		};
+		this.getNodeAttrs = function () {
+			return self.attrs;
+		};
 		this.drawCollapsedBG = function (canvas, offset) {
 			var context = canvas.getContext(),
 				cornerRadius = this.getCornerRadius(),

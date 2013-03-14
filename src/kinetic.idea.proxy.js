@@ -4,6 +4,7 @@ Kinetic.IdeaProxy = function (idea, stage, layer) {
 	var cached,
 		container = new Kinetic.Container({opacity: 0, draggable: true}),
 		cacheImage = function () {
+			console.log('cacheImage');
 			var x = -1, y = -1,
 				width = idea.getWidth() + 20,
 				height = idea.getHeight() + 20;

@@ -48,7 +48,7 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 		},
 		moveStage = function (deltaX, deltaY) {
 			var visibleAfterMove, visibleBeforeMove;
-			if (!stage) {
+			if (!stage) {	
 				return;
 			}
 			visibleBeforeMove = atLeastOneVisible(nodeByIdeaId, 0, 0) || atLeastOneVisible(connectorByFromIdeaId_ToIdeaId, 0, 0);
@@ -281,20 +281,22 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 					eventHandler();
 					evt.preventDefault();
 				}
-			},
+			};
+		/*
+	,
 			onScroll = function (event, delta, deltaX, deltaY) {
 				moveStage(-1 * deltaX, deltaY);
-				if (event.preventDefault) { /* stop the back button */
+				if (event.preventDefault) { // stop the back button
 					event.preventDefault();
 				}
 			};
-		jQuery(document).keydown(onKeydown);
 		jQuery(window).mousewheel(onScroll);
 		mapModel.addEventListener('inputEnabledChanged', function (isInputEnabled) {
 			jQuery(document)[isInputEnabled ? 'bind' : 'unbind']('keydown', onKeydown);
 			jQuery(window)[isInputEnabled ? 'mousewheel' : 'unmousewheel'](onScroll);
 		});
-
+		*/
+		jQuery(document).keydown(onKeydown);
 	}());
 };
 MAPJS.KineticMediator.dimensionProvider = _.memoize(function (title) {
