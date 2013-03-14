@@ -93,33 +93,34 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			y: n.y,
 			text: n.title,
 			mmStyle: n.style,
-			opacity: 0
-		});
+			opacity: 1
+		}), container = new Kinetic.Container({opacity: 0, draggable: true});
 		/* in kinetic 4.3 cannot use click because click if fired on dragend */
-		node.on('click tap', mapModel.selectNode.bind(mapModel, n.id));
-		node.on('dragstart', function () {
-			node.moveToTop();
+		container.on('click tap', mapModel.selectNode.bind(mapModel, n.id));
+		container.on('dragstart', function () {
+			container.moveToTop();
 			node.attrs.shadow.offset = {
 				x: 8,
 				y: 8
 			};
 		});
-		node.on('dragmove', function () {
+		container.on('dragmove', function () {
 			mapModel.nodeDragMove(
 				n.id,
-				node.attrs.x,
-				node.attrs.y
+				container.attrs.x,
+				container.attrs.y
 			);
 		});
-		node.on('dragend', function () {
+		container.on('dragend', function () {
 			node.attrs.shadow.offset = {
 				x: 4,
 				y: 4
 			};
+			stage.setDraggable(true);
 			mapModel.nodeDragEnd(
 				n.id,
-				node.attrs.x,
-				node.attrs.y
+				container.attrs.x,
+				container.attrs.y
 			);
 		});
 		node.on(':textChanged', function (event) {
@@ -131,13 +132,15 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 		});
 		node.on(':nodeEditRequested', mapModel.editNode.bind(mapModel, 'mouse', false));
 
+		if (n.level > 1) {
+			container.on('mouseover touchstart', stage.setDraggable.bind(stage, false));
+			container.on('mouseout touchend', stage.setDraggable.bind(stage, true));
+
+		}
+
 		mapModel.addEventListener('nodeEditRequested:' + n.id, node.editNode);
-		nodeByIdeaId[n.id] = node;
-		layer.add(node);
-		node.transitionToAndDontStopCurrentTransitions({
-			opacity: 1,
-			duration: 0.4
-		});
+		nodeByIdeaId[n.id] = Kinetic.IdeaProxy(node, container, stage, layer);
+
 	});
 	mapModel.addEventListener('nodeSelectionChanged', function (ideaId, isSelected) {
 		var node = nodeByIdeaId[ideaId],
@@ -261,7 +264,7 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			191: mapModel.toggleCollapse.bind(mapModel, 'keyboard')
 		}, shiftKeyboardEventHandlers = {
 			9: mapModel.insertIntermediate.bind(mapModel, 'keyboard'),
-			38: mapModel.toggleCollapse.bind(mapModel, 'keyboard'),
+			38: mapModel.toggleCollapse.bind(mapModel, 'keyboard')
 		}, metaKeyboardEventHandlers = {
 			48: resetStage,
 			90: mapModel.undo.bind(mapModel, 'keyboard'),

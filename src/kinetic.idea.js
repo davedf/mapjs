@@ -24,9 +24,6 @@
 		var ENTER_KEY_CODE = 13,
 			ESC_KEY_CODE = 27,
 			self = this,
-			setStageDraggable = function (isDraggable) {
-				self.getStage().setDraggable(isDraggable);
-			},
 			unformattedText = joinLines(config.text),
 			oldSetText,
 			oldTransitionTo;
@@ -45,10 +42,6 @@
 		};
 		this.classType = 'Idea';
 		this.on('dblclick dbltap', self.fire.bind(self, ':nodeEditRequested'));
-		if (config.level > 1) {
-			this.on('mouseover touchstart', setStageDraggable.bind(null, false));
-			this.on('mouseout touchend', setStageDraggable.bind(null, true));
-		}
 		this.oldDrawFunc = this.getDrawFunc();
 		this.setDrawFunc(function (canvas) {
 			if (self.isVisible()) {
