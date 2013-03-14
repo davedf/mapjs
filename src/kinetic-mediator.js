@@ -94,33 +94,35 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			text: n.title,
 			mmStyle: n.style,
 			opacity: 1
-		}), container = new Kinetic.Container({opacity: 0, draggable: true});
+		});
+
+		node = Kinetic.IdeaProxy(node, stage, layer);
 		/* in kinetic 4.3 cannot use click because click if fired on dragend */
-		container.on('click tap', mapModel.selectNode.bind(mapModel, n.id));
-		container.on('dragstart', function () {
-			container.moveToTop();
-			node.attrs.shadow.offset = {
+		node.on('click tap', mapModel.selectNode.bind(mapModel, n.id));
+		node.on('dragstart', function () {
+			node.moveToTop();
+			node.getNodeAttrs().shadow.offset = {
 				x: 8,
 				y: 8
 			};
 		});
-		container.on('dragmove', function () {
+		node.on('dragmove', function () {
 			mapModel.nodeDragMove(
 				n.id,
-				container.attrs.x,
-				container.attrs.y
+				node.attrs.x,
+				node.attrs.y
 			);
 		});
-		container.on('dragend', function () {
-			node.attrs.shadow.offset = {
+		node.on('dragend', function () {
+			node.getNodeAttrs().shadow.offset = {
 				x: 4,
 				y: 4
 			};
 			stage.setDraggable(true);
 			mapModel.nodeDragEnd(
 				n.id,
-				container.attrs.x,
-				container.attrs.y
+				node.attrs.x,
+				node.attrs.y
 			);
 		});
 		node.on(':textChanged', function (event) {
@@ -133,13 +135,13 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 		node.on(':nodeEditRequested', mapModel.editNode.bind(mapModel, 'mouse', false));
 
 		if (n.level > 1) {
-			container.on('mouseover touchstart', stage.setDraggable.bind(stage, false));
-			container.on('mouseout touchend', stage.setDraggable.bind(stage, true));
+			node.on('mouseover touchstart', stage.setDraggable.bind(stage, false));
+			node.on('mouseout touchend', stage.setDraggable.bind(stage, true));
 
 		}
 
 		mapModel.addEventListener('nodeEditRequested:' + n.id, node.editNode);
-		nodeByIdeaId[n.id] = Kinetic.IdeaProxy(node, container, stage, layer);
+		nodeByIdeaId[n.id] = node;
 
 	});
 	mapModel.addEventListener('nodeSelectionChanged', function (ideaId, isSelected) {
