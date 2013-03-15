@@ -118,7 +118,6 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 				x: 4,
 				y: 4
 			};
-			stage.setDraggable(true);
 			mapModel.nodeDragEnd(
 				n.id,
 				node.attrs.x,
@@ -250,7 +249,8 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			x: zoomPoint.x + (stage.attrs.x - zoomPoint.x) * targetScale / currentScale,
 			y: zoomPoint.y + (stage.attrs.y - zoomPoint.y) * targetScale / currentScale,
 			duration: 0.1,
-			easing: 'ease-in-out'
+			easing: 'ease-in-out',
+			callback: stage.fire.bind(stage, ':scaleChangeComplete')
 		});
 	});
 	mapModel.addEventListener('mapMoveRequested', function (deltaX, deltaY) {

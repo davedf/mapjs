@@ -1,18 +1,30 @@
-/*global _, Kinetic, MAPJS, Image, setTimeout */
+/*global _, Kinetic, MAPJS, Image, setTimeout, jQuery */
 Kinetic.IdeaProxy = function (idea, stage, layer) {
 	'use strict';
 	var nodeimage,
+		emptyImage,
 		imageRendered,
 		container = new Kinetic.Container({opacity: 0, draggable: true}),
+		removeImage = function () {
+			nodeimage.setImage(emptyImage);
+			imageRendered = false;
+		},
 		cacheImage = function () {
+			if (!idea.isVisible()) {
+				removeImage();
+				return;
+			}
+			if (imageRendered) {
+				return;
+			}
 			imageRendered = true;
-			idea.attrs.scale.x = stage.attrs.scale.x;
-			idea.attrs.scale.y = stage.attrs.scale.y;
 			var scale = stage.attrs.scale.x, x = -scale, y = -scale,
 				unscaledWidth = idea.getWidth() + 20,
 				unscaledHeight = idea.getHeight() + 20,
 				width = (unscaledWidth * scale),
 				height = (unscaledHeight * scale);
+			idea.attrs.scale.x = scale;
+			idea.attrs.scale.y = scale;
 			idea.toImage({
 				x: x,
 				y: y,
@@ -25,6 +37,10 @@ Kinetic.IdeaProxy = function (idea, stage, layer) {
 					layer.draw();
 				}
 			});
+		},
+		reRender = function () {
+			imageRendered = false;
+			cacheImage();
 		},
 		nodeImageDrawFunc;
 
@@ -40,16 +56,7 @@ Kinetic.IdeaProxy = function (idea, stage, layer) {
 	});
 	nodeImageDrawFunc = nodeimage.getDrawFunc().bind(nodeimage);
 	nodeimage.setDrawFunc(function (canvas) {
-		if (idea.isVisible()) {
-			if (!imageRendered) {
-				cacheImage();
-			}
-		} else {
-			if (imageRendered) {
-				nodeimage.setImage();
-				imageRendered = false;
-			}
-		}
+		cacheImage();
 		nodeImageDrawFunc(canvas);
 	});
 
@@ -76,7 +83,9 @@ Kinetic.IdeaProxy = function (idea, stage, layer) {
 	idea.getAbsolutePosition =  function () {
 		return container.getAbsolutePosition();
 	};
-
+	stage.on(':scaleChangeComplete', function () {
+		reRender();
+	});
 	container.transitionToAndDontStopCurrentTransitions = function (config) {
 		var transition = new Kinetic.Transition(container, config),
 			animation = new Kinetic.Animation();
@@ -94,19 +103,13 @@ Kinetic.IdeaProxy = function (idea, stage, layer) {
 	_.each([':textChanged', ':editing', ':nodeEditRequested'], function (fname) {
 		idea.on(fname, function (event) {
 			container.fire(fname, event);
-			imageRendered = false;
-			if (idea.isVisible()) {
-				cacheImage();
-			}
+			reRender();
 		});
 	});
 	_.each(['setMMStyle', 'setIsSelected', 'setText', 'setIsDroppable', 'editNode'], function (fname) {
 		container[fname] = function () {
 			var result = idea && idea[fname] && idea[fname].apply(idea, arguments);
-			imageRendered = false;
-			if (idea.isVisible()) {
-				cacheImage();
-			}
+			reRender();
 			return result;
 		};
 	});
