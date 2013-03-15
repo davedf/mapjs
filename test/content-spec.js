@@ -550,6 +550,68 @@ describe("content aggregate", function () {
 				expect(idea.ideas[newRank]).toBeUndefined();
 			});
 		});
+		describe("moveRelative", function () {
+			it ("if movement is negative, moves an idea relative to its immediate previous siblings", function () {
+				var idea = content({id: 1, ideas: { 5: { id: 2}, 10: { id: 3}, 15 : {id: 4}}});
+				var result=idea.moveRelative(4,-1);
+				expect(result).toBeTruthy();
+				expect(idea.ideas[5].id).toBe(2);
+				expect(idea.ideas[10].id).toBe(3);
+				var new_key=idea.findChildRankById(4);
+				expect(new_key).toBeLessThan(10);
+				expect(new_key).not.toBeLessThan(5);
+			});
+			it ("moves an idea before it's immediate previous sibling for negative nodes", function () {
+				var idea = content({id: 1, ideas: { '-5': { id: 2}, '-10': { id: 3}, '-15' : {id: 4}}});
+				var result=idea.moveRelative(4,-1);
+				expect(result).toBeTruthy();
+				expect(idea.ideas[-5].id).toBe(2);
+				expect(idea.ideas[-10].id).toBe(3);
+				var new_key=idea.findChildRankById(4);
+				expect(new_key).toBeLessThan(-5);
+				expect(new_key).not.toBeLessThan(-10);
+			});
+			it ("if movement is positive, moves an idea relative to its immediate following siblings", function () {
+				var idea = content({id: 1, ideas: { 5: { id: 2}, 10: { id: 3}, 15 : {id: 4}}});
+				var result=idea.moveRelative(2,1);
+				expect(result).toBeTruthy();
+				expect(idea.ideas[15].id).toBe(4);
+				expect(idea.ideas[10].id).toBe(3);
+				var new_key=idea.findChildRankById(2);
+				expect(new_key).toBeLessThan(15);
+				expect(new_key).not.toBeLessThan(10);
+			});
+			it ("moves an idea before it's immediate following sibling for negative nodes", function () {
+				var idea = content({id: 1, ideas: { '-5': { id: 2}, '-10': { id: 3}, '-15' : {id: 4}}});
+				var result=idea.moveRelative(2,1);
+				expect(result).toBeTruthy();
+				expect(idea.ideas[-15].id).toBe(4);
+				expect(idea.ideas[-10].id).toBe(3);
+				var new_key=idea.findChildRankById(2);
+				expect(new_key).toBeLessThan(-10);
+				expect(new_key).not.toBeLessThan(-15);
+			});
+			it ("moves to top", function () {
+				var idea = content({id: 1, ideas: { 5: { id: 2}, 10: { id: 3}, 15 : {id: 4}}});
+				expect(idea.moveRelative(3,-1)).toBeTruthy();
+				expect(idea.findChildRankById(3)).toBeLessThan(5);
+			});
+
+			it ("does nothing if already on top and movement negative", function () {
+				var idea = content({id: 1, ideas: { 5: { id: 2}, 10: { id: 3}, 15 : {id: 4}}});
+				expect(idea.moveRelative(2,-1)).toBeFalsy();
+				expect(idea.findChildRankById(2)).toBe(5);
+			});
+			it ("fails if no idea", function () {
+				var idea = content({id: 1, ideas: { 5: { id: 2}, 10: { id: 3}, 15 : {id: 4}}});
+				expect(idea.moveRelative(10,1)).toBeFalsy();
+			});
+			it ("moves to bottom", function () {
+				var idea = content({id: 1, ideas: { 5: { id: 2}, 10: { id: 3}, 15 : {id: 4}}});
+				expect(idea.moveRelative(3,1)).toBeTruthy();
+				expect(idea.findChildRankById(3)).toBeGreaterThan(15);
+			});
+		});
 		describe("positionBefore", function () {
 			it('prevents a node to be reordered into itself, if is it already in the right position (production bugcheck)', function () {
 				idea = content({id: 1,ideas:{"1":{id:2},"2":{id: 4},"3":{id:6},"4":{id:8},"-1":{id: 3},"-2":{id:5},"-3":{id:7},"-4":{id:9}}});
