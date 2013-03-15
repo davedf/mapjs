@@ -213,6 +213,20 @@ describe('MapModel', function () {
 
 			expect(anIdea.addSubIdea).toHaveBeenCalledWith(123, 'double click to edit');
 		});
+		it('should invoke idea.changeParent when mark/moveMarked method is invoked', function () {
+			spyOn(anIdea, 'changeParent');
+			underTest.selectNode(11);
+			underTest.mark('keyboard');
+			underTest.selectNode(12);
+			underTest.moveMarked('keyboard');
+			expect(anIdea.changeParent).toHaveBeenCalledWith(11, 12);
+		});
+		it('should invoke idea.undo when undo method is invoked', function () {
+			underTest.selectNode(123);
+			spyOn(anIdea, 'undo');
+			underTest.undo();
+			expect(anIdea.undo).toHaveBeenCalled();
+		});
 		it('should invoke idea.moveRelative when moveRelative method is invoked', function () {
 			underTest.selectNode(123);
 			spyOn(anIdea, 'moveRelative');
@@ -590,6 +604,14 @@ describe('MapModel', function () {
 			underTest.setIdea(anIdea);
 			analyticListener = jasmine.createSpy();
 			underTest.addEventListener('analytic', analyticListener);
+		});
+		it('should dispatch analytic event when moveMarked method is invoked', function () {
+			underTest.moveMarked('source');
+			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'moveMarked', 'source');
+		});
+		it('should dispatch analytic event when mark method is invoked', function () {
+			underTest.mark('source');
+			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'mark', 'source');
 		});
 		it('should dispatch analytic event when moveRelative method is invoked', function () {
 			underTest.moveRelative('source', 1);

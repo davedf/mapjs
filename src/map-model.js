@@ -14,6 +14,7 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 		idea,
 		isInputEnabled,
 		currentlySelectedIdeaId,
+		markedIdeaId,
 		getRandomTitle = function (titles) {
 			return titles[Math.floor(titles.length * Math.random())];
 		},
@@ -301,6 +302,14 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 		self.moveRelative = function (source, relativeMovement) {
 			analytic('moveRelative', source);
 			idea.moveRelative(currentlySelectedIdeaId, relativeMovement);
+		};
+		self.mark = function (source) {
+			analytic('mark', source);
+			markedIdeaId = currentlySelectedIdeaId;
+		};
+		self.moveMarked = function (source) {
+			analytic('moveMarked', source);
+			idea.changeParent(markedIdeaId, currentlySelectedIdeaId);
 		};
 	}());
 	//Todo - clean up this shit below
