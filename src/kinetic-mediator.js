@@ -48,7 +48,7 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 		},
 		moveStage = function (deltaX, deltaY) {
 			var visibleAfterMove, visibleBeforeMove;
-			if (!stage) {	
+			if (!stage) {
 				return;
 			}
 			visibleBeforeMove = atLeastOneVisible(nodeByIdeaId, 0, 0) || atLeastOneVisible(connectorByFromIdeaId_ToIdeaId, 0, 0);
@@ -139,6 +139,11 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			node.on('mouseout touchend', stage.setDraggable.bind(stage, true));
 
 		}
+		layer.add(node);
+		node.transitionToAndDontStopCurrentTransitions({
+			opacity: 1,
+			duration: 0.4
+		});
 
 		mapModel.addEventListener('nodeEditRequested:' + n.id, node.editNode);
 		nodeByIdeaId[n.id] = node;
@@ -281,9 +286,7 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 					eventHandler();
 					evt.preventDefault();
 				}
-			};
-		/*
-	,
+			},
 			onScroll = function (event, delta, deltaX, deltaY) {
 				moveStage(-1 * deltaX, deltaY);
 				if (event.preventDefault) { // stop the back button
@@ -295,7 +298,6 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			jQuery(document)[isInputEnabled ? 'bind' : 'unbind']('keydown', onKeydown);
 			jQuery(window)[isInputEnabled ? 'mousewheel' : 'unmousewheel'](onScroll);
 		});
-		*/
 		jQuery(document).keydown(onKeydown);
 	}());
 };

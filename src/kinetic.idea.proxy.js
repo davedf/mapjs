@@ -1,45 +1,61 @@
 /*global _, Kinetic, MAPJS, Image, setTimeout */
 Kinetic.IdeaProxy = function (idea, stage, layer) {
 	'use strict';
-	var cached,
+	var nodeimage,
+		imageRendered,
 		container = new Kinetic.Container({opacity: 0, draggable: true}),
 		cacheImage = function () {
-			console.log('cacheImage');
-			var x = -1, y = -1,
-				width = idea.getWidth() + 20,
-				height = idea.getHeight() + 20;
+			imageRendered = true;
+			idea.attrs.scale.x = stage.attrs.scale.x;
+			idea.attrs.scale.y = stage.attrs.scale.y;
+			var scale = stage.attrs.scale.x, x = -scale, y = -scale,
+				unscaledWidth = idea.getWidth() + 20,
+				unscaledHeight = idea.getHeight() + 20,
+				width = (unscaledWidth * scale),
+				height = (unscaledHeight * scale);
 			idea.toImage({
 				x: x,
 				y: y,
 				width: width,
 				height: height,
 				callback: function (img) {
-					if (cached) {
-						cached.setImage(img);
-						cached.attrs.width = width;
-						cached.attrs.height = height;
-					} else {
-						var image = new Kinetic.Image({
-							x: x,
-							y: y,
-							width: width,
-							height: height,
-							image: img
-						});
-						container.add(image);
-						cached = image;
-						container.getLayer().draw();
-					}
+					nodeimage.setImage(img);
+					nodeimage.attrs.width = unscaledWidth;
+					nodeimage.attrs.height = unscaledHeight;
+					layer.draw();
 				}
 			});
-		};
+		},
+		nodeImageDrawFunc;
 
 	container.attrs.x = idea.attrs.x;
 	container.attrs.y = idea.attrs.y;
 	idea.attrs.x = 0;
 	idea.attrs.y = 0;
+	nodeimage = new Kinetic.Image({
+		x: -1,
+		y: -1,
+		width: idea.getWidth() + 20,
+		height: idea.getHeight() + 20
+	});
+	nodeImageDrawFunc = nodeimage.getDrawFunc().bind(nodeimage);
+	nodeimage.setDrawFunc(function (canvas) {
+		if (idea.isVisible()) {
+			if (!imageRendered) {
+				cacheImage();
+			}
+		} else {
+			if (imageRendered) {
+				nodeimage.setImage();
+				imageRendered = false;
+			}
+		}
+		nodeImageDrawFunc(canvas);
+	});
 
-	container.cacheImage = cacheImage;
+	container.add(nodeimage);
+
+
 	container.getNodeAttrs = function () {
 		return idea.attrs;
 	};
@@ -78,22 +94,22 @@ Kinetic.IdeaProxy = function (idea, stage, layer) {
 	_.each([':textChanged', ':editing', ':nodeEditRequested'], function (fname) {
 		idea.on(fname, function (event) {
 			container.fire(fname, event);
+			imageRendered = false;
+			if (idea.isVisible()) {
+				cacheImage();
+			}
 		});
 	});
 	_.each(['setMMStyle', 'setIsSelected', 'setText', 'setIsDroppable', 'editNode'], function (fname) {
 		container[fname] = function () {
 			var result = idea && idea[fname] && idea[fname].apply(idea, arguments);
-			cacheImage();
+			imageRendered = false;
+			if (idea.isVisible()) {
+				cacheImage();
+			}
 			return result;
 		};
 	});
-
-	layer.add(container);
-	container.transitionToAndDontStopCurrentTransitions({
-		opacity: 1,
-		duration: 0.4
-	});
-	container.cacheImage();
 	return container;
 };
 
