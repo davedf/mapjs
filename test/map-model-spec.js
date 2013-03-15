@@ -592,7 +592,7 @@ describe('MapModel', function () {
 			underTest.addEventListener('analytic', analyticListener);
 		});
 		it('should dispatch analytic event when moveRelative method is invoked', function () {
-			underTest.moveRelative('source',1);
+			underTest.moveRelative('source', 1);
 			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'moveRelative', 'source');
 		});
 		it('should dispatch analytic event when undo method is invoked', function () {
