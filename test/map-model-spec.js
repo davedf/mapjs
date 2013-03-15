@@ -184,6 +184,60 @@ describe('MapModel', function () {
 			underTest.insertIntermediate('toolbar', true);
 			expect(nodeEditRequestedListener).toHaveBeenCalledWith(true);
 		});
+		it('should move map to keep the currently selected node in the same place while updating style (expand/collapse)', function () {
+			var layoutCalculatorLayout,
+				layoutCalculator = function () {
+					return layoutCalculatorLayout;
+				},
+				underTest,
+				anIdea,
+				layoutBefore,
+				layoutAfter,
+				nodeMovedListener = jasmine.createSpy();
+			layoutBefore = {
+				nodes: {
+					1: {
+						x: 100,
+						y: 200,
+						title: 'First'
+					},
+					2: {
+						x: 0,
+						y: 0,
+						title: 'Second'
+					}
+				}
+			};
+			layoutAfter = {
+				nodes: {
+					1: {
+						x: 110,
+						y: 220,
+						title: 'First'
+					},
+					2: {
+						x: 0,
+						y: 0,
+						title: 'Second'
+					}
+				}
+			};
+			layoutCalculatorLayout = layoutBefore;
+			anIdea = observable({});
+			underTest = new MAPJS.MapModel(observable({}), layoutCalculator);
+			underTest.setIdea(anIdea);
+			layoutCalculatorLayout = layoutAfter;
+			underTest.addEventListener('nodeMoved', nodeMovedListener);
+
+			anIdea.dispatchEvent('changed', 'updateStyle', [1]);
+
+			expect(nodeMovedListener.callCount).toBe(1);
+			expect(nodeMovedListener).toHaveBeenCalledWith({
+				x: -10,
+				y: -20,
+				title: 'Second'
+			});
+		});
 	});
 	describe('methods delegating to idea', function () {
 		var anIdea, underTest;

@@ -40,7 +40,6 @@
 	};
 	calculateConnectorInner = _.memoize(function (parentX, parentY, parentWidth, parentHeight,
 			childX, childY, childWidth, childHeight) {
-		console.log('calculateConnectorInner');
 		var tolerance = 10,
 			childMid = childY + childHeight * 0.5,
 			parentMid = parentY + parentHeight * 0.5,
