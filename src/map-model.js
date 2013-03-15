@@ -298,6 +298,10 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 			analytic('redo', source);
 			idea.redo();
 		};
+		self.moveRelative = function (source, relativeMovement) {
+			analytic('moveRelative', source);
+			idea.moveRelative(currentlySelectedIdeaId, relativeMovement);
+		};
 	}());
 	//Todo - clean up this shit below
 	(function () {

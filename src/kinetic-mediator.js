@@ -267,7 +267,9 @@ MAPJS.KineticMediator = function (mapModel, stage) {
 			90: mapModel.undo.bind(mapModel, 'keyboard'),
 			89: mapModel.redo.bind(mapModel, 'keyboard'),
 			187: mapModel.scaleUp.bind(mapModel, 'keyboard'),
-			189: mapModel.scaleDown.bind(mapModel, 'keyboard')
+			189: mapModel.scaleDown.bind(mapModel, 'keyboard'),
+			38: mapModel.moveRelative.bind(mapModel, 'keyboard', -1),
+			40: mapModel.moveRelative.bind(mapModel, 'keyboard', 1)
 		},
 			onKeydown = function (evt) {
 				var eventHandler = ((evt.metaKey || evt.ctrlKey) ? metaKeyboardEventHandlers :

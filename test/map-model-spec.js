@@ -213,6 +213,12 @@ describe('MapModel', function () {
 
 			expect(anIdea.addSubIdea).toHaveBeenCalledWith(123, 'double click to edit');
 		});
+		it('should invoke idea.moveRelative when moveRelative method is invoked', function () {
+			underTest.selectNode(123);
+			spyOn(anIdea, 'moveRelative');
+			underTest.moveRelative('keyboard', -1);
+			expect(anIdea.moveRelative).toHaveBeenCalledWith(123, -1);
+		});
 		it('should invoke idea.undo when undo method is invoked', function () {
 			underTest.selectNode(123);
 			spyOn(anIdea, 'undo');
@@ -584,6 +590,10 @@ describe('MapModel', function () {
 			underTest.setIdea(anIdea);
 			analyticListener = jasmine.createSpy();
 			underTest.addEventListener('analytic', analyticListener);
+		});
+		it('should dispatch analytic event when moveRelative method is invoked', function () {
+			underTest.moveRelative('source',1);
+			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'moveRelative', 'source');
 		});
 		it('should dispatch analytic event when undo method is invoked', function () {
 			underTest.undo('source');
