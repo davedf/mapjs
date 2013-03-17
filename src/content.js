@@ -1,6 +1,6 @@
 /*jslint eqeq: true, forin: true, nomen: true*/
 /*global _, observable*/
-var content = function (contentAggregate) {
+var content = function (contentAggregate, progressCallback) {
 	'use strict';
 	var init = function (contentIdea) {
 		if (contentIdea.ideas) {
@@ -8,7 +8,7 @@ var content = function (contentAggregate) {
 				contentIdea.ideas[parseFloat(key)] = init(value);
 			});
 		}
-		contentIdea.id = contentIdea.id || (contentAggregate.maxId() + 1);
+		contentIdea.id = contentIdea.id || contentAggregate.nextId();
 		contentIdea.containsDirectChild = contentIdea.findChildRankById = function (childIdeaId) {
 			return parseFloat(
 				_.reduce(
@@ -43,6 +43,9 @@ var content = function (contentAggregate) {
 			}
 			return false;
 		};
+		if (progressCallback) {
+			progressCallback();
+		}
 		return contentIdea;
 	},
 		maxKey = function (kv_map, sign) {
@@ -102,7 +105,15 @@ var content = function (contentAggregate) {
 		reorderChild = function (parentIdea, newRank, oldRank) {
 			parentIdea.ideas[newRank] = parentIdea.ideas[oldRank];
 			delete parentIdea.ideas[oldRank];
-		};
+		},
+		cachedId;
+	contentAggregate.nextId = function nextId() {
+		if (!cachedId) {
+			cachedId =  contentAggregate.maxId();
+		}
+		cachedId += 1;
+		return cachedId;
+	};
 	contentAggregate.maxId = function maxId(idea) {
 		idea = idea || contentAggregate;
 		if (!idea.ideas) {
