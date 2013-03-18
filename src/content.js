@@ -172,6 +172,30 @@ var content = function (contentAggregate, progressCallback) {
 	};
 
 	/**** aggregate command processing methods ****/
+	contentAggregate.paste = function (parentIdeaId, jsonToPaste) {
+		var pasteParent = (parentIdeaId === contentAggregate.id) ?  contentAggregate : contentAggregate.findSubIdeaById(parentIdeaId),
+			removeIds = function (json) {
+				var result = _.clone(json);
+				delete result.id;
+				if (json.ideas) {
+					result.ideas = {};
+					_.each(json.ideas, function (val, key) {
+						result.ideas[key] = removeIds(val);
+					});
+				}
+				return result;
+			},
+			newIdea = jsonToPaste && jsonToPaste.title && init(removeIds(jsonToPaste)),
+			newRank;
+		if (!pasteParent || !newIdea) {
+			return false;
+		}
+		newRank = appendSubIdea(pasteParent, newIdea);
+		notifyChange('paste', [parentIdeaId, jsonToPaste, newIdea.id], function () {
+			delete pasteParent.ideas[newRank];
+		});
+		return true;
+	};
 	contentAggregate.flip = function (ideaId) {
 		var new_rank, max_rank, current_rank = contentAggregate.findChildRankById(ideaId);
 		if (!current_rank) {

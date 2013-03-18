@@ -1,4 +1,4 @@
-/*global observable, beforeEach, content, describe, expect, it, jasmine, spyOn, MAPJS*/
+/*global _, observable, beforeEach, content, describe, expect, it, jasmine, spyOn, MAPJS*/
 describe("content aggregate", function () {
 	describe("content wapper", function () {
 		it("automatically assigns IDs to ideas without IDs", function () {
@@ -146,7 +146,7 @@ describe("content aggregate", function () {
 			});
 		});
 		describe("clone", function () {
-			var idea_to_clone = function () {return { id: 2, title: 'copy me', style: {background: 'red'}, ideas: {'5': {id: 66, title: 'hey there'}}}};
+			var idea_to_clone = function () {return { id: 2, title: 'copy me', style: {background: 'red'}, ideas: {'5': {id: 66, title: 'hey there'}}}; };
 			it("returns a deep clone copy of a subidea by id", function () {
 				var idea = content({id: 1, ideas: { '-5': idea_to_clone(), '-10': { id: 3}, '-15' : {id: 4}}});
 				expect(idea.clone(2)).toEqual(idea_to_clone());
@@ -163,6 +163,55 @@ describe("content aggregate", function () {
 		});
 	});
 	describe("command processing", function () {
+		describe("paste", function () {
+			var idea, toPaste;
+			beforeEach(function () {
+				idea = content({id: 1, ideas: {'-10': { id: 3}, '-15' : {id: 4}}});
+				toPaste = {title: 'pasted', id: 1};
+			});
+			it("should create a new child and paste cloned contents", function () {
+				var result = idea.paste(3, toPaste);
+				expect(result).toBeTruthy();
+				expect(idea.ideas[-10].ideas[1]).toPartiallyMatch({title: 'pasted'});
+			});
+			it("should reassign IDs based on next available ID in the aggregate", function () {
+				var result = idea.paste(3, toPaste);
+				expect(result).toBeTruthy();
+				expect(idea.ideas[-10].ideas[1].id).toBe(5);
+			});
+			it("should reassign IDs recursively based on next available ID in the aggregate", function () {
+				var result = idea.paste(3, _.extend(toPaste, {ideas: {5: { id: 66, title: 'sub sub'}}}));
+				expect(result).toBeTruthy();
+				expect(idea.ideas[-10].ideas[1].id).toBe(6);
+				expect(idea.ideas[-10].ideas[1].ideas[5].id).toBe(5);
+			});
+			it("should paste to aggregate root if root ID is given", function () {
+				var result = idea.paste(1, toPaste), newRank;
+				expect(result).toBeTruthy();
+				console.log(idea);
+				newRank = idea.findChildRankById(5);
+				expect(newRank).toBeTruthy();
+				expect(idea.ideas[newRank]).toPartiallyMatch({title: 'pasted'});
+			});
+			it("should fail if invalid idea id", function () {
+				var result = idea.paste(-3, toPaste);
+				expect(result).toBeFalsy();
+			});
+			it("should fail if nothing pasted", function () {
+				expect(idea.paste(1)).toBeFalsy();
+			});
+			it("should fire a paste event when it succeeds, appending the new ID as the last", function () {
+				var spy = jasmine.createSpy('paste');
+				idea.addEventListener('changed', spy);
+				idea.paste(3, toPaste);
+				expect(spy).toHaveBeenCalledWith('paste', [3, toPaste, 5]);
+			});
+			it('pushes an event on the undo stack if successful', function () {
+				idea.paste(3, toPaste);
+				idea.undo();
+				expect(idea.ideas[-10].ideas).toEqual({});
+			});
+		});
 		describe("updateStyle", function () {
 			it('should allow an attribute to be set on the aggregate', function () {
 				var aggregate = content({id: 71, title: 'My Idea'}),
