@@ -1,4 +1,4 @@
-/*global observable, beforeEach, content, describe, expect, it, jasmine, spyOn, MAPJS*/
+/*global _, observable, beforeEach, content, describe, expect, it, jasmine, spyOn, MAPJS*/
 describe('MapModel', function () {
 	'use strict';
 	it('should be able to instantiate MapModel', function () {
@@ -266,6 +266,22 @@ describe('MapModel', function () {
 			underTest.addSubIdea();
 
 			expect(anIdea.addSubIdea).toHaveBeenCalledWith(123, 'double click to edit');
+		});
+		it('should clone active idea into clipboard when copy is called', function () {
+			spyOn(anIdea, 'clone').andReturn('CLONE');
+			underTest.selectNode(11);
+			underTest.copy('keyboard');
+			expect(anIdea.clone).toHaveBeenCalledWith(11);
+		});
+		it('should paste clipboard into currently selected idea when paste is called', function () {
+			var toPaste = {title: 'clone'};
+			spyOn(anIdea, 'clone').andReturn(toPaste);
+			spyOn(anIdea, 'paste');
+			underTest.selectNode(11);
+			underTest.copy('keyboard');
+			underTest.selectNode(12);
+			underTest.paste('keyboard');
+			expect(anIdea.paste).toHaveBeenCalledWith(12, toPaste);
 		});
 		it('should invoke idea.changeParent when mark/moveMarked method is invoked', function () {
 			spyOn(anIdea, 'changeParent');
@@ -658,6 +674,15 @@ describe('MapModel', function () {
 			underTest.setIdea(anIdea);
 			analyticListener = jasmine.createSpy();
 			underTest.addEventListener('analytic', analyticListener);
+		});
+		it('should dispatch analytic event when methods are invoked', function () {
+			var methods = ['copy', 'paste'];
+			_.each(methods, function (method) {
+				var spy = jasmine.createSpy(method);
+				underTest.addEventListener('analytic', spy);
+				underTest[method]('source');
+				expect(analyticListener).toHaveBeenCalledWith('mapModel', method, 'source');
+			});
 		});
 		it('should dispatch analytic event when moveMarked method is invoked', function () {
 			underTest.moveMarked('source');

@@ -325,6 +325,14 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 			analytic('moveMarked', source);
 			idea.changeParent(markedIdeaId, currentlySelectedIdeaId);
 		};
+		self.copy = function (source) {
+			analytic('copy', source);
+			self.clipBoard = idea.clone(currentlySelectedIdeaId);
+		};
+		self.paste = function (source) {
+			analytic('paste', source);
+			idea.paste(currentlySelectedIdeaId, self.clipBoard);
+		};
 	}());
 	//Todo - clean up this shit below
 	(function () {
