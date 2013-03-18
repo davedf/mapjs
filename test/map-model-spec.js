@@ -283,13 +283,17 @@ describe('MapModel', function () {
 			underTest.paste('keyboard');
 			expect(anIdea.paste).toHaveBeenCalledWith(12, toPaste);
 		});
-		it('should invoke idea.changeParent when mark/moveMarked method is invoked', function () {
-			spyOn(anIdea, 'changeParent');
+		it('should invoke idea.removeSubIdea when cut/paste method is invoked', function () {
+			var toPaste = {title: 'clone'};
+			spyOn(anIdea, 'clone').andReturn(toPaste);
+			spyOn(anIdea, 'paste');
+			spyOn(anIdea, 'removeSubIdea');
 			underTest.selectNode(11);
-			underTest.mark('keyboard');
+			underTest.cut('keyboard');
 			underTest.selectNode(12);
-			underTest.moveMarked('keyboard');
-			expect(anIdea.changeParent).toHaveBeenCalledWith(11, 12);
+			underTest.paste('keyboard');
+			expect(anIdea.paste).toHaveBeenCalledWith(12, toPaste);
+			expect(anIdea.removeSubIdea).toHaveBeenCalledWith(11);
 		});
 		it('should invoke idea.undo when undo method is invoked', function () {
 			underTest.selectNode(123);
@@ -676,7 +680,7 @@ describe('MapModel', function () {
 			underTest.addEventListener('analytic', analyticListener);
 		});
 		it('should dispatch analytic event when methods are invoked', function () {
-			var methods = ['copy', 'paste', 'redo', 'undo', 'scaleUp', 'scaleDown', 'move', 'moveRelative', 'addSubIdea',
+			var methods = ['cut', 'copy', 'paste', 'redo', 'undo', 'scaleUp', 'scaleDown', 'move', 'moveRelative', 'addSubIdea',
 				'addSiblingIdea', 'removeSubIdea', 'editNode', 'selectNodeLeft', 'selectNodeRight', 'selectNodeUp', 'selectNodeDown'];
 			_.each(methods, function (method) {
 				var spy = jasmine.createSpy(method);
@@ -684,14 +688,6 @@ describe('MapModel', function () {
 				underTest[method]('source');
 				expect(spy).toHaveBeenCalledWith('mapModel', method, 'source');
 			});
-		});
-		it('should dispatch analytic event when moveMarked method is invoked', function () {
-			underTest.moveMarked('source');
-			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'moveMarked', 'source');
-		});
-		it('should dispatch analytic event when mark method is invoked', function () {
-			underTest.mark('source');
-			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'mark', 'source');
 		});
 		it('should dispatch analytic event when collapse method is invoked', function () {
 			underTest.collapse('toolbar', false);

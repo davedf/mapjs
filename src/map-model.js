@@ -317,13 +317,10 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 			analytic('moveRelative', source);
 			idea.moveRelative(currentlySelectedIdeaId, relativeMovement);
 		};
-		self.mark = function (source) {
-			analytic('mark', source);
-			markedIdeaId = currentlySelectedIdeaId;
-		};
-		self.moveMarked = function (source) {
-			analytic('moveMarked', source);
-			idea.changeParent(markedIdeaId, currentlySelectedIdeaId);
+		self.cut = function (source) {
+			analytic('cut', source);
+			self.clipBoard = idea.clone(currentlySelectedIdeaId);
+			idea.removeSubIdea(currentlySelectedIdeaId);
 		};
 		self.copy = function (source) {
 			analytic('copy', source);
