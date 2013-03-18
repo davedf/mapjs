@@ -676,12 +676,13 @@ describe('MapModel', function () {
 			underTest.addEventListener('analytic', analyticListener);
 		});
 		it('should dispatch analytic event when methods are invoked', function () {
-			var methods = ['copy', 'paste'];
+			var methods = ['copy', 'paste', 'redo', 'undo', 'scaleUp', 'scaleDown', 'move', 'moveRelative', 'addSubIdea',
+				'addSiblingIdea', 'removeSubIdea', 'editNode', 'selectNodeLeft', 'selectNodeRight', 'selectNodeUp', 'selectNodeDown'];
 			_.each(methods, function (method) {
 				var spy = jasmine.createSpy(method);
 				underTest.addEventListener('analytic', spy);
 				underTest[method]('source');
-				expect(analyticListener).toHaveBeenCalledWith('mapModel', method, 'source');
+				expect(spy).toHaveBeenCalledWith('mapModel', method, 'source');
 			});
 		});
 		it('should dispatch analytic event when moveMarked method is invoked', function () {
@@ -692,18 +693,6 @@ describe('MapModel', function () {
 			underTest.mark('source');
 			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'mark', 'source');
 		});
-		it('should dispatch analytic event when moveRelative method is invoked', function () {
-			underTest.moveRelative('source', 1);
-			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'moveRelative', 'source');
-		});
-		it('should dispatch analytic event when undo method is invoked', function () {
-			underTest.undo('source');
-			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'undo', 'source');
-		});
-		it('should dispatch analytic event when redo method is invoked', function () {
-			underTest.redo('source');
-			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'redo', 'source');
-		});
 		it('should dispatch analytic event when collapse method is invoked', function () {
 			underTest.collapse('toolbar', false);
 
@@ -713,40 +702,6 @@ describe('MapModel', function () {
 			underTest.updateStyle('toolbar', 'propname', 'propval');
 
 			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'updateStyle:propname', 'toolbar');
-		});
-		it('should dispatch analytic event when scaleUp method is invoked', function () {
-			underTest.scaleUp('toolbar');
-
-			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'scaleUp', 'toolbar');
-		});
-		it('should dispatch analytic event when move method is invoked', function () {
-			underTest.move('toolbar');
-
-			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'mapMoveRequested', 'toolbar');
-		});
-		it('should dispatch analytic event when scaleDown method is invoked', function () {
-			underTest.scaleDown('toolbar');
-
-			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'scaleDown', 'toolbar');
-		});
-		it('should dispatch analytic event when addSubIdea method is invoked', function () {
-			underTest.addSubIdea('toolbar');
-
-			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'addSubIdea', 'toolbar');
-		});
-		it('should dispatch analytic event when editNode method is invoked', function () {
-			underTest.editNode('toolbar', true);
-
-			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'editNode', 'toolbar');
-		});
-		it('should dispatch analytic event when removeSubIdea method is invoked', function () {
-			underTest.removeSubIdea('toolbar');
-
-			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'removeSubIdea', 'toolbar');
-		});
-		it('should dispatch analytic event when addSiblingIdea method is invoked', function () {
-			underTest.addSiblingIdea('toolbar');
-			expect(analyticListener).toHaveBeenCalledWith('mapModel', 'addSiblingIdea', 'toolbar');
 		});
 		it('should dispatch analytic event when insertIntermediate method is invoked, unless there is nothing selected', function () {
 			underTest.selectNode(6);
@@ -759,12 +714,6 @@ describe('MapModel', function () {
 			underTest.insertIntermediate('toolbar');
 
 			expect(analyticListener).not.toHaveBeenCalledWith();
-		});
-		it('should dispatch analytic event when selectNode[Left,Right,Up,Down] method is invoked', function () {
-			['Left', 'Right', 'Up', 'Down'].forEach(function (direction) {
-				underTest['selectNode' + direction]('toolbar');
-				expect(analyticListener).toHaveBeenCalledWith('mapModel', 'selectNode' + direction, 'toolbar');
-			});
 		});
 	});
 	describe("getSelectedStyle", function () {

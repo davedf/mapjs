@@ -202,7 +202,7 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 	};
 	this.move = function (source, deltaX, deltaY) {
 		self.dispatchEvent('mapMoveRequested', deltaX, deltaY);
-		analytic('mapMoveRequested', source);
+		analytic('move', source);
 	};
 	(function () {
 		var isRootOrRightHalf = function (id) {
