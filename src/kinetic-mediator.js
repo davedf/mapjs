@@ -298,8 +298,10 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 			46: mapModel.removeSubIdea.bind(mapModel, 'keyboard'),
 			32: mapModel.editNode.bind(mapModel, 'keyboard'),
 			191: mapModel.toggleCollapse.bind(mapModel, 'keyboard'),
-			67: mapModel.mark.bind(mapModel, 'keyboard'),
-			80: mapModel.moveMarked.bind(mapModel, 'keyboard')
+			67: mapModel.cut.bind(mapModel, 'keyboard'),
+			80: mapModel.paste.bind(mapModel, 'keyboard'),
+			89: mapModel.copy.bind(mapModel, 'keyboard'),
+			85: mapModel.undo.bind(mapModel, 'keyboard')
 		}, shiftKeyboardEventHandlers = {
 			9: mapModel.insertIntermediate.bind(mapModel, 'keyboard'),
 			38: mapModel.toggleCollapse.bind(mapModel, 'keyboard')
@@ -311,8 +313,9 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 			189: mapModel.scaleDown.bind(mapModel, 'keyboard'),
 			38: mapModel.moveRelative.bind(mapModel, 'keyboard', -1),
 			40: mapModel.moveRelative.bind(mapModel, 'keyboard', 1),
-			88: mapModel.mark.bind(mapModel, 'keyboard'),
-			86: mapModel.moveMarked.bind(mapModel, 'keyboard')
+			88: mapModel.cut.bind(mapModel, 'keyboard'),
+			67: mapModel.copy.bind(mapModel, 'keyboard'),
+			86: mapModel.paste.bind(mapModel, 'keyboard')
 		},
 			onKeydown = function (evt) {
 				var eventHandler = ((evt.metaKey || evt.ctrlKey) ? metaKeyboardEventHandlers :
