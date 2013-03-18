@@ -1,7 +1,7 @@
 /*global _, window, document, jQuery, Kinetic*/
 var MAPJS = MAPJS || {};
 if (Kinetic.Stage.prototype.isRectVisible) {
-	throw ("isRectVisible already exists, should not mix in our methods");
+	throw ('isRectVisible already exists, should not mix in our methods');
 }
 MAPJS.Rectangle = function (x, y, width, height) {
 	'use strict';
@@ -67,7 +67,7 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 			}
 			return false;
 		},
-		resetStage = function (evt) {
+		resetStage = function () {
 			stage.transitionTo({
 				x: 0.5 * stage.getWidth(),
 				y: 0.5 * stage.getHeight(),
@@ -139,7 +139,7 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 			mapModel.updateTitle(n.id, event.text);
 			mapModel.dispatchEvent('inputEnabledChanged', true);
 		});
-		node.on(':editing', function (event) {
+		node.on(':editing', function () {
 			mapModel.dispatchEvent('inputEnabledChanged', false);
 		});
 		node.on(':nodeEditRequested', mapModel.editNode.bind(mapModel, 'mouse', false));
@@ -274,11 +274,16 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 	(function () {
 		var x, y;
 		stage.on('dragmove', function () {
-			if (!(atLeastOneVisible(nodeByIdeaId, 0, 0) || atLeastOneVisible(connectorByFromIdeaId_ToIdeaId, 0, 0))) {
-				moveStage(x - stage.attrs.x, y - stage.attrs.y);
+			var deltaX = x - stage.attrs.x,
+				deltaY = y - stage.attrs.y,
+				visibleAfterMove = atLeastOneVisible(nodeByIdeaId, 0, 0) || atLeastOneVisible(connectorByFromIdeaId_ToIdeaId, 0, 0),
+				shouldMoveBack = !visibleAfterMove && !(atLeastOneVisible(nodeByIdeaId, deltaX, deltaY) || atLeastOneVisible(connectorByFromIdeaId_ToIdeaId, deltaX, deltaY));
+			if (shouldMoveBack) {
+				moveStage(deltaX, deltaY);
+			} else {
+				x = stage.attrs.x;
+				y = stage.attrs.y;
 			}
-			x = stage.attrs.x;
-			y = stage.attrs.y;
 		});
 	}());
 	(function () {
