@@ -78,14 +78,20 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 				duration: 0.5,
 				easing: 'ease-in-out'
 			});
+		},
+		resetstageOnClick = function (evt) {
+			if (!getTargetShape(evt)) {
+				resetStage();
+			}
+		},
+		stageCenteringEvents = function (isInputEnabled) {
+			jQuery(document)[isInputEnabled ? 'on' : 'off']('dblclick', stage.simulate.bind(stage, 'dblclick'));
+			stage[isInputEnabled ? 'on' : 'off']('dbltap dblclick', resetstageOnClick);
 		};
+
 	stage.add(layer);
-	jQuery(stage.getContainer()).on('dblclick', function (evt) { stage.simulate('dblclick', evt); });
-	stage.on('dbltap dblclick', function (evt) {
-		if (!getTargetShape(evt)) {
-			resetStage();
-		}
-	});
+	mapModel.addEventListener('inputEnabledChanged', stageCenteringEvents);
+	stageCenteringEvents(true);
 	mapModel.addEventListener('nodeCreated', function (n) {
 		var node = new Kinetic.Idea({
 			level: n.level,
