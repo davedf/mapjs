@@ -145,7 +145,22 @@ describe("content aggregate", function () {
 				expect(idea.previousSiblingId(5)).toBeFalsy();
 			});
 		});
-
+		describe("clone", function () {
+			var idea_to_clone = function () {return { id: 2, title: 'copy me', style: {background: 'red'}, ideas: {'5': {id: 66, title: 'hey there'}}}};
+			it("returns a deep clone copy of a subidea by id", function () {
+				var idea = content({id: 1, ideas: { '-5': idea_to_clone(), '-10': { id: 3}, '-15' : {id: 4}}});
+				expect(idea.clone(2)).toEqual(idea_to_clone());
+				expect(idea.clone(2)).not.toBe(idea.ideas[-5]);
+			});
+			it("clones the aggregate if no subidea given", function () {
+				var idea = content({id: 1, ideas: {'-10': { id: 3}, '-15' : {id: 4}}});
+				expect(idea.clone().id).toBe(1);
+			});
+			it("clones the aggregate if aggregate ID given", function () {
+				var idea = content({id: 1, ideas: {'-10': { id: 3}, '-15' : {id: 4}}});
+				expect(idea.clone(1).id).toBe(1);
+			});
+		});
 	});
 	describe("command processing", function () {
 		describe("updateStyle", function () {

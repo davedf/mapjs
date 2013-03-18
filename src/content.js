@@ -151,8 +151,10 @@ var content = function (contentAggregate, progressCallback) {
 		if (siblingsBefore.length === 0) { return false; }
 		return parentIdea.ideas[_.max(siblingsBefore, Math.abs)].id;
 	};
-
-
+	contentAggregate.clone = function (subIdeaId) {
+		var toClone = (subIdeaId && subIdeaId != contentAggregate.id && contentAggregate.findSubIdeaById(subIdeaId)) || contentAggregate;
+		return JSON.parse(JSON.stringify(toClone));
+	};
 	/*** private utility methods ***/
 	contentAggregate.findParent = function (subIdeaId, parentIdea) {
 		parentIdea = parentIdea || contentAggregate;
