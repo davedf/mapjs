@@ -31,7 +31,7 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 				moveNodes(newLayout.nodes,
 					currentLayout.nodes[contextNodeId].x - newLayout.nodes[contextNodeId].x,
 					currentLayout.nodes[contextNodeId].y - newLayout.nodes[contextNodeId].y
-				);
+					);
 			}
 			for (nodeId in currentLayout.connectors) {
 				newConnector = newLayout.connectors[nodeId];
@@ -146,6 +146,7 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 	};
 	this.updateStyle = function (source, prop, value) {
 		analytic('updateStyle:' + prop, source);
+		/*jslint eqeq:true */
 		if (this.getSelectedStyle(prop) != value) {
 			idea.updateStyle(currentlySelectedIdeaId, prop, value);
 		}
