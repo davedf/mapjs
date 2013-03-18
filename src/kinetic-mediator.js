@@ -271,7 +271,16 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 	mapModel.addEventListener('mapMoveRequested', function (deltaX, deltaY) {
 		moveStage(deltaX, deltaY);
 	});
-
+	(function () {
+		var x, y;
+		stage.on('dragmove', function () {
+			if (!(atLeastOneVisible(nodeByIdeaId, 0, 0) || atLeastOneVisible(connectorByFromIdeaId_ToIdeaId, 0, 0))) {
+				moveStage(x - stage.attrs.x, y - stage.attrs.y);
+			}
+			x = stage.attrs.x;
+			y = stage.attrs.y;
+		});
+	}());
 	(function () {
 		var keyboardEventHandlers = {
 			13: mapModel.addSiblingIdea.bind(mapModel, 'keyboard'),
