@@ -180,10 +180,23 @@ describe("content aggregate", function () {
 				expect(idea.ideas[-10].ideas[1].id).toBe(5);
 			});
 			it("should reassign IDs recursively based on next available ID in the aggregate", function () {
-				var result = idea.paste(3, _.extend(toPaste, {ideas: {5: { id: 66, title: 'sub sub'}}}));
+				var result = idea.paste(3, _.extend(toPaste, {ideas: {1: { id: 66, title: 'sub sub'}}}));
 				expect(result).toBeTruthy();
 				expect(idea.ideas[-10].ideas[1].id).toBe(6);
-				expect(idea.ideas[-10].ideas[1].ideas[5].id).toBe(5);
+				expect(idea.ideas[-10].ideas[1].ideas[1].id).toBe(5);
+			});
+			it("should reorder children by absolute rank, positive first then negative", function () {
+				var result = idea.paste(3, _.extend(toPaste, {ideas: {
+					77: {id: 10, title: '77'},
+					1: { id: 11, title: '1'},
+				    '-77': {id: 12, title: '-77'},
+				    '-1': {id: 13, title: '-1'}
+				}})),
+					newChildren = idea.ideas[-10].ideas[1].ideas;
+				expect(newChildren[1].title).toBe('1');
+				expect(newChildren[2].title).toBe('77');
+				expect(newChildren[3].title).toBe('-1');
+				expect(newChildren[4].title).toBe('-77');
 			});
 			it("should paste to aggregate root if root ID is given", function () {
 				var result = idea.paste(1, toPaste), newRank;

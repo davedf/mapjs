@@ -174,18 +174,19 @@ var content = function (contentAggregate, progressCallback) {
 	/**** aggregate command processing methods ****/
 	contentAggregate.paste = function (parentIdeaId, jsonToPaste) {
 		var pasteParent = (parentIdeaId === contentAggregate.id) ?  contentAggregate : contentAggregate.findSubIdeaById(parentIdeaId),
-			removeIds = function (json) {
-				var result = _.clone(json);
-				delete result.id;
+			cleanUp = function (json) {
+				var result =  _.omit(json, 'ideas', 'id'), index = 1, childKeys, sortedChildKeys;
 				if (json.ideas) {
+					childKeys = _.groupBy(_.map(_.keys(json.ideas), parseFloat), function (key) { return key > 0; });
+					sortedChildKeys = _.sortBy(childKeys[true], Math.abs).concat(_.sortBy(childKeys[false], Math.abs));
 					result.ideas = {};
-					_.each(json.ideas, function (val, key) {
-						result.ideas[key] = removeIds(val);
+					_.each(sortedChildKeys, function (key) {
+						result.ideas[index++] = cleanUp(json.ideas[key]);
 					});
 				}
 				return result;
 			},
-			newIdea = jsonToPaste && jsonToPaste.title && init(removeIds(jsonToPaste)),
+			newIdea = jsonToPaste && jsonToPaste.title && init(cleanUp(jsonToPaste)),
 			newRank;
 		if (!pasteParent || !newIdea) {
 			return false;
