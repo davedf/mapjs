@@ -96,6 +96,7 @@
 				});
 				mapModel.addEventListener('analytic', console.log.bind(console));
 				mapRepository.dispatchEvent('mapLoaded', idea);
+				window.mapModel = mapModel;
 			}());
 		</script>
 	</body>

@@ -1,4 +1,4 @@
-/*global jQuery, Kinetic, MAPJS, window*/
+/*global jQuery, Kinetic, MAPJS, window, document*/
 jQuery.fn.mapWidget = function (activityLog, mapModel, touchEnabled, imageRendering) {
 	'use strict';
 	return this.each(function () {
@@ -29,7 +29,61 @@ jQuery.fn.mapWidget = function (activityLog, mapModel, touchEnabled, imageRender
 				var result = (lastGesture && lastGesture.type !== gesture.type && (gesture.timeStamp - lastGesture.timeStamp < 250));
 				lastGesture = gesture;
 				return !result;
+			},
+			keyboardEventHandlers = {
+				13: mapModel.addSiblingIdea.bind(mapModel, 'keyboard'),
+				8: mapModel.removeSubIdea.bind(mapModel, 'keyboard'),
+				9: mapModel.addSubIdea.bind(mapModel, 'keyboard'),
+				37: mapModel.selectNodeLeft.bind(mapModel, 'keyboard'),
+				38: mapModel.selectNodeUp.bind(mapModel, 'keyboard'),
+				39: mapModel.selectNodeRight.bind(mapModel, 'keyboard'),
+				40: mapModel.selectNodeDown.bind(mapModel, 'keyboard'),
+				46: mapModel.removeSubIdea.bind(mapModel, 'keyboard'),
+				32: mapModel.editNode.bind(mapModel, 'keyboard'),
+				191: mapModel.toggleCollapse.bind(mapModel, 'keyboard'),
+				67: mapModel.cut.bind(mapModel, 'keyboard'),
+				80: mapModel.paste.bind(mapModel, 'keyboard'),
+				89: mapModel.copy.bind(mapModel, 'keyboard'),
+				85: mapModel.undo.bind(mapModel, 'keyboard')
+			},
+			shiftKeyboardEventHandlers = {
+				9: mapModel.insertIntermediate.bind(mapModel, 'keyboard'),
+				38: mapModel.toggleCollapse.bind(mapModel, 'keyboard')
+			},
+			metaKeyboardEventHandlers = {
+				48: mapModel.resetView.bind(mapModel, 'keyboard'),
+				90: mapModel.undo.bind(mapModel, 'keyboard'),
+				89: mapModel.redo.bind(mapModel, 'keyboard'),
+				187: mapModel.scaleUp.bind(mapModel, 'keyboard'),
+				189: mapModel.scaleDown.bind(mapModel, 'keyboard'),
+				38: mapModel.moveRelative.bind(mapModel, 'keyboard', -1),
+				40: mapModel.moveRelative.bind(mapModel, 'keyboard', 1),
+				88: mapModel.cut.bind(mapModel, 'keyboard'),
+				67: mapModel.copy.bind(mapModel, 'keyboard'),
+				86: mapModel.paste.bind(mapModel, 'keyboard')
+			},
+			onKeydown = function (evt) {
+				var eventHandler = ((evt.metaKey || evt.ctrlKey) ? metaKeyboardEventHandlers :
+						(evt.shiftKey ? shiftKeyboardEventHandlers : keyboardEventHandlers))[evt.which];
+				if (eventHandler) {
+					eventHandler();
+					evt.preventDefault();
+				}
+			},
+			onScroll = function (event, delta, deltaX, deltaY) {
+				mapModel.move('mousewheel', -1 * deltaX, deltaY);
+				if (event.preventDefault) { // stop the back button
+					event.preventDefault();
+				}
 			};
+	/* 
+	 * input enabled/disabled sets stage to draggable false/true
+	 * input enabled/disabled prevents mapModel from firing events 
+	 */
+		mapModel.addEventListener('inputEnabledChanged', function (isInputEnabled) {
+			jQuery(document)[isInputEnabled ? 'bind' : 'unbind']('keydown', onKeydown);
+		});
+		jQuery(document).keydown(onKeydown);
 		activityLog.log('Creating canvas Size ' + element.width() + ' ' + element.height());
 		setStageDimensions();
 		stage.attrs.x = 0.5 * stage.getWidth();
@@ -39,7 +93,12 @@ jQuery.fn.mapWidget = function (activityLog, mapModel, touchEnabled, imageRender
 		jQuery('.modal')
 			.on('show', mapModel.setInputEnabled.bind(mapModel, false))
 			.on('hidden', mapModel.setInputEnabled.bind(mapModel, true));
-		if (touchEnabled) {
+		if (!touchEnabled) {
+			jQuery(window).mousewheel(onScroll);
+			mapModel.addEventListener('inputEnabledChanged', function (isInputEnabled) {
+				jQuery(window)[isInputEnabled ? 'mousewheel' : 'unmousewheel'](onScroll);
+			});
+		} else {
 			element.find('canvas').hammer().on("pinch", function (event) {
 				if (discrete(event)) {
 					mapModel.scale('touch', event.gesture.scale, {
