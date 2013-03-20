@@ -59,6 +59,8 @@
 		<div id="container"></div>
 		<script type="text/javascript" src="../lib/jquery-1.9.0.js"></script>
 		<script type="text/javascript" src="../lib/jquery.mousewheel-3.1.3.js"></script>
+		<script type="text/javascript" src="../lib/jquery.mousewheel-3.1.3.js"></script>
+		<script src="../lib/jquery.hammer.min.js"></script>
 		<script type="text/javascript" src="../lib/underscore-1.4.3-min.js"></script>
 		<!--script type="text/javascript" src="../lib/kinetic-v4.2.0-custom-min.js"></script-->
 		<script type="text/javascript" src="../lib/kinetic-v4.2.0.js"></script>
@@ -74,30 +76,19 @@
 		<script type="text/javascript" src="../src/kinetic-mediator.js"></script>
 		<script type="text/javascript" src="../src/map-toolbar-widget.js"></script>
 		<script type="text/javascript" src="../src/png-exporter.js"></script>
+		<script type="text/javascript" src="../src/map-widget.js"></script>
 		<script type="text/javascript" src="testtree.js"></script>
 		<script>
 			(function () {
 				window.onerror = alert;
 				var container = jQuery('#container'),
-				stage = new Kinetic.Stage({
-					container: 'container',
-					draggable: true
-				}),
 				idea = content(test_tree()),
-				mapRepository = observable({});
-				mapModel = new MAPJS.MapModel(mapRepository, MAPJS.KineticMediator.layoutCalculator, ['A brilliant idea...', 'A cunning plan...', 'We\'ll be famous...'], ['hoo har']),
-				mediator = new MAPJS.KineticMediator(mapModel, stage),
-				setStageDimensions = function () {
-					stage.setWidth(container.width());
-					stage.setHeight(container.height());
-					stage.draw();
-				};
-				setStageDimensions();
-				stage.attrs.x = 0.5 * stage.getWidth();
-				stage.attrs.y = 0.5 * stage.getHeight();
-				$(window).resize(setStageDimensions);
+				mapRepository = observable({}),
+				isTouch = false,
+				renderImages = false,
+				mapModel = new MAPJS.MapModel(mapRepository, MAPJS.KineticMediator.layoutCalculator, ['A brilliant idea...', 'A cunning plan...', 'We\'ll be famous...'], ['hoo har']);
+				container.mapWidget(console,mapModel, isTouch, renderImages);
 				jQuery('body').mapToolbarWidget(mapModel);
-				window.mapModel = mapModel;
 				var pngExporter = new MAPJS.PNGExporter(mapRepository);
 				$("[data-mm-action='export-image']").click(pngExporter.exportMap);
 				pngExporter.addEventListener('mapExported', function (url) {
