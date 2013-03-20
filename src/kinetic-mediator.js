@@ -268,6 +268,9 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 			}
 		});
 	});
+	mapModel.addEventListener('mapViewResetRequested', function () {
+		resetStage();
+	});
 	mapModel.addEventListener('mapMoveRequested', function (deltaX, deltaY) {
 		moveStage(deltaX, deltaY);
 	});

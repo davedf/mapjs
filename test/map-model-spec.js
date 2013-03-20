@@ -447,6 +447,13 @@ describe('MapModel', function () {
 
 			expect(mapScaleChangedListener).toHaveBeenCalledWith(1.25, undefined);
 		});
+		it('should dispatch mapViewResetRequested when resetView is called', function () {
+			var underTest = new MAPJS.MapModel(observable({})),
+				mapScaleChangedListener = jasmine.createSpy();
+			underTest.addEventListener('mapViewResetRequested', mapScaleChangedListener);
+			underTest.resetView();
+			expect(mapScaleChangedListener).toHaveBeenCalled();
+		});
 		it('should dispatch mapScaleChanged event with 0.8 and no zoom point when scaleDown method is invoked', function () {
 			var underTest = new MAPJS.MapModel(observable({})),
 				mapScaleChangedListener = jasmine.createSpy();
@@ -681,7 +688,8 @@ describe('MapModel', function () {
 		});
 		it('should dispatch analytic event when methods are invoked', function () {
 			var methods = ['cut', 'copy', 'paste', 'redo', 'undo', 'scaleUp', 'scaleDown', 'move', 'moveRelative', 'addSubIdea',
-				'addSiblingIdea', 'removeSubIdea', 'editNode', 'selectNodeLeft', 'selectNodeRight', 'selectNodeUp', 'selectNodeDown'];
+				'addSiblingIdea', 'removeSubIdea', 'editNode', 'selectNodeLeft', 'selectNodeRight', 'selectNodeUp', 'selectNodeDown',
+				'resetView'];
 			_.each(methods, function (method) {
 				var spy = jasmine.createSpy(method);
 				underTest.addEventListener('analytic', spy);

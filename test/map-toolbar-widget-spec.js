@@ -7,6 +7,8 @@ describe('mapToolbarWidget', function () {
 		mapModel = new MAPJS.MapModel(observable({}), function () { return []; });
 		element = jQuery(
 			'<div>\
+			<input type="button" class="resetView" value="0"></input>\
+			<input type="button" class="scaleUp" value="+"></input>\
 			<input type="button" class="scaleUp" value="+"></input>\
 			<input type="button" class="scaleDown" value="-"></input>\
 			<input type="button" class="addSubIdea" value="++"></input>\
@@ -16,6 +18,9 @@ describe('mapToolbarWidget', function () {
 			<input type="button" class="addSiblingIdea" value="insert parent"></input>\
 			<input type="button" class="undo" value="undo"></input>\
 			<input type="button" class="redo" value="redo"></input>\
+			<input type="button" class="cut" value="cut"></input>\
+			<input type="button" class="copy" value="copy"></input>\
+			<input type="button" class="paste" value="paste"></input>\
 			<input data-mm-target-property="color" type="text" class="updateStyle" value=""></input>\
 			</div>'
 		);
@@ -29,7 +34,7 @@ describe('mapToolbarWidget', function () {
 		expect(result).toBe(element);
 	});
 	it('should invoke underlying method on map model when button is clicked', function () {
-		var methods = ['scaleUp', 'scaleDown', 'removeSubIdea', 'editNode', 'addSubIdea', 'insertIntermediate', 'addSiblingIdea', 'undo', 'redo'];
+		var methods = ['scaleUp', 'scaleDown', 'removeSubIdea', 'editNode', 'addSubIdea', 'insertIntermediate', 'addSiblingIdea', 'undo', 'redo', 'cut', 'copy', 'paste', 'resetView'];
 		_.each(methods, function (method) {
 			spyOn(mapModel, method);
 			element.mapToolbarWidget(mapModel);
