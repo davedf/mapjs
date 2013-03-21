@@ -119,16 +119,16 @@ describe('MapModel', function () {
 		describe('editNode', function () {
 			it('should dispatch nodeEditRequested when a request to edit node is made', function () {
 				var nodeEditRequestedListener = jasmine.createSpy();
-				underTest.addEventListener('nodeEditRequested:1', nodeEditRequestedListener);
+				underTest.addEventListener('nodeEditRequested', nodeEditRequestedListener);
 				underTest.selectNode(1);
 
 				underTest.editNode('toolbar', true);
 
-				expect(nodeEditRequestedListener).toHaveBeenCalledWith(true);
+				expect(nodeEditRequestedListener).toHaveBeenCalledWith(1, true);
 			});
 			it('should not dispatch nodeEditRequested when input is disabled', function () {
 				var nodeEditRequestedListener = jasmine.createSpy();
-				underTest.addEventListener('nodeEditRequested:1', nodeEditRequestedListener);
+				underTest.addEventListener('nodeEditRequested', nodeEditRequestedListener);
 				underTest.selectNode(1);
 				underTest.setInputEnabled(false);
 				underTest.editNode('toolbar', true);
@@ -136,30 +136,30 @@ describe('MapModel', function () {
 			});
 			it('should select all text when the current text of root node is one of our defaults', function () {
 				var nodeEditRequestedListener = jasmine.createSpy();
-				underTest.addEventListener('nodeEditRequested:4', nodeEditRequestedListener);
+				underTest.addEventListener('nodeEditRequested', nodeEditRequestedListener);
 				underTest.selectNode(4);
 
 				underTest.editNode('toolbar', false);
 
-				expect(nodeEditRequestedListener).toHaveBeenCalledWith(true);
+				expect(nodeEditRequestedListener).toHaveBeenCalledWith(4, true);
 			});
 			it('should select all text when the current text of child node is one of our defaults', function () {
 				var nodeEditRequestedListener = jasmine.createSpy();
-				underTest.addEventListener('nodeEditRequested:6', nodeEditRequestedListener);
+				underTest.addEventListener('nodeEditRequested', nodeEditRequestedListener);
 				underTest.selectNode(6);
 
 				underTest.editNode('toolbar', false);
 
-				expect(nodeEditRequestedListener).toHaveBeenCalledWith(true);
+				expect(nodeEditRequestedListener).toHaveBeenCalledWith(6, true);
 			});
 			it('should select all text when the current text of child node is one of our intermediate defaults', function () {
 				var nodeEditRequestedListener = jasmine.createSpy();
-				underTest.addEventListener('nodeEditRequested:5', nodeEditRequestedListener);
+				underTest.addEventListener('nodeEditRequested', nodeEditRequestedListener);
 				underTest.selectNode(5);
 
 				underTest.editNode('toolbar', false);
 
-				expect(nodeEditRequestedListener).toHaveBeenCalledWith(true);
+				expect(nodeEditRequestedListener).toHaveBeenCalledWith(5, true);
 			});
 		});
 		it('should dispatch nodeStyleChanged the style changes is created', function () {
@@ -179,10 +179,10 @@ describe('MapModel', function () {
 			});
 			underTest.setIdea(anIdea);
 			var nodeEditRequestedListener = jasmine.createSpy(), newId;
-			underTest.addEventListener('nodeEditRequested:3', nodeEditRequestedListener);
+			underTest.addEventListener('nodeEditRequested', nodeEditRequestedListener);
 			underTest.selectNode(2);
 			underTest.insertIntermediate('toolbar', true);
-			expect(nodeEditRequestedListener).toHaveBeenCalledWith(true);
+			expect(nodeEditRequestedListener).toHaveBeenCalledWith(3, true);
 		});
 		it('should move map to keep the currently selected node in the same place while updating style (expand/collapse)', function () {
 			var layoutCalculatorLayout,

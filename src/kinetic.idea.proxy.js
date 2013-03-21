@@ -54,8 +54,6 @@ Kinetic.IdeaProxy = function (idea, stage, layer) {
 		height: idea.getHeight() + 20
 	});
 	nodeImageDrawFunc = nodeimage.getDrawFunc().bind(nodeimage);
-	nodeimage.on('dblclick dbltap', idea.fire.bind(idea, ':nodeEditRequested'));
-
 	nodeimage.setDrawFunc(function (canvas) {
 		cacheImage();
 		nodeImageDrawFunc(canvas);
@@ -101,7 +99,7 @@ Kinetic.IdeaProxy = function (idea, stage, layer) {
 			return idea && idea[fname] && idea[fname].apply(idea, arguments);
 		};
 	});
-	_.each([':textChanged', ':editing', ':nodeEditRequested'], function (fname) {
+	_.each([':textChanged', ':editing'], function (fname) {
 		idea.on(fname, function (event) {
 			container.fire(fname, event);
 			reRender();

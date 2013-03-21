@@ -77,6 +77,12 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 			});
 		};
 	stage.add(layer);
+	mapModel.addEventListener('nodeEditRequested', function (nodeId, shouldSelectAll) {
+		var node = nodeByIdeaId[nodeId];
+		if (node) {
+			node.editNode(shouldSelectAll);
+		}
+	});
 	mapModel.addEventListener('nodeCreated', function (n) {
 		var node = new Kinetic.Idea({
 			level: n.level,
@@ -92,6 +98,7 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 		}
 		/* in kinetic 4.3 cannot use click because click if fired on dragend */
 		node.on('click tap', mapModel.selectNode.bind(mapModel, n.id));
+		node.on('dblclick dbltap', mapModel.editNode.bind(mapModel, 'mouse', false));
 		node.on('dragstart', function () {
 			node.moveToTop();
 			node.getNodeAttrs().shadow.offset = {
@@ -127,7 +134,7 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 		node.on(':editing', function () {
 			mapModel.setInputEnabled(false);
 		});
-		node.on(':nodeEditRequested', mapModel.editNode.bind(mapModel, 'mouse', false));
+
 
 		if (n.level > 1) {
 			node.on('mouseover touchstart', stage.setDraggable.bind(stage, false));
@@ -140,7 +147,7 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 			duration: 0.4
 		});
 
-		mapModel.addEventListener('nodeEditRequested:' + n.id, node.editNode);
+
 		nodeByIdeaId[n.id] = node;
 
 	});
@@ -186,8 +193,7 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 			duration: 0.4,
 			callback: node.remove.bind(node)
 		});
-		node.off('click dblclick tap dragstart dragmove dragend mouseover mouseout :textChanged :nodeEditRequested');
-		mapModel.removeEventListener('nodeEditRequested:' + n.id, node.editNode);
+		node.off('click dblclick tap dragstart dragmove dragend mouseover mouseout :textChanged');
 	});
 	mapModel.addEventListener('nodeMoved', function (n, reason) {
 		var node = nodeByIdeaId[n.id];

@@ -41,7 +41,6 @@
 			oldSetText(breakWords(text));
 		};
 		this.classType = 'Idea';
-		this.on('dblclick dbltap', self.fire.bind(self, ':nodeEditRequested'));
 		this.oldDrawFunc = this.getDrawFunc();
 		this.setDrawFunc(function (canvas) {
 			if (self.isVisible()) {

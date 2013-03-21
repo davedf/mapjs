@@ -199,8 +199,7 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 				 titlesToRandomlyChooseFrom.indexOf(title) !== -1) {
 			shouldSelectAll = true;
 		}
-		self.dispatchEvent('nodeEditRequested:' + currentlySelectedIdeaId, shouldSelectAll);
-
+		self.dispatchEvent('nodeEditRequested', currentlySelectedIdeaId, shouldSelectAll);
 	};
 	this.scaleUp = function (source) {
 		self.scale(source, 1.25);
