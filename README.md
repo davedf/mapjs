@@ -23,7 +23,10 @@ where our tests expect them. Make sure to run that script the first time you dow
 - [Kinetic JS 4.2.0](http://kineticjs.com/)
 - [JQuery 1.9.0](http://jquery.com/)
 - [Underscore.Js 1.4.3](http://underscorejs.org/)
-
+- [JQuery HotKeys 0.8](http://jquery.com/)
+- [JQuery MouseWheel 3.1.3](https://github.com/brandonaaron/jquery-mousewheel/)
+- [Hammer.JS JQuery Plugin 1.0.4](http://eightmedia.github.com/hammer.js)
+- [Color JS 0.4.1](https://github.com/harthur/color)
 Testing
 -------
 

@@ -60,7 +60,7 @@ jQuery.fn.mapWidget = function (activityLog, mapModel, touchEnabled, imageRender
 				40: mapModel.moveRelative.bind(mapModel, 'keyboard', 1),
 				88: mapModel.cut.bind(mapModel, 'keyboard'),
 				67: mapModel.copy.bind(mapModel, 'keyboard'),
-				86: mapModel.paste.bind(mapModel, 'keyboard')
+		//		86: mapModel.paste.bind(mapModel, 'keyboard')
 			},
 			onKeydown = function (evt) {
 				var eventHandler = ((evt.metaKey || evt.ctrlKey) ? metaKeyboardEventHandlers :
@@ -83,6 +83,12 @@ jQuery.fn.mapWidget = function (activityLog, mapModel, touchEnabled, imageRender
 			stage.setDraggable(!canInput);
 		});
 		jQuery(document).keydown(onKeydown);
+		jQuery(document).keydown("ctrl+shift+v meta+shift+v", function () {
+			mapModel.pasteStyle('keyboard');
+		});
+		jQuery(document).keydown("ctrl+v meta+v", function () {
+			mapModel.paste('keyboard');
+		});
 		activityLog.log('Creating canvas Size ' + element.width() + ' ' + element.height());
 		setStageDimensions();
 		stage.attrs.x = 0.5 * stage.getWidth();
