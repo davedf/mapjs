@@ -225,6 +225,69 @@ describe("content aggregate", function () {
 				expect(idea.ideas[-10].ideas).toEqual({});
 			});
 		});
+		describe("setStyleMap", function () {
+			it('should change the entire style of an idea', function () {
+				var aggregate = content({id: 71, title: 'My Idea'}),
+					result = aggregate.setStyleMap(71, {'newStyle': 'newValue'});
+				expect(result).toBeTruthy();
+				expect(aggregate.getStyle('newStyle')).toBe('newValue');
+			});
+			it('should allow the entire style to be set on the child', function () {
+				var aggregate = content({id: 1, ideas: { 5: { id: 2}}}),
+					result = aggregate.setStyleMap(2, {'newStyle': 'newValue'});
+				expect(result).toBeTruthy();
+				expect(aggregate.ideas[5].getStyle('newStyle')).toBe('newValue');
+			});
+			it('clones style when setting to a new object to prevent stale references', function () {
+				var oldStyle = {oldProp: 'oldVal'},
+					newStyle = {newProp: 'newVal'},
+					aggregate = content({id: 1, style: oldStyle}),
+					result = aggregate.setStyleMap(1, newStyle);
+				newStyle.newProp = 'anotherVal';
+				expect(oldStyle).toEqual({oldProp: 'oldVal'});
+				expect(aggregate.getStyle('newProp')).toBe('newVal');
+			});
+			it("fires an event matching the method call when the style changes", function () {
+				var listener = jasmine.createSpy('style_listener'),
+					wrapped = content({});
+				wrapped.addEventListener('changed', listener);
+				wrapped.setStyleMap(1, {new: 'yellow'});
+				expect(listener).toHaveBeenCalledWith('setStyleMap', [1, {new: 'yellow'}]);
+			});
+			it('should fail if no such child exists', function () {
+				var listener = jasmine.createSpy('style_listener'),
+					aggregate = content({id: 1, ideas: { 5: { id: 2}}}),
+					result;
+				aggregate.addEventListener('changed', listener);
+				result = aggregate.setStyleMap(100, {'newStyle': 'newValue'});
+				expect(result).toBeFalsy();
+				expect(listener).not.toHaveBeenCalled();
+			});
+			it('should fail if old style equals new one', function () {
+				var listener = jasmine.createSpy('style_listener'),
+					aggregate = content({id: 1, style: {'v': 'x'} }),
+					result;
+				aggregate.addEventListener('changed', listener);
+				result = aggregate.setStyleMap(1, {'v': 'x'});
+				expect(result).toBeFalsy();
+				expect(listener).not.toHaveBeenCalled();
+			});
+			it('should fail if it receives something that is not a property map', function () {
+				var listener = jasmine.createSpy('style_listener'),
+					aggregate = content({id: 1}),
+					result;
+				aggregate.addEventListener('changed', listener);
+				result = aggregate.setStyleMap(1, 'x');
+				expect(result).toBeFalsy();
+				expect(listener).not.toHaveBeenCalled();
+			});
+			it('should push an undo function onto event stack if successful', function () {
+				var aggregate = content({id: 71, style: {'newStyle': 'oldValue'}});
+				aggregate.setStyleMap(71, {'newStyle': 'newValue'});
+				aggregate.undo();
+				expect(aggregate.getStyle('newStyle')).toBe('oldValue');
+			});
+		});
 		describe("updateStyle", function () {
 			it('should allow an attribute to be set on the aggregate', function () {
 				var aggregate = content({id: 71, title: 'My Idea'}),

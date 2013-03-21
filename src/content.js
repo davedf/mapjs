@@ -308,6 +308,21 @@ var content = function (contentAggregate, progressCallback) {
 		});
 		return true;
 	};
+	contentAggregate.setStyleMap = function (ideaId, newStyle) {
+		var idea = findIdeaById(ideaId), oldStyle;
+		if (!idea || !_.isObject(newStyle)) {
+			return false;
+		}
+		if (_.isEqual(idea.style, newStyle)) {
+			return false;
+		}
+		oldStyle = _.clone(idea.style);
+		idea.style = _.clone(newStyle);
+		notifyChange('setStyleMap', [ideaId, newStyle], function () {
+			idea.style = oldStyle;
+		});
+		return true;
+	};
 	contentAggregate.updateStyle = function (ideaId, styleName, styleValue) {
 		var idea = findIdeaById(ideaId), oldStyle;
 		if (!idea) {
