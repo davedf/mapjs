@@ -68,7 +68,12 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 					y: 1
 				},
 				duration: 0.5,
-				easing: 'ease-in-out'
+				easing: 'ease-in-out',
+				callback: function () {
+					if (imageRendering) {
+						stage.fire(':scaleChangeComplete');
+					}
+				}
 			});
 		};
 	stage.add(layer);
