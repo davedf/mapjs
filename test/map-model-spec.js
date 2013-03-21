@@ -290,12 +290,9 @@ describe('MapModel', function () {
 			});
 			it('should expand the node when addSubIdea is called', function () {
 				underTest.selectNode(1);
-				var nodeSelectionChangedListener = jasmine.createSpy();
 				underTest.collapse('source', true);
 				spyOn(anIdea, 'updateStyle');
-				underTest.addEventListener('nodeSelectionChanged', nodeSelectionChangedListener);
 				underTest.addSubIdea();
-
 				expect(anIdea.updateStyle).toHaveBeenCalledWith(1, 'collapsed', false);
 			});
 			it('should invoke idea.addSubIdea with randomly selected title when addSubIdea method is invoked', function () {
@@ -470,6 +467,12 @@ describe('MapModel', function () {
 			it('should invoke idea.addSubIdea with a root node if root is currently selected (root has no parent or siblings)', function () {
 				underTest.addSiblingIdea();
 				expect(anIdea.addSubIdea).toHaveBeenCalledWith(1, 'double click to edit');
+			});
+			it('should expand the root node if it is collapsed', function () {
+				underTest.collapse('source', true);
+				spyOn(anIdea, 'updateStyle');
+				underTest.addSiblingIdea();
+				expect(anIdea.updateStyle).toHaveBeenCalledWith(1, 'collapsed', false);
 			});
 			it('should not invoke anything if input is disabled', function () {
 				underTest.setInputEnabled(false);
