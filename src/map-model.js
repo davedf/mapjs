@@ -12,7 +12,7 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 			connectors: {}
 		},
 		idea,
-		isInputEnabled,
+		isInputEnabled = true,
 		currentlySelectedIdeaId,
 		markedIdeaId,
 		getRandomTitle = function (titles) {
@@ -121,7 +121,7 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 		}
 	};
 	this.selectNode = function (id) {
-		if (id !== currentlySelectedIdeaId) {
+		if (isInputEnabled && id !== currentlySelectedIdeaId) {
 			if (currentlySelectedIdeaId) {
 				self.dispatchEvent('nodeSelectionChanged', currentlySelectedIdeaId, false);
 			}
@@ -139,40 +139,48 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 	};
 	this.collapse = function (source, doCollapse) {
 		analytic('collapse:' + doCollapse, source);
-		var node = currentlySelectedIdea();
-		if (node.ideas && _.size(node.ideas) > 0) {
-			idea.updateStyle(currentlySelectedIdeaId, 'collapsed', doCollapse);
+		if (isInputEnabled) {
+			var node = currentlySelectedIdea();
+			if (node.ideas && _.size(node.ideas) > 0) {
+				idea.updateStyle(currentlySelectedIdeaId, 'collapsed', doCollapse);
+			}
 		}
 	};
 	this.updateStyle = function (source, prop, value) {
-		analytic('updateStyle:' + prop, source);
 		/*jslint eqeq:true */
-		if (this.getSelectedStyle(prop) != value) {
+		if (isInputEnabled && this.getSelectedStyle(prop) != value) {
+			analytic('updateStyle:' + prop, source);
 			idea.updateStyle(currentlySelectedIdeaId, prop, value);
 		}
 	};
 	this.addSubIdea = function (source) {
 		analytic('addSubIdea', source);
-		ensureNodeIsExpanded(source, currentlySelectedIdeaId);
-		idea.addSubIdea(currentlySelectedIdeaId, getRandomTitle(titlesToRandomlyChooseFrom));
+		if (isInputEnabled) {
+			ensureNodeIsExpanded(source, currentlySelectedIdeaId);
+			idea.addSubIdea(currentlySelectedIdeaId, getRandomTitle(titlesToRandomlyChooseFrom));
+		}
 	};
 	this.insertIntermediate = function (source) {
-		if (currentlySelectedIdeaId === idea.id) {
-			return false;
+		if (!isInputEnabled || currentlySelectedIdeaId === idea.id) {
+			return;
 		}
 		idea.insertIntermediate(currentlySelectedIdeaId, getRandomTitle(intermediaryTitlesToRandomlyChooseFrom));
 		analytic('insertIntermediate', source);
 	};
 	this.addSiblingIdea = function (source) {
 		analytic('addSiblingIdea', source);
-		var parent = idea.findParent(currentlySelectedIdeaId) || idea;
-		idea.addSubIdea(parent.id, getRandomTitle(titlesToRandomlyChooseFrom));
+		if (isInputEnabled) {
+			var parent = idea.findParent(currentlySelectedIdeaId) || idea;
+			idea.addSubIdea(parent.id, getRandomTitle(titlesToRandomlyChooseFrom));
+		}
 	};
 	this.removeSubIdea = function (source) {
 		analytic('removeSubIdea', source);
-		var parent = idea.findParent(currentlySelectedIdeaId);
-		if (idea.removeSubIdea(currentlySelectedIdeaId)) {
-			self.selectNode(parent.id);
+		if (isInputEnabled) {
+			var parent = idea.findParent(currentlySelectedIdeaId);
+			if (idea.removeSubIdea(currentlySelectedIdeaId)) {
+				self.selectNode(parent.id);
+			}
 		}
 	};
 	this.updateTitle = function (ideaId, title) {
@@ -181,6 +189,9 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 	this.editNode = function (source, shouldSelectAll) {
 		if (source) {
 			analytic('editNode', source);
+		}
+		if (!isInputEnabled) {
+			return false;
 		}
 		var title = currentlySelectedIdea().title;
 		if (intermediaryTitlesToRandomlyChooseFrom.indexOf(title) !== -1 ||
@@ -197,16 +208,22 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 		self.scale(source, 0.8);
 	};
 	this.scale = function (source, scaleMultiplier, zoomPoint) {
-		self.dispatchEvent('mapScaleChanged', scaleMultiplier, zoomPoint);
-		analytic(scaleMultiplier < 1 ? 'scaleDown' : 'scaleUp', source);
+		if (isInputEnabled) {
+			self.dispatchEvent('mapScaleChanged', scaleMultiplier, zoomPoint);
+			analytic(scaleMultiplier < 1 ? 'scaleDown' : 'scaleUp', source);
+		}
 	};
 	this.move = function (source, deltaX, deltaY) {
-		self.dispatchEvent('mapMoveRequested', deltaX, deltaY);
-		analytic('move', source);
+		if (isInputEnabled) {
+			self.dispatchEvent('mapMoveRequested', deltaX, deltaY);
+			analytic('move', source);
+		}
 	};
 	this.resetView = function (source) {
-		self.dispatchEvent('mapViewResetRequested');
-		analytic('resetView', source);
+		if (isInputEnabled) {
+			self.dispatchEvent('mapViewResetRequested');
+			analytic('resetView', source);
+		}
 	};
 	(function () {
 		var isRootOrRightHalf = function (id) {
@@ -227,6 +244,9 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 				isRoot = currentlySelectedIdeaId === idea.id,
 				targetRank = isRoot ? -Infinity : Infinity,
 				targetNode;
+			if (!isInputEnabled) {
+				return;
+			}
 			analytic('selectNodeLeft', source);
 			if (isRootOrLeftHalf(currentlySelectedIdeaId)) {
 				node = idea.id === currentlySelectedIdeaId ? idea : idea.findSubIdeaById(currentlySelectedIdeaId);
@@ -246,6 +266,9 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 		};
 		self.selectNodeRight = function (source) {
 			var node, rank, minimumPositiveRank = Infinity;
+			if (!isInputEnabled) {
+				return;
+			}
 			analytic('selectNodeRight', source);
 			if (isRootOrRightHalf(currentlySelectedIdeaId)) {
 				node = idea.id === currentlySelectedIdeaId ? idea : idea.findSubIdeaById(currentlySelectedIdeaId);
@@ -269,6 +292,9 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 				nodesAbove,
 				closestNode,
 				currentNode = currentLayout.nodes[currentlySelectedIdeaId];
+			if (!isInputEnabled) {
+				return;
+			}
 			analytic('selectNodeUp', source);
 			if (previousSibling) {
 				self.selectNode(previousSibling);
@@ -291,6 +317,9 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 				nodesBelow,
 				closestNode,
 				currentNode = currentLayout.nodes[currentlySelectedIdeaId];
+			if (!isInputEnabled) {
+				return;
+			}
 			analytic('selectNodeDown', source);
 			if (nextSibling) {
 				self.selectNode(nextSibling);
@@ -311,28 +340,40 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 		};
 		self.undo = function (source) {
 			analytic('undo', source);
-			idea.undo();
+			if (isInputEnabled) {
+				idea.undo();
+			}
 		};
 		self.redo = function (source) {
 			analytic('redo', source);
-			idea.redo();
+			if (isInputEnabled) {
+				idea.redo();
+			}
 		};
 		self.moveRelative = function (source, relativeMovement) {
 			analytic('moveRelative', source);
-			idea.moveRelative(currentlySelectedIdeaId, relativeMovement);
+			if (isInputEnabled) {
+				idea.moveRelative(currentlySelectedIdeaId, relativeMovement);
+			}
 		};
 		self.cut = function (source) {
 			analytic('cut', source);
-			self.clipBoard = idea.clone(currentlySelectedIdeaId);
-			idea.removeSubIdea(currentlySelectedIdeaId);
+			if (isInputEnabled) {
+				self.clipBoard = idea.clone(currentlySelectedIdeaId);
+				idea.removeSubIdea(currentlySelectedIdeaId);
+			}
 		};
 		self.copy = function (source) {
 			analytic('copy', source);
-			self.clipBoard = idea.clone(currentlySelectedIdeaId);
+			if (isInputEnabled) {
+				self.clipBoard = idea.clone(currentlySelectedIdeaId);
+			}
 		};
 		self.paste = function (source) {
 			analytic('paste', source);
-			idea.paste(currentlySelectedIdeaId, self.clipBoard);
+			if (isInputEnabled) {
+				idea.paste(currentlySelectedIdeaId, self.clipBoard);
+			}
 		};
 	}());
 	//Todo - clean up this shit below

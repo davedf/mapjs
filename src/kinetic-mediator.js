@@ -59,14 +59,6 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 				stage.draw();
 			}
 		},
-		getTargetShape = function (evt) {
-			var is;
-			if (evt.offsetX && evt.offsetY) {
-				is = stage.getIntersection({x: evt.offsetX, y: evt.offsetY});
-				return is && is.shape;
-			}
-			return false;
-		},
 		resetStage = function () {
 			stage.transitionTo({
 				x: 0.5 * stage.getWidth(),
@@ -78,20 +70,8 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 				duration: 0.5,
 				easing: 'ease-in-out'
 			});
-		},
-		resetstageOnClick = function (evt) {
-			if (!getTargetShape(evt)) {
-				resetStage();
-			}
-		},
-		stageCenteringEvents = function (isInputEnabled) {
-			jQuery(document)[isInputEnabled ? 'on' : 'off']('dblclick', stage.simulate.bind(stage, 'dblclick'));
-			stage[isInputEnabled ? 'on' : 'off']('dbltap dblclick', resetstageOnClick);
 		};
-
 	stage.add(layer);
-	mapModel.addEventListener('inputEnabledChanged', stageCenteringEvents);
-	stageCenteringEvents(true);
 	mapModel.addEventListener('nodeCreated', function (n) {
 		var node = new Kinetic.Idea({
 			level: n.level,
@@ -137,10 +117,10 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 		});
 		node.on(':textChanged', function (event) {
 			mapModel.updateTitle(n.id, event.text);
-			mapModel.dispatchEvent('inputEnabledChanged', true);
+			mapModel.setInputEnabled(true);
 		});
 		node.on(':editing', function () {
-			mapModel.dispatchEvent('inputEnabledChanged', false);
+			mapModel.setInputEnabled(false);
 		});
 		node.on(':nodeEditRequested', mapModel.editNode.bind(mapModel, 'mouse', false));
 

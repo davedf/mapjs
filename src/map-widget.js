@@ -65,6 +65,9 @@ jQuery.fn.mapWidget = function (activityLog, mapModel, touchEnabled, imageRender
 			onKeydown = function (evt) {
 				var eventHandler = ((evt.metaKey || evt.ctrlKey) ? metaKeyboardEventHandlers :
 						(evt.shiftKey ? shiftKeyboardEventHandlers : keyboardEventHandlers))[evt.which];
+				if (/input|textarea|select/i.test(evt.target.nodeName)) {
+					return;
+				}
 				if (eventHandler) {
 					eventHandler();
 					evt.preventDefault();
@@ -78,26 +81,19 @@ jQuery.fn.mapWidget = function (activityLog, mapModel, touchEnabled, imageRender
 			};
 	/* 
 	 * input enabled/disabled sets stage to draggable false/true
-	 * input enabled/disabled prevents mapModel from firing events 
 	 */
-		mapModel.addEventListener('inputEnabledChanged', function (isInputEnabled) {
-			jQuery(document)[isInputEnabled ? 'bind' : 'unbind']('keydown', onKeydown);
-		});
+
 		jQuery(document).keydown(onKeydown);
 		activityLog.log('Creating canvas Size ' + element.width() + ' ' + element.height());
 		setStageDimensions();
 		stage.attrs.x = 0.5 * stage.getWidth();
 		stage.attrs.y = 0.5 * stage.getHeight();
-		//stage.attrs.y = Math.max(-minY + $('#topbar').outerHeight() + 5, 0.5 * stage.getHeight());
 		jQuery(window).resize(setStageDimensions);
 		jQuery('.modal')
 			.on('show', mapModel.setInputEnabled.bind(mapModel, false))
 			.on('hidden', mapModel.setInputEnabled.bind(mapModel, true));
 		if (!touchEnabled) {
 			jQuery(window).mousewheel(onScroll);
-			mapModel.addEventListener('inputEnabledChanged', function (isInputEnabled) {
-				jQuery(window)[isInputEnabled ? 'mousewheel' : 'unmousewheel'](onScroll);
-			});
 		} else {
 			element.find('canvas').hammer().on("pinch", function (event) {
 				if (discrete(event)) {
@@ -111,7 +107,7 @@ jQuery.fn.mapWidget = function (activityLog, mapModel, touchEnabled, imageRender
 					mapModel.move('touch', event.gesture.deltaX, event.gesture.deltaY);
 				}
 			}).on("doubletap", function (event) {
-				simulateTouch("dbltap", event);
+				mapModel.resetView();
 			}).on("touch", function (evt) {
 				jQuery('.topbar-color-picker:visible').hide();
 				jQuery('.ideaInput:visible').blur();
