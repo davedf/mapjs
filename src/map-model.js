@@ -375,6 +375,12 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 				idea.paste(currentlySelectedIdeaId, self.clipBoard);
 			}
 		};
+		self.pasteStyle = function (source) {
+			analytic('pasteStyle', source);
+			if (isInputEnabled) {
+				idea.setStyleMap(currentlySelectedIdeaId, self.clipBoard.style);
+			}
+		};
 	}());
 	//Todo - clean up this shit below
 	(function () {

@@ -346,6 +346,26 @@ describe('MapModel', function () {
 				expect(anIdea.paste).not.toHaveBeenCalled();
 			});
 		});
+		describe('pasteStyle', function () {
+			var toPaste;
+			beforeEach(function () {
+				toPaste = {title: 'c', style: {color: 'red'}};
+				spyOn(anIdea, 'clone').andReturn(toPaste);
+				spyOn(anIdea, 'setStyleMap');
+				underTest.selectNode(11);
+				underTest.copy('keyboard');
+				underTest.selectNode(12);
+			});
+			it('should set root node style from clipboard to currently selected idea', function () {
+				underTest.pasteStyle('keyboard');
+				expect(anIdea.setStyleMap).toHaveBeenCalledWith(12, toPaste.style);
+			});
+			it('should not paste when input is disabled', function () {
+				underTest.setInputEnabled(false);
+				underTest.pasteStyle('keyboard');
+				expect(anIdea.setStyleMap).not.toHaveBeenCalled();
+			});
+		});
 		describe('cut', function () {
 			var toPaste;
 			beforeEach(function () {
@@ -803,7 +823,7 @@ describe('MapModel', function () {
 			underTest.addEventListener('analytic', analyticListener);
 		});
 		it('should dispatch analytic event when methods are invoked', function () {
-			var methods = ['cut', 'copy', 'paste', 'redo', 'undo', 'scaleUp', 'scaleDown', 'move', 'moveRelative', 'addSubIdea',
+			var methods = ['cut', 'copy', 'paste', 'pasteStyle', 'redo', 'undo', 'scaleUp', 'scaleDown', 'move', 'moveRelative', 'addSubIdea',
 				'addSiblingIdea', 'removeSubIdea', 'editNode', 'selectNodeLeft', 'selectNodeRight', 'selectNodeUp', 'selectNodeDown',
 				'resetView'];
 			_.each(methods, function (method) {
