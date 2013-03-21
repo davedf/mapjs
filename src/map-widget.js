@@ -79,10 +79,9 @@ jQuery.fn.mapWidget = function (activityLog, mapModel, touchEnabled, imageRender
 					event.preventDefault();
 				}
 			};
-	/* 
-	 * input enabled/disabled sets stage to draggable false/true
-	 */
-
+		mapModel.addEventListener('inputEnabledChanged', function (canInput) {
+			stage.setDraggable(!canInput);
+		});
 		jQuery(document).keydown(onKeydown);
 		activityLog.log('Creating canvas Size ' + element.width() + ' ' + element.height());
 		setStageDimensions();
