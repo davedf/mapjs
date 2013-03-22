@@ -378,7 +378,12 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 		self.pasteStyle = function (source) {
 			analytic('pasteStyle', source);
 			if (isInputEnabled) {
-				idea.setStyleMap(currentlySelectedIdeaId, self.clipBoard.style);
+				var pastingStyle = _.omit(self.clipBoard.style, 'collapsed'),
+					collapsed = currentlySelectedIdea().getStyle('collapsed');
+				if (collapsed) {
+					pastingStyle.collapsed = collapsed;
+				}
+				idea.setStyleMap(currentlySelectedIdeaId, pastingStyle);
 			}
 		};
 		self.moveUp = function (source) { self.moveRelative(source, -1); };

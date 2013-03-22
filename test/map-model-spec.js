@@ -354,11 +354,21 @@ describe('MapModel', function () {
 				spyOn(anIdea, 'setStyleMap');
 				underTest.selectNode(11);
 				underTest.copy('keyboard');
-				underTest.selectNode(12);
+				underTest.selectNode(2);
 			});
 			it('should set root node style from clipboard to currently selected idea', function () {
 				underTest.pasteStyle('keyboard');
-				expect(anIdea.setStyleMap).toHaveBeenCalledWith(12, toPaste.style);
+				expect(anIdea.setStyleMap).toHaveBeenCalledWith(2, toPaste.style);
+			});
+			it('should keep the collapsed status of a node when pasting', function () {
+				anIdea.updateStyle(2, 'collapsed', 'true');
+				underTest.pasteStyle('keyboard');
+				expect(anIdea.setStyleMap).toHaveBeenCalledWith(2, _.extend({collapsed: 'true'}, toPaste.style));
+			});
+			it('should keep the uncollapsed status of a node when pasting', function () {
+				toPaste.style.collapsed = 'true';
+				underTest.pasteStyle('keyboard');
+				expect(anIdea.setStyleMap).toHaveBeenCalledWith(2, _.omit(toPaste.style, 'collapsed'));
 			});
 			it('should not paste when input is disabled', function () {
 				underTest.setInputEnabled(false);
