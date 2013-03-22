@@ -123,7 +123,9 @@
 					top: canvasPosition.top + self.getAbsolutePosition().y,
 					left: canvasPosition.left + self.getAbsolutePosition().x,
 					width: self.getWidth() * scale,
-					height: self.getHeight() * scale
+					height: self.getHeight() * scale,
+					'padding-top': 5 * scale + 'px',
+					'font-size': self.attrs.fontSize * scale + 'pt'
 				})
 				.val(unformattedText)
 				.appendTo('body')

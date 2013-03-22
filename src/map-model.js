@@ -381,6 +381,9 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 				idea.setStyleMap(currentlySelectedIdeaId, self.clipBoard.style);
 			}
 		};
+		self.moveUp = function (source) { self.moveRelative(source, -1); };
+		self.moveDown = function (source) { self.moveRelative(source, 1); };
+
 	}());
 	//Todo - clean up this shit below
 	(function () {

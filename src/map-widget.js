@@ -31,27 +31,27 @@ jQuery.fn.mapWidget = function (activityLog, mapModel, touchEnabled, imageRender
 				return !result;
 			},
 			keyboardEventHandlers = {
-				'return': mapModel.addSiblingIdea.bind(mapModel, 'keyboard'),
-				'del backspace': mapModel.removeSubIdea.bind(mapModel, 'keyboard'),
-				'tab': mapModel.addSubIdea.bind(mapModel, 'keyboard'),
-				'left': mapModel.selectNodeLeft.bind(mapModel, 'keyboard'),
-				'up': mapModel.selectNodeUp.bind(mapModel, 'keyboard'),
-				'right': mapModel.selectNodeRight.bind(mapModel, 'keyboard'),
-				'down': mapModel.selectNodeDown.bind(mapModel, 'keyboard'),
-				'space': mapModel.editNode.bind(mapModel, 'keyboard'),
-				'/ shift+up': mapModel.toggleCollapse.bind(mapModel, 'keyboard'),
-				'c meta+x ctrl+x': mapModel.cut.bind(mapModel, 'keyboard'),
-				'p meta+v ctrl+v': mapModel.paste.bind(mapModel, 'keyboard'),
-				'y meta+c ctrl+c': mapModel.copy.bind(mapModel, 'keyboard'),
-				'u meta+z ctrl+z': mapModel.undo.bind(mapModel, 'keyboard'),
-				'shift+tab': mapModel.insertIntermediate.bind(mapModel, 'keyboard'),
-				'meta+0 ctrl+0': mapModel.resetView.bind(mapModel, 'keyboard'),
-				'r meta+shift+z meta+y ctrl+y': mapModel.redo.bind(mapModel, 'keyboard'),
-				'meta+plus ctrl+plus': mapModel.scaleUp.bind(mapModel, 'keyboard'),
-				'meta+minus ctrl+minus': mapModel.scaleDown.bind(mapModel, 'keyboard'),
-				'meta+up ctrl+up': mapModel.moveRelative.bind(mapModel, 'keyboard', -1),
-				'meta+down ctrl+down': mapModel.moveRelative.bind(mapModel, 'keyboard', 1),
-				'ctrl+shift+v meta+shift+v': mapModel.pasteStyle.bind(mapModel, 'keyboard')
+				'return': 'addSiblingIdea',
+				'del backspace': 'removeSubIdea',
+				'tab': 'addSubIdea',
+				'left': 'selectNodeLeft',
+				'up': 'selectNodeUp',
+				'right': 'selectNodeRight',
+				'down': 'selectNodeDown',
+				'space': 'editNode',
+				'/ shift+up': 'toggleCollapse',
+				'c meta+x ctrl+x': 'cut',
+				'p meta+v ctrl+v': 'paste',
+				'y meta+c ctrl+c': 'copy',
+				'u meta+z ctrl+z': 'undo',
+				'shift+tab': 'insertIntermediate',
+				'meta+0 ctrl+0': 'resetView',
+				'r meta+shift+z meta+y ctrl+y': 'redo',
+				'meta+plus ctrl+plus': 'scaleUp',
+				'meta+minus ctrl+minus': 'scaleDown',
+				'meta+up ctrl+up': 'moveUp',
+				'meta+down ctrl+down': 'moveDown',
+				'ctrl+shift+v meta+shift+v': 'pasteStyle',
 			},
 			onScroll = function (event, delta, deltaX, deltaY) {
 				mapModel.move('mousewheel', -1 * deltaX, deltaY);
@@ -64,7 +64,7 @@ jQuery.fn.mapWidget = function (activityLog, mapModel, touchEnabled, imageRender
 		_.each(keyboardEventHandlers, function (mappedFunction, keysPressed) {
 			jQuery(document).keydown(keysPressed, function (event) {
 				event.preventDefault();
-				mappedFunction();
+				mapModel[mappedFunction]('keyboard');
 			});
 		});
 		mapModel.addEventListener('inputEnabledChanged', function (canInput) {
