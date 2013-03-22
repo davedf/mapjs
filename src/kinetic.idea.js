@@ -1,4 +1,4 @@
-/*global MAPJS, Color, _, console, jQuery, Kinetic*/
+/*global MAPJS, Color, _, jQuery, Kinetic*/
 /*jslint nomen: true, newcap: true*/
 (function () {
 	'use strict';
@@ -90,8 +90,6 @@
 		};
 		this.editNode = function (shouldSelectAll) {
 			self.fire(':editing');
-			//this only works for solid color nodes
-			self.attrs.textFill = self.attrs.fill;
 			self.getLayer().draw();
 			var canvasPosition = jQuery(self.getLayer().getCanvas().getElement()).offset(),
 				ideaInput,
@@ -122,10 +120,16 @@
 				.css({
 					top: canvasPosition.top + self.getAbsolutePosition().y,
 					left: canvasPosition.left + self.getAbsolutePosition().x,
-					width: self.getWidth() * scale,
-					height: self.getHeight() * scale,
-					'padding-top': 5 * scale + 'px',
-					'font-size': self.attrs.fontSize * scale + 'pt'
+					width: (6 + self.getWidth()) * scale,
+					height: (6 + self.getHeight()) * scale,
+					'padding': 3 * scale + 'px',
+					'font-size': self.attrs.fontSize * scale + 'pt',
+					'line-height': 1.2,
+					'background-color': self.getBackground(),
+					'margin': -3 * scale,
+					'border-radius': self.attrs.cornerRadius * scale + 'px',
+					'border': self.attrs.strokeWidth * (2 * scale) + 'px dashed ' + self.attrs.stroke,
+					'color': self.attrs.textFill
 				})
 				.val(unformattedText)
 				.appendTo('body')
@@ -149,8 +153,8 @@
 					var text = new Kinetic.Idea({
 						text: ideaInput.val()
 					});
-					ideaInput.width(Math.max(ideaInput.width(), text.getWidth()));
-					ideaInput.height(Math.max(ideaInput.height(), text.getHeight()));
+					ideaInput.width(Math.max(ideaInput.width(), text.getWidth() * scale));
+					ideaInput.height(Math.max(ideaInput.height(), text.getHeight() * scale));
 				});
 			self.stopEditing = onCancelEdit;
 			if (shouldSelectAll) {
@@ -164,6 +168,7 @@
 	};
 }());
 Kinetic.Idea.prototype.getScale = function () {
+	'use strict';
 	var stage = this.getStage();
 	return (stage && stage.attrs && stage.attrs.scale && stage.attrs.scale.x) || (this.attrs && this.attrs.scale && this.attrs.scale.x) || 1;
 };
@@ -192,12 +197,10 @@ Kinetic.Idea.prototype.setupShadows = function (config) {
 		config.shadow = isSelected ? selectedShadow : normalShadow;
 	}
 };
-
-Kinetic.Idea.prototype.setStyle = function (config) {
+Kinetic.Idea.prototype.getBackground = function () {
 	'use strict';
-	var isDroppable = this.isDroppable,
-		isRoot = this.level === 1,
-		isSelected = this.isSelected,
+	/*jslint newcap: true*/
+	var isRoot = this.level === 1,
 		defaultBg = MAPJS.defaultStyles[isRoot ? 'root' : 'nonRoot'].background,
 		validColor = function (color, defaultColor) {
 			if (!color) {
@@ -205,8 +208,16 @@ Kinetic.Idea.prototype.setStyle = function (config) {
 			}
 			var parsed = Color(color).hexString();
 			return color.toUpperCase() === parsed.toUpperCase() ? color : defaultColor;
-		},
-		background = validColor(this.mmStyle && this.mmStyle.background, defaultBg),
+		};
+	return validColor(this.mmStyle && this.mmStyle.background, defaultBg);
+};
+Kinetic.Idea.prototype.setStyle = function (config) {
+	'use strict';
+	/*jslint newcap: true*/
+	var isDroppable = this.isDroppable,
+		isRoot = this.level === 1,
+		isSelected = this.isSelected,
+		background = this.getBackground(),
 		tintedBackground = Color(background).mix(Color('#EEEEEE')).hexString(),
 		luminosity = Color(tintedBackground).luminosity();
 	config.strokeWidth = 1;
