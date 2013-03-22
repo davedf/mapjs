@@ -1,4 +1,4 @@
-/*global jQuery, Kinetic, MAPJS, window, document*/
+/*global _, jQuery, Kinetic, MAPJS, window, document*/
 jQuery.fn.mapWidget = function (activityLog, mapModel, touchEnabled, imageRendering) {
 	'use strict';
 	return this.each(function () {
@@ -31,47 +31,27 @@ jQuery.fn.mapWidget = function (activityLog, mapModel, touchEnabled, imageRender
 				return !result;
 			},
 			keyboardEventHandlers = {
-				13: mapModel.addSiblingIdea.bind(mapModel, 'keyboard'),
-				8: mapModel.removeSubIdea.bind(mapModel, 'keyboard'),
-				9: mapModel.addSubIdea.bind(mapModel, 'keyboard'),
-				37: mapModel.selectNodeLeft.bind(mapModel, 'keyboard'),
-				38: mapModel.selectNodeUp.bind(mapModel, 'keyboard'),
-				39: mapModel.selectNodeRight.bind(mapModel, 'keyboard'),
-				40: mapModel.selectNodeDown.bind(mapModel, 'keyboard'),
-				46: mapModel.removeSubIdea.bind(mapModel, 'keyboard'),
-				32: mapModel.editNode.bind(mapModel, 'keyboard'),
-				191: mapModel.toggleCollapse.bind(mapModel, 'keyboard'),
-				67: mapModel.cut.bind(mapModel, 'keyboard'),
-				80: mapModel.paste.bind(mapModel, 'keyboard'),
-				89: mapModel.copy.bind(mapModel, 'keyboard'),
-				85: mapModel.undo.bind(mapModel, 'keyboard')
-			},
-			shiftKeyboardEventHandlers = {
-				9: mapModel.insertIntermediate.bind(mapModel, 'keyboard'),
-				38: mapModel.toggleCollapse.bind(mapModel, 'keyboard')
-			},
-			metaKeyboardEventHandlers = {
-				48: mapModel.resetView.bind(mapModel, 'keyboard'),
-				90: mapModel.undo.bind(mapModel, 'keyboard'),
-				89: mapModel.redo.bind(mapModel, 'keyboard'),
-				187: mapModel.scaleUp.bind(mapModel, 'keyboard'),
-				189: mapModel.scaleDown.bind(mapModel, 'keyboard'),
-				38: mapModel.moveRelative.bind(mapModel, 'keyboard', -1),
-				40: mapModel.moveRelative.bind(mapModel, 'keyboard', 1),
-				88: mapModel.cut.bind(mapModel, 'keyboard'),
-				67: mapModel.copy.bind(mapModel, 'keyboard'),
-		//		86: mapModel.paste.bind(mapModel, 'keyboard')
-			},
-			onKeydown = function (evt) {
-				var eventHandler = ((evt.metaKey || evt.ctrlKey) ? metaKeyboardEventHandlers :
-						(evt.shiftKey ? shiftKeyboardEventHandlers : keyboardEventHandlers))[evt.which];
-				if (/input|textarea|select/i.test(evt.target.nodeName)) {
-					return;
-				}
-				if (eventHandler) {
-					eventHandler();
-					evt.preventDefault();
-				}
+				'return': 'addSiblingIdea',
+				'del backspace': 'removeSubIdea',
+				'tab': 'addSubIdea',
+				'left': 'selectNodeLeft',
+				'up': 'selectNodeUp',
+				'right': 'selectNodeRight',
+				'down': 'selectNodeDown',
+				'space': 'editNode',
+				'/ shift+up': 'toggleCollapse',
+				'c meta+x ctrl+x': 'cut',
+				'p meta+v ctrl+v': 'paste',
+				'y meta+c ctrl+c': 'copy',
+				'u meta+z ctrl+z': 'undo',
+				'shift+tab': 'insertIntermediate',
+				'meta+0 ctrl+0': 'resetView',
+				'r meta+shift+z meta+y ctrl+y': 'redo',
+				'meta+plus ctrl+plus': 'scaleUp',
+				'meta+minus ctrl+minus': 'scaleDown',
+				'meta+up ctrl+up': 'moveUp',
+				'meta+down ctrl+down': 'moveDown',
+				'ctrl+shift+v meta+shift+v': 'pasteStyle',
 			},
 			onScroll = function (event, delta, deltaX, deltaY) {
 				mapModel.move('mousewheel', -1 * deltaX, deltaY);
@@ -79,15 +59,16 @@ jQuery.fn.mapWidget = function (activityLog, mapModel, touchEnabled, imageRender
 					event.preventDefault();
 				}
 			};
+		jQuery.hotkeys.specialKeys[187] = 'plus';
+		jQuery.hotkeys.specialKeys[189] = 'minus';
+		_.each(keyboardEventHandlers, function (mappedFunction, keysPressed) {
+			jQuery(document).keydown(keysPressed, function (event) {
+				event.preventDefault();
+				mapModel[mappedFunction]('keyboard');
+			});
+		});
 		mapModel.addEventListener('inputEnabledChanged', function (canInput) {
 			stage.setDraggable(!canInput);
-		});
-		jQuery(document).keydown(onKeydown);
-		jQuery(document).keydown("ctrl+shift+v meta+shift+v", function () {
-			mapModel.pasteStyle('keyboard');
-		});
-		jQuery(document).keydown("ctrl+v meta+v", function () {
-			mapModel.paste('keyboard');
 		});
 		activityLog.log('Creating canvas Size ' + element.width() + ' ' + element.height());
 		setStageDimensions();
