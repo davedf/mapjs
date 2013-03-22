@@ -73,7 +73,9 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 					stage.fire(':scaleChangeComplete');
 				}
 			});
-		};
+		},
+		isShiftPressed;
+	jQuery(document).bind('keyup keydown', function (e) {isShiftPressed = e.shiftKey; });
 	stage.add(layer);
 
 	mapModel.addEventListener('nodeEditRequested', function (nodeId, shouldSelectAll) {
@@ -126,7 +128,8 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 			mapModel.nodeDragEnd(
 				n.id,
 				node.attrs.x,
-				node.attrs.y
+				node.attrs.y,
+				isShiftPressed
 			);
 			if (n.level > 1) {
 				stage.setDraggable(true);
