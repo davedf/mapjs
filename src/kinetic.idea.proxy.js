@@ -82,9 +82,6 @@ Kinetic.IdeaProxy = function (idea, stage, layer) {
 	idea.getAbsolutePosition =  function () {
 		return container.getAbsolutePosition();
 	};
-	stage.on(':scaleChangeComplete', function () {
-		reRender();
-	});
 	container.transitionToAndDontStopCurrentTransitions = function (config) {
 		var transition = new Kinetic.Transition(container, config),
 			animation = new Kinetic.Animation();
@@ -105,7 +102,7 @@ Kinetic.IdeaProxy = function (idea, stage, layer) {
 			reRender();
 		});
 	});
-	_.each(['setMMStyle', 'setIsSelected', 'setText', 'setIsDroppable', 'editNode'], function (fname) {
+	_.each(['setMMStyle', 'setIsSelected', 'setText', 'setIsDroppable', 'editNode', 'setupShadows'], function (fname) {
 		container[fname] = function () {
 			var result = idea && idea[fname] && idea[fname].apply(idea, arguments);
 			reRender();

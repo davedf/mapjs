@@ -70,13 +70,12 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 				duration: 0.5,
 				easing: 'ease-in-out',
 				callback: function () {
-					if (imageRendering) {
-						stage.fire(':scaleChangeComplete');
-					}
+					stage.fire(':scaleChangeComplete');
 				}
 			});
 		};
 	stage.add(layer);
+
 	mapModel.addEventListener('nodeEditRequested', function (nodeId, shouldSelectAll) {
 		var node = nodeByIdeaId[nodeId];
 		if (node) {
@@ -91,7 +90,10 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 			text: n.title,
 			mmStyle: n.style,
 			opacity: 1
-		});
+		}),
+			getScale = function () {
+				return (stage && stage.attrs && stage.attrs.scale && stage.attrs.scale.x) || 1;
+			};
 
 		if (imageRendering) {
 			node = Kinetic.IdeaProxy(node, stage, layer);
@@ -100,10 +102,12 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 		node.on('click tap', mapModel.selectNode.bind(mapModel, n.id));
 		node.on('dblclick dbltap', mapModel.editNode.bind(mapModel, 'mouse', false));
 		node.on('dragstart', function () {
+			var scale = getScale();
+
 			node.moveToTop();
 			node.getNodeAttrs().shadow.offset = {
-				x: 8,
-				y: 8
+				x: 8 * scale,
+				y: 8 * scale
 			};
 		});
 		node.on('dragmove', function () {
@@ -114,9 +118,10 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 			);
 		});
 		node.on('dragend', function () {
+			var scale = getScale();
 			node.getNodeAttrs().shadow.offset = {
-				x: 4,
-				y: 4
+				x: 4 * scale,
+				y: 4 * scale
 			};
 			mapModel.nodeDragEnd(
 				n.id,
@@ -145,6 +150,11 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 		node.transitionToAndDontStopCurrentTransitions({
 			opacity: 1,
 			duration: 0.4
+		});
+		console.log(':scaleChangeComplete setup', stage);
+		stage.on(':scaleChangeComplete', function () {
+			console.log(':scaleChangeComplete');
+			node.setupShadows();
 		});
 
 
@@ -253,9 +263,7 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 			duration: 0.1,
 			easing: 'ease-in-out',
 			callback: function () {
-				if (imageRendering) {
-					stage.fire(':scaleChangeComplete');
-				}
+				stage.fire(':scaleChangeComplete');
 			}
 		});
 	});

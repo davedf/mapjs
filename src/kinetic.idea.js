@@ -95,6 +95,12 @@
 			self.getLayer().draw();
 			var canvasPosition = jQuery(self.getLayer().getCanvas().getElement()).offset(),
 				ideaInput,
+				onStageMoved = _.throttle(function () {
+					ideaInput.css({
+						top: canvasPosition.top + self.getAbsolutePosition().y,
+						left: canvasPosition.left + self.getAbsolutePosition().x
+					});
+				}, 10),
 				updateText = function (newText) {
 					self.setStyle(self.attrs);
 					self.getStage().draw();
@@ -111,13 +117,7 @@
 				onCancelEdit = function () {
 					updateText(unformattedText);
 				},
-				scale = self.getStage().getScale().x || 1,
-				onStageMoved = _.throttle(function () {
-					ideaInput.css({
-						top: canvasPosition.top + self.getAbsolutePosition().y,
-						left: canvasPosition.left + self.getAbsolutePosition().x
-					});
-				}, 10);
+				scale = self.getStage().getScale().x || 1;
 			ideaInput = jQuery('<textarea type="text" wrap="soft" class="ideaInput"></textarea>')
 				.css({
 					top: canvasPosition.top + self.getAbsolutePosition().y,
@@ -156,30 +156,47 @@
 			} else if (ideaInput[0].setSelectionRange) {
 				ideaInput[0].setSelectionRange(unformattedText.length, unformattedText.length);
 			}
+
 			self.getStage().on('xChange yChange', onStageMoved);
 		};
 	};
 }());
+Kinetic.Idea.prototype.getScale = function () {
+	var stage = this.getStage();
+	return (stage && stage.attrs && stage.attrs.scale && stage.attrs.scale.x) || (this.attrs && this.attrs.scale && this.attrs.scale.x) || 1;
+};
 
-Kinetic.Idea.prototype.setStyle = function (config) {
+
+Kinetic.Idea.prototype.setupShadows = function (config) {
 	'use strict';
-	var isDroppable = this.isDroppable,
+	var scale = this.getScale(),
 		isSelected = this.isSelected,
-		isRoot = this.level === 1,
-		defaultBg = MAPJS.defaultStyles[isRoot ? 'root' : 'nonRoot'].background,
-		offset =  (this.mmStyle && this.mmStyle.collapsed) ? 3 : 4,
+		offset =  (this.mmStyle && this.mmStyle.collapsed) ? 3 * scale : 4 * scale,
 		normalShadow = {
 			color: 'black',
-			blur: 10,
+			blur: 10 * scale,
 			offset: [offset, offset],
-			opacity: 0.4
+			opacity: 0.4 * scale
 		},
 		selectedShadow = {
 			color: 'black',
 			blur: 0,
 			offset: [offset, offset],
 			opacity: 1
-		},
+		};
+	if (this.attrs && this.attrs.shadow) {
+		this.setShadow(isSelected ? selectedShadow : normalShadow);
+	} else if (config) {
+		config.shadow = isSelected ? selectedShadow : normalShadow;
+	}
+};
+
+Kinetic.Idea.prototype.setStyle = function (config) {
+	'use strict';
+	var isDroppable = this.isDroppable,
+		isRoot = this.level === 1,
+		isSelected = this.isSelected,
+		defaultBg = MAPJS.defaultStyles[isRoot ? 'root' : 'nonRoot'].background,
 		validColor = function (color, defaultColor) {
 			if (!color) {
 				return defaultColor;
@@ -214,12 +231,9 @@ Kinetic.Idea.prototype.setStyle = function (config) {
 			colorStops: [0, tintedBackground, 1, background]
 		};
 	}
+
+	this.setupShadows(config);
 	config.align = 'center';
-	if (this.attrs && this.attrs.shadow) {
-		this.setShadow(isSelected ? selectedShadow : normalShadow);
-	} else {
-		config.shadow = isSelected ? selectedShadow : normalShadow;
-	}
 	config.cornerRadius = 10;
 	if (luminosity < 0.5) {
 		config.textFill = '#EEEEEE';
