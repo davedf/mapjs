@@ -25,9 +25,9 @@ MAPJS.LayoutCompressor.nodeAndConnectorCollisionBox = function (node, parent) {
 	'use strict';
 	return {
 		x: Math.min(node.x, parent.x + 0.5 * parent.width),
-		y: Math.min(node.y, parent.y),
+		y: node.y,
 		width: node.width + 0.5 * parent.width,
-		height: Math.max(node.y + node.height, parent.y + parent.height) - Math.min(node.y, parent.y)
+		height: node.height
 	};
 };
 MAPJS.LayoutCompressor.getSubTreeNodeList = function getSubTreeNodeList(positions, result, parent) {

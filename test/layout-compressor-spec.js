@@ -60,7 +60,7 @@ describe('layout compressor', function () {
 		});
 	});
 	describe('calculating node and connector collision box', function () {
-		it('should return a box with origin of parent top and horizontal mid-point containing child node', function () {
+		it('should return a box with origin of node top and horizontal mid-point containing child node', function () {
 			var node = { x: 200, y: 100, width: 50, height: 20 },
 				parent = { x: 0, y: 0, width: 200, height: 100 },
 				result;
@@ -68,10 +68,10 @@ describe('layout compressor', function () {
 			result = MAPJS.LayoutCompressor.nodeAndConnectorCollisionBox(node, parent);
 
 			expect(result).toEqual({
-				x: 100,
-				y: 0,
-				width: 150,
-				height: 120
+				x : 100,
+				y : 100,
+				width : 150,
+				height : 20
 			});
 		});
 		it('should return a box with origin of child top left containing left half of the parent node', function () {
@@ -85,7 +85,7 @@ describe('layout compressor', function () {
 				x: 0,
 				y: 0,
 				width: 225,
-				height: 120
+				height: 100
 			});
 		});
 	});
@@ -128,13 +128,13 @@ describe('layout compressor', function () {
 			result = MAPJS.LayoutCompressor.getSubTreeNodeList(layout);
 
 			expect(result).toEqual([
-				{ x : 0, y : 0, width : 10, height : 10 },
-				{ x : 1, y : 2, width : 1, height : 1 },
-				{ x : 1, y : 0, width : 6, height : 10 },
-				{ x : 3, y : 6, width : 3, height : 6 },
-				{ x : 1.5, y : 2, width : 3.5, height : 10 },
-				{ x : 2, y : 4, width : 2, height : 4 },
-				{ x : 2, y : 0, width : 7, height : 10 }
+				{ x: 0, y: 0, width: 10, height: 10 },
+				{ x: 1, y: 2, width: 1, height: 1 },
+				{ x: 1, y: 2, width: 6, height: 1 },
+				{ x: 3, y: 6, width: 3, height: 6 },
+				{ x: 1.5, y: 6, width: 3.5, height: 6 },
+				{ x: 2, y: 4, width: 2, height: 4 },
+				{ x: 2, y: 4, width: 7, height: 4 }
 			]);
 		});
 	});
