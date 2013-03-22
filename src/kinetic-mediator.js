@@ -67,7 +67,7 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 					x: 1,
 					y: 1
 				},
-				duration: 0.5,
+				duration: 0.05,
 				easing: 'ease-in-out',
 				callback: function () {
 					stage.fire(':scaleChangeComplete');
