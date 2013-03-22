@@ -151,15 +151,10 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 			opacity: 1,
 			duration: 0.4
 		});
-		console.log(':scaleChangeComplete setup', stage);
 		stage.on(':scaleChangeComplete', function () {
-			console.log(':scaleChangeComplete');
 			node.setupShadows();
 		});
-
-
 		nodeByIdeaId[n.id] = node;
-
 	});
 	mapModel.addEventListener('nodeSelectionChanged', function (ideaId, isSelected) {
 		var node = nodeByIdeaId[ideaId],
@@ -260,7 +255,7 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 			},
 			x: zoomPoint.x + (stage.attrs.x - zoomPoint.x) * targetScale / currentScale,
 			y: zoomPoint.y + (stage.attrs.y - zoomPoint.y) * targetScale / currentScale,
-			duration: 0.1,
+			duration: 0.01,
 			easing: 'ease-in-out',
 			callback: function () {
 				stage.fire(':scaleChangeComplete');
