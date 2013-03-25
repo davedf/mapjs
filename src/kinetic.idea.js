@@ -152,7 +152,17 @@
 					e.stopPropagation();
 				})
 				.blur(onCommit)
-				.focus()
+				.focus(function () {
+					if (shouldSelectAll) {
+						if (ideaInput[0].setSelectionRange) {
+							ideaInput[0].setSelectionRange(0, unformattedText.length);
+						} else {
+							ideaInput.select();
+						}
+					} else if (ideaInput[0].setSelectionRange) {
+						ideaInput[0].setSelectionRange(unformattedText.length, unformattedText.length);
+					}
+				})
 				.on('input', function () {
 					var text = new Kinetic.Idea({
 						text: ideaInput.val()
@@ -160,12 +170,9 @@
 					ideaInput.width(Math.max(ideaInput.width(), text.getWidth() * scale));
 					ideaInput.height(Math.max(ideaInput.height(), text.getHeight() * scale));
 				});
+
 			self.stopEditing = onCancelEdit;
-			if (shouldSelectAll) {
-				ideaInput.select();
-			} else if (ideaInput[0].setSelectionRange) {
-				ideaInput[0].setSelectionRange(unformattedText.length, unformattedText.length);
-			}
+			ideaInput.focus();
 
 			self.getStage().on('xChange yChange', onStageMoved);
 		};
