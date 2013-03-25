@@ -262,6 +262,11 @@ Kinetic.Idea.prototype.setMMStyle = function (newMMStyle) {
 	this.setStyle(this.attrs);
 	this.getLayer().draw();
 };
+Kinetic.Idea.prototype.getIsSelected = function () {
+	'use strict';
+	return this.isSelected;
+};
+
 Kinetic.Idea.prototype.setIsSelected = function (isSelected) {
 	'use strict';
 	this.isSelected = isSelected;

@@ -1,4 +1,4 @@
-/*global _, window, document, jQuery, Kinetic*/
+/*global _, window, document, jQuery, Kinetic, setTimeout*/
 var MAPJS = MAPJS || {};
 if (Kinetic.Stage.prototype.isRectVisible) {
 	throw ('isRectVisible already exists, should not mix in our methods');
@@ -181,21 +181,12 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 		nodeByIdeaId[n.id] = node;
 	});
 	mapModel.addEventListener('nodeSelectionChanged', function (ideaId, isSelected) {
-		var node = nodeByIdeaId[ideaId],
-			scale = stage.getScale().x || 1,
-			offset = 100,
-			move = { x: 0, y: 0 };
+		var node = nodeByIdeaId[ideaId];
 		node.setIsSelected(isSelected);
 		if (!isSelected) {
 			return;
 		}
 		ensureNodeVisible(node);
-	});
-	mapModel.addEventListener('hierarchyChanged', function (ideaId) {
-		var node = nodeByIdeaId[ideaId];
-		if (node) {
-			ensureNodeVisible(node);
-		}
 	});
 	mapModel.addEventListener('nodeStyleChanged', function (n) {
 		var node = nodeByIdeaId[n.id];
@@ -216,13 +207,17 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 		node.off('click dblclick tap dragstart dragmove dragend mouseover mouseout :textChanged');
 	});
 	mapModel.addEventListener('nodeMoved', function (n, reason) {
-		var node = nodeByIdeaId[n.id];
-		node.transitionTo({
-			x: n.x,
-			y: n.y,
-			duration: 0.4,
-			easing: reason === 'failed' ? 'bounce-ease-out' : 'ease-in-out'
-		});
+		var node = nodeByIdeaId[n.id],
+			transition = {
+				x: n.x,
+				y: n.y,
+				duration: 0.4,
+				easing: reason === 'failed' ? 'bounce-ease-out' : 'ease-in-out'
+			};
+		if (node.getIsSelected()) {
+			transition.callback = ensureNodeVisible.bind(undefined, node);
+		}
+		node.transitionTo(transition);
 	});
 	mapModel.addEventListener('nodeTitleChanged', function (n) {
 		var node = nodeByIdeaId[n.id];

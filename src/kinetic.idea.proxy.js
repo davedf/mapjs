@@ -91,7 +91,7 @@ Kinetic.IdeaProxy = function (idea, stage, layer) {
 		transition.start();
 		animation.start();
 	};
-	_.each(['getHeight', 'getWidth'], function (fname) {
+	_.each(['getHeight', 'getWidth', 'getIsSelected'], function (fname) {
 		container[fname] = function () {
 			return idea && idea[fname] && idea[fname].apply(idea, arguments);
 		};

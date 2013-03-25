@@ -354,7 +354,6 @@ MAPJS.MapModel = function (mapRepository, layoutCalculator, titlesToRandomlyChoo
 			analytic('moveRelative', source);
 			if (isInputEnabled) {
 				idea.moveRelative(currentlySelectedIdeaId, relativeMovement);
-				self.dispatchEvent('hierarchyChanged', currentlySelectedIdeaId);
 			}
 		};
 		self.cut = function (source) {
