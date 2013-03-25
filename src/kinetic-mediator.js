@@ -74,6 +74,27 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 				}
 			});
 		},
+		ensureNodeVisible = function (node) {
+			var scale = stage.getScale().x || 1,
+				offset = 100,
+				move = { x: 0, y: 0 };
+			if (node.getAbsolutePosition().x + node.getWidth() * scale + offset > stage.getWidth()) {
+				move.x = stage.getWidth() - (node.getAbsolutePosition().x + node.getWidth() * scale + offset);
+			} else if (node.getAbsolutePosition().x < offset) {
+				move.x  = offset - node.getAbsolutePosition().x;
+			}
+			if (node.getAbsolutePosition().y + node.getHeight() * scale + offset > stage.getHeight()) {
+				move.y = stage.getHeight() - (node.getAbsolutePosition().y + node.getHeight() * scale + offset);
+			} else if (node.getAbsolutePosition().y < offset) {
+				move.y = offset - node.getAbsolutePosition().y;
+			}
+			stage.transitionTo({
+				x: stage.attrs.x + move.x,
+				y: stage.attrs.y + move.y,
+				duration: 0.4,
+				easing: 'ease-in-out'
+			});
+		},
 		isShiftPressed;
 	jQuery(document).bind('keyup keydown', function (e) {isShiftPressed = e.shiftKey; });
 	stage.add(layer);
@@ -168,22 +189,13 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 		if (!isSelected) {
 			return;
 		}
-		if (node.getAbsolutePosition().x + node.getWidth() * scale + offset > stage.getWidth()) {
-			move.x = stage.getWidth() - (node.getAbsolutePosition().x + node.getWidth() * scale + offset);
-		} else if (node.getAbsolutePosition().x < offset) {
-			move.x  = offset - node.getAbsolutePosition().x;
+		ensureNodeVisible(node);
+	});
+	mapModel.addEventListener('hierarchyChanged', function (ideaId) {
+		var node = nodeByIdeaId[ideaId];
+		if (node) {
+			ensureNodeVisible(node);
 		}
-		if (node.getAbsolutePosition().y + node.getHeight() * scale + offset > stage.getHeight()) {
-			move.y = stage.getHeight() - (node.getAbsolutePosition().y + node.getHeight() * scale + offset);
-		} else if (node.getAbsolutePosition().y < offset) {
-			move.y = offset - node.getAbsolutePosition().y;
-		}
-		stage.transitionTo({
-			x: stage.attrs.x + move.x,
-			y: stage.attrs.y + move.y,
-			duration: 0.4,
-			easing: 'ease-in-out'
-		});
 	});
 	mapModel.addEventListener('nodeStyleChanged', function (n) {
 		var node = nodeByIdeaId[n.id];

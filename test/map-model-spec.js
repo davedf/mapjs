@@ -426,10 +426,23 @@ describe('MapModel', function () {
 				underTest.moveRelative('keyboard', -1);
 				expect(anIdea.moveRelative).toHaveBeenCalledWith(123, -1);
 			});
+			it('should dispatch hierarchyChanged event', function () {
+				var hierarchyChangedChangedListener = jasmine.createSpy();
+				underTest.addEventListener('hierarchyChanged', hierarchyChangedChangedListener);
+				underTest.moveRelative('keyboard', -1);
+				expect(hierarchyChangedChangedListener).toHaveBeenCalledWith(123);
+			});
 			it('should not invoke idea.moveRelative when input is disabled', function () {
 				underTest.setInputEnabled(false);
 				underTest.moveRelative('keyboard', -1);
 				expect(anIdea.moveRelative).not.toHaveBeenCalled();
+			});
+			it('should not dispatch hierarchyChanged event when input is disabled', function () {
+				var hierarchyChangedChangedListener = jasmine.createSpy();
+				underTest.addEventListener('hierarchyChanged', hierarchyChangedChangedListener);
+				underTest.setInputEnabled(false);
+				underTest.moveRelative('keyboard', -1);
+				expect(hierarchyChangedChangedListener).not.toHaveBeenCalled();
 			});
 		});
 		describe('redo', function () {
