@@ -144,6 +144,10 @@
 						e.preventDefault();
 						onCommit();
 						return; /* propagate to let the environment handle ctrl+s */
+					} else if (!e.shiftKey && e.which === 90 && (e.metaKey || e.ctrlKey)) {
+						if (ideaInput.val() === unformattedText) {
+							onCancelEdit();
+						}
 					}
 					e.stopPropagation();
 				})
