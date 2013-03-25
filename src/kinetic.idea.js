@@ -229,8 +229,7 @@ Kinetic.Idea.prototype.setStyle = function (config) {
 		isRoot = this.level === 1,
 		isSelected = this.isSelected,
 		background = this.getBackground(),
-		tintedBackground = Color(background).mix(Color('#EEEEEE')).hexString(),
-		luminosity = Color(tintedBackground).luminosity();
+		tintedBackground = Color(background).mix(Color('#EEEEEE')).hexString();
 	config.strokeWidth = 1;
 	config.padding = 8;
 	config.fontSize = 10;
@@ -259,13 +258,7 @@ Kinetic.Idea.prototype.setStyle = function (config) {
 	this.setupShadows(config);
 	config.align = 'center';
 	config.cornerRadius = 10;
-	if (luminosity < 0.5) {
-		config.textFill = '#EEEEEE';
-	} else if (luminosity < 0.9) {
-		config.textFill = '#4F4F4F';
-	} else {
-		config.textFill = '#000000';
-	}
+	config.textFill = MAPJS.contrastForeground(tintedBackground);
 };
 Kinetic.Idea.prototype.setMMStyle = function (newMMStyle) {
 	'use strict';

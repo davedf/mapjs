@@ -1,5 +1,5 @@
 /*jslint nomen: true*/
-/*global _*/
+/*global _, Color*/
 var MAPJS = MAPJS || {};
 (function () {
 	'use strict';
@@ -123,5 +123,16 @@ var MAPJS = MAPJS || {};
 		result.width = margin + _.max(_.map(nodes, function (node) { return node.x + node.width; })) - result.left;
 		result.height = margin + _.max(_.map(nodes, function (node) { return node.y + node.height; })) - result.top;
 		return result;
+	};
+	MAPJS.contrastForeground = function (background) {
+		/*jslint newcap:true*/
+		var luminosity = Color(background).luminosity();
+		if (luminosity < 0.5) {
+			return '#EEEEEE';
+		}
+		if (luminosity < 0.9) {
+			return '#4F4F4F';
+		}
+		return '#000000';
 	};
 }());
