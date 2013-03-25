@@ -46,12 +46,12 @@ jQuery.fn.mapWidget = function (activityLog, mapModel, touchEnabled, imageRender
 				'u meta+z ctrl+z': 'undo',
 				'shift+tab': 'insertIntermediate',
 				'meta+0 ctrl+0': 'resetView',
-				'r meta+shift+z meta+y ctrl+y': 'redo',
+				'r meta+shift+z ctrl+shift+z meta+y ctrl+y': 'redo',
 				'meta+plus ctrl+plus': 'scaleUp',
 				'meta+minus ctrl+minus': 'scaleDown',
 				'meta+up ctrl+up': 'moveUp',
 				'meta+down ctrl+down': 'moveDown',
-				'ctrl+shift+v meta+shift+v': 'pasteStyle',
+				'ctrl+shift+v meta+shift+v': 'pasteStyle'
 			},
 			onScroll = function (event, delta, deltaX, deltaY) {
 				mapModel.move('mousewheel', -1 * deltaX, deltaY);
