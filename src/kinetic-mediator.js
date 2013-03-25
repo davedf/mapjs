@@ -74,10 +74,13 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 				}
 			});
 		},
-		ensureNodeVisible = function (node) {
+		ensureSelectedNodeVisible = function (node) {
 			var scale = stage.getScale().x || 1,
 				offset = 100,
 				move = { x: 0, y: 0 };
+			if (!node.getIsSelected()) {
+				return;
+			}
 			if (node.getAbsolutePosition().x + node.getWidth() * scale + offset > stage.getWidth()) {
 				move.x = stage.getWidth() - (node.getAbsolutePosition().x + node.getWidth() * scale + offset);
 			} else if (node.getAbsolutePosition().x < offset) {
@@ -186,7 +189,7 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 		if (!isSelected) {
 			return;
 		}
-		ensureNodeVisible(node);
+		ensureSelectedNodeVisible(node);
 	});
 	mapModel.addEventListener('nodeStyleChanged', function (n) {
 		var node = nodeByIdeaId[n.id];
@@ -207,17 +210,14 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 		node.off('click dblclick tap dragstart dragmove dragend mouseover mouseout :textChanged');
 	});
 	mapModel.addEventListener('nodeMoved', function (n, reason) {
-		var node = nodeByIdeaId[n.id],
-			transition = {
-				x: n.x,
-				y: n.y,
-				duration: 0.4,
-				easing: reason === 'failed' ? 'bounce-ease-out' : 'ease-in-out'
-			};
-		if (node.getIsSelected()) {
-			transition.callback = ensureNodeVisible.bind(undefined, node);
-		}
-		node.transitionTo(transition);
+		var node = nodeByIdeaId[n.id];
+		node.transitionTo({
+			x: n.x,
+			y: n.y,
+			duration: 0.4,
+			easing: reason === 'failed' ? 'bounce-ease-out' : 'ease-in-out',
+			callback: ensureSelectedNodeVisible.bind(undefined, node)
+		});
 	});
 	mapModel.addEventListener('nodeTitleChanged', function (n) {
 		var node = nodeByIdeaId[n.id];
