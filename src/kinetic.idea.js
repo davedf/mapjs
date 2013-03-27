@@ -50,7 +50,8 @@
 		this.add(this.text);
 		this.setText = function (text) {
 			unformattedText = text;
-			text.setText(breakWords(text));
+			self.text.setText(breakWords(text));
+			self.setStyle();
 		};
 		this.setStyle();
 		this.classType = 'Idea';
@@ -103,6 +104,10 @@
 			var stage = self.getStage();
 			return stage && stage.isRectVisible(new MAPJS.Rectangle(self.attrs.x, self.attrs.y, self.getWidth(), self.getHeight()), offset);
 		};
+		this.getAbsolutePosition = function () {
+			return { x: self.getStage().getPosition().x + self.getPosition().x * self.getStage().getScale().x,
+					y:  self.getStage().getPosition().y + self.getPosition().y * self.getStage().getScale().y};
+		};
 		this.editNode = function (shouldSelectAll) {
 			self.fire(':editing');
 			self.getLayer().draw();
@@ -110,8 +115,8 @@
 				ideaInput,
 				onStageMoved = _.throttle(function () {
 					ideaInput.css({
-						top: canvasPosition.top + self.getAbsolutePosition().y,
-						left: canvasPosition.left + self.getAbsolutePosition().x
+						top: canvasPosition.top + self.rect.getAbsolutePosition().y,
+						left: canvasPosition.left + self.rect.getAbsolutePosition().x
 					});
 				}, 10),
 				updateText = function (newText) {
@@ -138,13 +143,13 @@
 					width: (6 + self.getWidth()) * scale,
 					height: (6 + self.getHeight()) * scale,
 					'padding': 3 * scale + 'px',
-					'font-size': self.attrs.fontSize * scale + 'pt',
+					'font-size': self.text.attrs.fontSize * scale + 'pt',
 					'line-height': 1.2,
 					'background-color': self.getBackground(),
 					'margin': -3 * scale,
-					'border-radius': self.attrs.cornerRadius * scale + 'px',
-					'border': self.attrs.strokeWidth * (2 * scale) + 'px dashed ' + self.attrs.stroke,
-					'color': self.attrs.textFill
+					'border-radius': self.rect.attrs.cornerRadius * scale + 'px',
+					'border': self.rect.attrs.strokeWidth * (2 * scale) + 'px dashed ' + self.rect.attrs.stroke,
+					'color': self.text.attrs.fill
 				})
 				.val(unformattedText)
 				.appendTo('body')
