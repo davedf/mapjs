@@ -194,7 +194,7 @@
 		};
 	};
 }());
-Kinetic.Idea.prototype.getScale = function () {
+Kinetic.Idea.prototype.getMMScale = function () {
 	'use strict';
 	var stage = this.getStage(),
 		scale = (stage && stage.attrs && stage.attrs.scale && stage.attrs.scale.x) || (this.attrs && this.attrs.scale && this.attrs.scale.x) || 1;
@@ -204,7 +204,7 @@ Kinetic.Idea.prototype.getScale = function () {
 
 Kinetic.Idea.prototype.setupShadows = function () {
 	'use strict';
-	var scale = this.getScale().x,
+	var scale = this.getMMScale().x,
 		isSelected = this.isSelected,
 		offset =  (this.mmStyle && this.mmStyle.collapsed) ? 3 * scale : 4 * scale,
 		normalShadow = {
@@ -251,6 +251,7 @@ Kinetic.Idea.prototype.setStyle = function () {
 		background = this.getBackground(),
 		tintedBackground = Color(background).mix(Color('#EEEEEE')).hexString(),
 		padding = 8;
+	console.log('size', this.text.getWidth(), this.text.getHeight(), this.text.getScale(), this.getScale());
 	this.rect.attrs.width = this.text.getWidth() + 2 * padding;
 	this.rect.attrs.height = this.text.getHeight() + 2 * padding;
 	this.attrs.width = this.text.getWidth() + 2 * padding;
