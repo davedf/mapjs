@@ -221,10 +221,15 @@ Kinetic.Idea.prototype.setupShadows = function () {
 			blur: 0,
 			offset: [offset, offset],
 			opacity: 1
-		};
-	if (this.rect.attrs && this.rect.attrs.shadow) {
-		this.rect.setShadow(isSelected ? selectedShadow : normalShadow);
-	}
+		},
+		shadow = isSelected ? selectedShadow : normalShadow;
+	this.rect.setShadowColor(shadow.color);
+	this.rect.setShadowBlur(shadow.blur);
+	this.rect.setShadowOpacity(shadow.opacity);
+	this.rect.setShadowOffset(shadow.offset);
+	//if (this.rect.attrs && this.rect.attrs.shadow) {
+	//this.rect.setShadow(isSelected ? selectedShadow : normalShadow);
+	//}
 };
 Kinetic.Idea.prototype.getBackground = function () {
 	'use strict';
