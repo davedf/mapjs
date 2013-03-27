@@ -131,10 +131,10 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 			var scale = getScale();
 
 			node.moveToTop();
-			node.getNodeAttrs().shadow.offset = {
-				x: 8 * scale,
-				y: 8 * scale
-			};
+			// node.getNodeAttrs().shadow.offset = {
+			// 	x: 8 * scale,
+			// 	y: 8 * scale
+			// };
 		});
 		node.on('dragmove', function () {
 			mapModel.nodeDragMove(
@@ -145,10 +145,10 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 		});
 		node.on('dragend', function () {
 			var scale = getScale();
-			node.getNodeAttrs().shadow.offset = {
-				x: 4 * scale,
-				y: 4 * scale
-			};
+			// node.getNodeAttrs().shadow.offset = {
+			// 	x: 4 * scale,
+			// 	y: 4 * scale
+			// };
 			mapModel.nodeDragEnd(
 				n.id,
 				node.attrs.x,

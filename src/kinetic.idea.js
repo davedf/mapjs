@@ -104,10 +104,6 @@
 			var stage = self.getStage();
 			return stage && stage.isRectVisible(new MAPJS.Rectangle(self.attrs.x, self.attrs.y, self.getWidth(), self.getHeight()), offset);
 		};
-		this.getAbsolutePosition = function () {
-			return { x: self.getStage().getPosition().x + self.getPosition().x * self.getStage().getScale().x,
-					y:  self.getStage().getPosition().y + self.getPosition().y * self.getStage().getScale().y};
-		};
 		this.editNode = function (shouldSelectAll) {
 			self.fire(':editing');
 			self.getLayer().draw();
@@ -200,14 +196,15 @@
 }());
 Kinetic.Idea.prototype.getScale = function () {
 	'use strict';
-	var stage = this.getStage();
-	return (stage && stage.attrs && stage.attrs.scale && stage.attrs.scale.x) || (this.attrs && this.attrs.scale && this.attrs.scale.x) || 1;
+	var stage = this.getStage(),
+		scale = (stage && stage.attrs && stage.attrs.scale && stage.attrs.scale.x) || (this.attrs && this.attrs.scale && this.attrs.scale.x) || 1;
+	return {x: scale, y: scale};
 };
 
 
 Kinetic.Idea.prototype.setupShadows = function () {
 	'use strict';
-	var scale = this.getScale(),
+	var scale = this.getScale().x,
 		isSelected = this.isSelected,
 		offset =  (this.mmStyle && this.mmStyle.collapsed) ? 3 * scale : 4 * scale,
 		normalShadow = {
@@ -258,10 +255,8 @@ Kinetic.Idea.prototype.setStyle = function () {
 	this.rect.attrs.height = this.text.getHeight() + 2 * padding;
 	this.attrs.width = this.text.getWidth() + 2 * padding;
 	this.attrs.height = this.text.getHeight() + 2 * padding;
-	this.text.attrs.x = this.attrs.x + padding;
-	this.text.attrs.y = this.attrs.y + padding;
-	this.rect.attrs.x = this.attrs.x;
-	this.rect.attrs.y = this.attrs.y;
+	this.text.attrs.x = padding;
+	this.text.attrs.y = padding;
 
 	if (isDroppable) {
 		this.rect.attrs.stroke = '#9F4F4F';
