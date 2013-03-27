@@ -4,7 +4,7 @@ Kinetic.IdeaProxy = function (idea, stage, layer) {
 	var nodeimage,
 		emptyImage,
 		imageRendered,
-		container = new Kinetic.Container({opacity: 0, draggable: true}),
+		container = new Kinetic.Group({opacity: 0, draggable: true}),
 		removeImage = function () {
 			nodeimage.setImage(emptyImage);
 			imageRendered = false;
@@ -18,13 +18,12 @@ Kinetic.IdeaProxy = function (idea, stage, layer) {
 				return;
 			}
 			imageRendered = true;
-			var scale = stage.attrs.scale.x, x = -scale, y = -scale,
+			var scale = stage.getScale().x, x = -scale, y = -scale,
 				unscaledWidth = idea.getWidth() + 20,
 				unscaledHeight = idea.getHeight() + 20,
 				width = (unscaledWidth * scale),
 				height = (unscaledHeight * scale);
-			idea.attrs.scale.x = scale;
-			idea.attrs.scale.y = scale;
+			idea.setScale({x: scale, y: scale});
 			idea.toImage({
 				x: x,
 				y: y,
@@ -81,15 +80,6 @@ Kinetic.IdeaProxy = function (idea, stage, layer) {
 	};
 	idea.getAbsolutePosition =  function () {
 		return container.getAbsolutePosition();
-	};
-	container.transitionToAndDontStopCurrentTransitions = function (config) {
-		var transition = new Kinetic.Transition(container, config),
-			animation = new Kinetic.Animation();
-		animation.func = transition._onEnterFrame.bind(transition);
-		animation.node = container.getLayer();
-		transition.onFinished = animation.stop.bind(animation);
-		transition.start();
-		animation.start();
 	};
 	_.each(['getHeight', 'getWidth', 'getIsSelected'], function (fname) {
 		container[fname] = function () {

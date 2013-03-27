@@ -1,4 +1,4 @@
-/*global _, window, document, jQuery, Kinetic, setTimeout*/
+/*global _, document, jQuery, Kinetic*/
 var MAPJS = MAPJS || {};
 if (Kinetic.Stage.prototype.isRectVisible) {
 	throw ('isRectVisible already exists, should not mix in our methods');
@@ -131,10 +131,10 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 			var scale = getScale();
 
 			node.moveToTop();
-			// node.getNodeAttrs().shadow.offset = {
+			// node.setShadowOffset({
 			// 	x: 8 * scale,
 			// 	y: 8 * scale
-			// };
+			// });
 		});
 		node.on('dragmove', function () {
 			mapModel.nodeDragMove(
@@ -174,7 +174,7 @@ MAPJS.KineticMediator = function (mapModel, stage, imageRendering) {
 
 		}
 		layer.add(node);
-		node.transitionToAndDontStopCurrentTransitions({
+		node.transitionTo({
 			opacity: 1,
 			duration: 0.4
 		});

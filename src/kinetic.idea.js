@@ -24,9 +24,7 @@
 		var ENTER_KEY_CODE = 13,
 			ESC_KEY_CODE = 27,
 			self = this,
-			unformattedText = joinLines(config.text),
-			oldSetText,
-			oldTransitionTo;
+			unformattedText = joinLines(config.text);
 		config.text = breakWords(config.text);
 		this.level = config.level;
 		this.mmStyle = config.mmStyle;
@@ -246,12 +244,10 @@ Kinetic.Idea.prototype.setStyle = function () {
 	'use strict';
 	/*jslint newcap: true*/
 	var isDroppable = this.isDroppable,
-		isRoot = this.level === 1,
 		isSelected = this.isSelected,
 		background = this.getBackground(),
 		tintedBackground = Color(background).mix(Color('#EEEEEE')).hexString(),
 		padding = 8;
-	console.log('size', this.text.getWidth(), this.text.getHeight(), this.text.getScale(), this.getScale());
 	this.rect.attrs.width = this.text.getWidth() + 2 * padding;
 	this.rect.attrs.height = this.text.getHeight() + 2 * padding;
 	this.attrs.width = this.text.getWidth() + 2 * padding;
@@ -300,16 +296,5 @@ Kinetic.Idea.prototype.setIsDroppable = function (isDroppable) {
 	'use strict';
 	this.isDroppable = isDroppable;
 	this.setStyle(this.attrs);
-};
-Kinetic.Idea.prototype.transitionToAndDontStopCurrentTransitions = function (config) {
-	'use strict';
-	var transition = new Kinetic.Transition(this, config),
-		animation = new Kinetic.Animation();
-	this.transAnim = animation;
-	animation.func = transition._onEnterFrame.bind(transition);
-	animation.node = this.getLayer();
-	transition.onFinished = animation.stop.bind(animation);
-	transition.start();
-	animation.start();
 };
 Kinetic.Global.extend(Kinetic.Idea, Kinetic.Group);
